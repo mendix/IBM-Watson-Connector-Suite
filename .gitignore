@@ -1,0 +1,9 @@
+.classpath
+.project
+.idea
+.mendix-cache
+.svn
+deployment
+**/javasource/**/proxies/
+*.launch
+*.iml
