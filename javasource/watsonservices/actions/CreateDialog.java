@@ -13,12 +13,13 @@ import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+
 import com.ibm.watson.developer_cloud.dialog.v1.DialogService;
 import com.ibm.watson.developer_cloud.dialog.v1.model.Dialog;
 import com.mendix.core.Core;
 import com.mendix.systemwideinterfaces.core.IContext;
-import com.mendix.webui.CustomJavaAction;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
+import com.mendix.webui.CustomJavaAction;
 
 public class CreateDialog extends CustomJavaAction<String>
 {
@@ -51,7 +52,7 @@ public class CreateDialog extends CustomJavaAction<String>
 		InputStream is = Core.getFileDocumentContent(getContext(), __dialogContent);
 		Files.copy(is, tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 		is.close();
-		Dialog dialog = service.createDialog(dialogName, tempFile);
+		Dialog dialog = service.createDialog(dialogName, tempFile).execute();
 		tempFile.delete();
 		return dialog.getId();
 		// END USER CODE

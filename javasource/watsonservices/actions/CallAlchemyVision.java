@@ -15,13 +15,14 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
+
 import com.ibm.watson.developer_cloud.alchemy.v1.AlchemyVision;
 import com.ibm.watson.developer_cloud.alchemy.v1.model.ImageFace;
 import com.ibm.watson.developer_cloud.alchemy.v1.model.ImageFaces;
 import com.mendix.core.Core;
 import com.mendix.systemwideinterfaces.core.IContext;
-import com.mendix.webui.CustomJavaAction;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
+import com.mendix.webui.CustomJavaAction;
 
 public class CallAlchemyVision extends CustomJavaAction<java.util.List<IMendixObject>>
 {
@@ -49,8 +50,9 @@ public class CallAlchemyVision extends CustomJavaAction<java.util.List<IMendixOb
 		InputStream stream = Core.getFileDocumentContent(getContext(), __image);
 		Files.copy(stream, tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 		stream.close();
-		
-		ImageFaces faces = service.recognizeFaces(tempFile, true);
+	
+
+		ImageFaces faces = service.recognizeFaces(tempFile, true).execute();
 		
 		List<IMendixObject> results = new ArrayList<IMendixObject>();
 		

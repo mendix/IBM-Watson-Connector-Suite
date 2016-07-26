@@ -11,13 +11,15 @@ package watsonservices.actions;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import com.ibm.watson.developer_cloud.dialog.v1.DialogService;
 import com.ibm.watson.developer_cloud.dialog.v1.model.Dialog;
 import com.mendix.core.Core;
 import com.mendix.systemwideinterfaces.core.IContext;
-import com.mendix.webui.CustomJavaAction;
-import watsonservices.proxies.ExistingDialog;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
+import com.mendix.webui.CustomJavaAction;
+
+import watsonservices.proxies.ExistingDialog;
 
 public class GetDialogs extends CustomJavaAction<java.util.List<IMendixObject>>
 {
@@ -37,7 +39,7 @@ public class GetDialogs extends CustomJavaAction<java.util.List<IMendixObject>>
 		// BEGIN USER CODE
 		DialogService service = new DialogService();
 		service.setUsernameAndPassword(this.username,this.password);
-		List<Dialog> dialogs = service.getDialogs();
+		List<Dialog> dialogs = service.getDialogs().execute();
 
 		//Create output
 		List<IMendixObject> result = new ArrayList<IMendixObject>();

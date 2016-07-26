@@ -13,25 +13,28 @@ import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import com.ibm.watson.developer_cloud.visual_recognition.v2.VisualRecognition;
-import com.ibm.watson.developer_cloud.visual_recognition.v2.model.VisualClassifier;
+
+import com.ibm.watson.developer_cloud.visual_recognition.v3.VisualRecognition;
+import com.ibm.watson.developer_cloud.visual_recognition.v3.model.CreateClassifierOptions;
+import com.ibm.watson.developer_cloud.visual_recognition.v3.model.VisualClassifier;
 import com.mendix.core.Core;
 import com.mendix.systemwideinterfaces.core.IContext;
-import com.mendix.webui.CustomJavaAction;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
+import com.mendix.webui.CustomJavaAction;
+
+import system.proxies.FileDocument;
+import watsonservices.proxies.trainingImagesZipFile;
 
 public class TrainNewClassifier extends CustomJavaAction<String>
 {
-	private String username;
-	private String password;
+	private String apikey;
 	private IMendixObject __VRClassigier;
 	private watsonservices.proxies.VRClassification VRClassigier;
 
-	public TrainNewClassifier(IContext context, String username, String password, IMendixObject VRClassigier)
+	public TrainNewClassifier(IContext context, String apikey, IMendixObject VRClassigier)
 	{
 		super(context);
-		this.username = username;
-		this.password = password;
+		this.apikey = apikey;
 		this.__VRClassigier = VRClassigier;
 	}
 
@@ -42,25 +45,30 @@ public class TrainNewClassifier extends CustomJavaAction<String>
 
 		// BEGIN USER CODE
 		
-		VisualRecognition service = new VisualRecognition(com.ibm.watson.developer_cloud.visual_recognition.v2.VisualRecognition.VERSION_DATE_2015_12_02);
-		service.setUsernameAndPassword(this.username, this.password);
+		VisualRecognition service = new VisualRecognition(VisualRecognition.VERSION_DATE_2016_05_19);
+		service.setApiKey(this.apikey);
 		
-		watsonservices.proxies.trainingImagesZipFile posTrainingImagesZipFile = VRClassigier.getpositives_trainingImages();
-		system.proxies.FileDocument posZipFileDocument = posTrainingImagesZipFile;
+		trainingImagesZipFile posTrainingImagesZipFile = VRClassigier.getpositives_trainingImages();
+		FileDocument posZipFileDocument = posTrainingImagesZipFile;
 		File posTempFile = new File(Core.getConfiguration().getTempPath() + posZipFileDocument.getName());
 		InputStream stream = Core.getFileDocumentContent(getContext(), posTrainingImagesZipFile.getMendixObject());
 		Files.copy(stream, posTempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 		stream.close();
 		
-		watsonservices.proxies.trainingImagesZipFile negTrainingImagesZipFile = VRClassigier.getnegative_trainingImages();
-		system.proxies.FileDocument negZipFileDocument = negTrainingImagesZipFile;
+		trainingImagesZipFile negTrainingImagesZipFile = VRClassigier.getnegative_trainingImages();
+		FileDocument negZipFileDocument = negTrainingImagesZipFile;
 		File negTempFile = new File(Core.getConfiguration().getTempPath() + negZipFileDocument.getName());
 		stream = Core.getFileDocumentContent(getContext(), negTrainingImagesZipFile.getMendixObject());
 		Files.copy(stream, negTempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 		stream.close();
 		
+	    CreateClassifierOptions options = new CreateClassifierOptions.Builder().
+	    		classifierName(VRClassigier.getclassificationName()).
+	    		addClass("class-name", posTempFile).
+	    		negativeExamples(negTempFile).
+	    		build();
 	    
-	    VisualClassifier classifier = service.createClassifier(VRClassigier.getclassificationName(), posTempFile, negTempFile);
+		VisualClassifier classifier = service.createClassifier(options).execute();
 	    return classifier.getId();
 
 		// END USER CODE

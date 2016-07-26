@@ -10,9 +10,11 @@
 package watsonservices.actions;
 
 import java.util.List;
+
 import com.ibm.watson.developer_cloud.language_translation.v2.LanguageTranslation;
 import com.ibm.watson.developer_cloud.language_translation.v2.model.IdentifiableLanguage;
 import com.ibm.watson.developer_cloud.language_translation.v2.model.IdentifiedLanguage;
+import com.ibm.watson.developer_cloud.language_translation.v2.model.Language;
 import com.ibm.watson.developer_cloud.language_translation.v2.model.Translation;
 import com.ibm.watson.developer_cloud.language_translation.v2.model.TranslationResult;
 import com.mendix.systemwideinterfaces.core.IContext;
@@ -48,7 +50,7 @@ public class Translate extends CustomJavaAction<String>
 	    service.setUsernameAndPassword(username, password);
 	    
 	    if(FromLang == null | FromLang.length() == 0) 	    {
-	    	List<IdentifiedLanguage> identifiedLanguages = service.identify(text);
+	    	List<IdentifiedLanguage> identifiedLanguages = service.identify(text).execute();
 	    	if(identifiedLanguages != null && !identifiedLanguages.isEmpty()) {
 	    		IdentifiableLanguage identifiableLanguage = identifiedLanguages.get(0);
 	    		FromLang = identifiableLanguage.getLanguage();	    		
@@ -58,7 +60,8 @@ public class Translate extends CustomJavaAction<String>
 	    	}
 	    }
 	    
-	    TranslationResult result = service.translate(text, FromLang, ToLang);
+	    
+	    TranslationResult result = service.translate(text, getLanguage(FromLang), getLanguage(ToLang)).execute();
 	    List<Translation> translations = result.getTranslations();
 	    if(translations.size() > 0) {
 	    	return translations.get(0).getTranslation();
@@ -77,5 +80,27 @@ public class Translate extends CustomJavaAction<String>
 	}
 
 	// BEGIN EXTRA CODE
+	private static Language getLanguage(String lang){
+		if(Language.ARABIC.toString().equals(lang)){
+			return Language.ARABIC;
+		}
+		if(Language.ENGLISH.toString().equals(lang)){
+			return Language.ENGLISH;
+		}
+		if(Language.SPANISH.toString().equals(lang)){
+			return Language.SPANISH;
+		}
+		if(Language.FRENCH.toString().equals(lang)){
+			return Language.FRENCH;
+		}
+		if(Language.ITALIAN.toString().equals(lang)){
+			return Language.ITALIAN;
+		}
+		if(Language.PORTUGUESE.toString().equals(lang)){
+			return Language.PORTUGUESE;
+		}
+		
+		return null; 
+	}
 	// END EXTRA CODE
 }

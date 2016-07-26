@@ -9,14 +9,13 @@
 
 package watsonservices.actions;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
 import com.ibm.watson.developer_cloud.dialog.v1.DialogService;
 import com.ibm.watson.developer_cloud.dialog.v1.model.Conversation;
 import com.mendix.systemwideinterfaces.core.IContext;
-import com.mendix.webui.CustomJavaAction;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
+import com.mendix.webui.CustomJavaAction;
 
 public class Converse extends CustomJavaAction<Boolean>
 {
@@ -42,12 +41,13 @@ public class Converse extends CustomJavaAction<Boolean>
 		DialogService service = new DialogService();
 		service.setUsernameAndPassword(this.username,this.password);
 		watsonservices.proxies.Conversation conversation = message.getMessage_Conversation();
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put(DialogService.DIALOG_ID, conversation.getDialogID());
-		params.put(DialogService.CLIENT_ID, conversation.getClientID());
-		params.put(DialogService.INPUT, message.getInput());
-		params.put(DialogService.CONVERSATION_ID, conversation.getConversationID());
-		Conversation response = service.converse(params);
+		
+		Conversation conv = new Conversation();
+		conv.setDialogId(conversation.getDialogID());
+		conv.setClientId(conversation.getClientID());
+		conv.setId(conversation.getConversationID());
+		
+		Conversation response = service.converse(conv, message.getInput()).execute();
 
 		//Update conversation if this is a new conversation
 		if (conversation.getConversationID() == null) {

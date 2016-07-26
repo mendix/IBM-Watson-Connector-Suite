@@ -10,13 +10,16 @@
 package watsonservices.actions;
 
 import java.io.InputStream;
+
+import com.ibm.watson.developer_cloud.text_to_speech.v1.model.AudioFormat;
 import com.ibm.watson.developer_cloud.text_to_speech.v1.model.Voice;
 import com.mendix.core.Core;
 import com.mendix.systemwideinterfaces.core.IContext;
+import com.mendix.systemwideinterfaces.core.IMendixObject;
 import com.mendix.webui.CustomJavaAction;
+
 import watsonservices.proxies.Speech;
 import watsonservices.proxies.VoiceEnum;
-import com.mendix.systemwideinterfaces.core.IMendixObject;
 
 public class TextToSpeech extends CustomJavaAction<IMendixObject>
 {
@@ -64,7 +67,7 @@ public class TextToSpeech extends CustomJavaAction<IMendixObject>
 		else if(VoiceEnumParameter1.equals(VoiceEnum.IT_FRANCESCA))
 			voice = Voice.IT_FRANCESCA;
 		
-		InputStream stream = service.synthesize(Text, voice, "audio/wav");
+		InputStream stream = service.synthesize(Text, voice, AudioFormat.WAV).execute();
 
 		IMendixObject object = Core.instantiate(getContext(), Speech.entityName);
 		Core.storeFileDocumentContent(getContext(), object, stream);

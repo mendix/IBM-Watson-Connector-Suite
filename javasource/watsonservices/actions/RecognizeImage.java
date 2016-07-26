@@ -16,11 +16,12 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.Iterator;
 import java.util.List;
-import com.ibm.watson.developer_cloud.visual_recognition.v2.VisualRecognition;
-import com.ibm.watson.developer_cloud.visual_recognition.v2.model.VisualClassification;
-import com.ibm.watson.developer_cloud.visual_recognition.v2.model.VisualClassification.Image;
-import com.ibm.watson.developer_cloud.visual_recognition.v2.model.VisualClassification.Score;
-import com.ibm.watson.developer_cloud.visual_recognition.v2.model.VisualClassifier;
+
+import com.ibm.watson.developer_cloud.visual_recognition.v2_beta.VisualRecognition;
+import com.ibm.watson.developer_cloud.visual_recognition.v2_beta.model.VisualClassification;
+import com.ibm.watson.developer_cloud.visual_recognition.v2_beta.model.VisualClassification.Image;
+import com.ibm.watson.developer_cloud.visual_recognition.v2_beta.model.VisualClassification.Score;
+import com.ibm.watson.developer_cloud.visual_recognition.v2_beta.model.VisualClassifier;
 import com.mendix.core.Core;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
@@ -33,16 +34,14 @@ public class RecognizeImage extends CustomJavaAction<java.util.List<IMendixObjec
 {
 	private IMendixObject __VisualRequestObject;
 	private watsonservices.proxies.VisualRecognitionImage VisualRequestObject;
-	private String username;
-	private String password;
+	private String apikey;
 	private String classifier;
 
-	public RecognizeImage(IContext context, IMendixObject VisualRequestObject, String username, String password, String classifier)
+	public RecognizeImage(IContext context, IMendixObject VisualRequestObject, String apikey, String classifier)
 	{
 		super(context);
 		this.__VisualRequestObject = VisualRequestObject;
-		this.username = username;
-		this.password = password;
+		this.apikey = apikey;
 		this.classifier = classifier;
 	}
 
@@ -52,8 +51,8 @@ public class RecognizeImage extends CustomJavaAction<java.util.List<IMendixObjec
 		this.VisualRequestObject = __VisualRequestObject == null ? null : watsonservices.proxies.VisualRecognitionImage.initialize(getContext(), __VisualRequestObject);
 
 		// BEGIN USER CODE
-		VisualRecognition service = new VisualRecognition(com.ibm.watson.developer_cloud.visual_recognition.v2.VisualRecognition.VERSION_DATE_2015_12_02);
-		service.setUsernameAndPassword(this.username, this.password);
+		VisualRecognition service = new VisualRecognition(VisualRecognition.VERSION_DATE_2015_12_02);
+		service.setApiKey(this.apikey);
 		
 		system.proxies.FileDocument fileDocument = VisualRequestObject;
 		File tempFile = new File(Core.getConfiguration().getTempPath() + fileDocument.getName());
@@ -61,16 +60,16 @@ public class RecognizeImage extends CustomJavaAction<java.util.List<IMendixObjec
 		Files.copy(stream, tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 		stream.close();
 		
-		List<VisualClassification.Score> scores = null;
+		List<Score> scores = null;
 		if(classifier != null && classifier.length() > 0) {
-			VisualClassifier Vclassifier = new VisualClassifier(classifier);
-			VisualClassification result = service.classify(tempFile, Vclassifier );
+			VisualClassifier classifier = new VisualClassifier(this.classifier);
+			VisualClassification result = service.classify(tempFile, classifier).execute();
 			List<Image> images = result.getImages();
 			Image firstImage = images.get(0);
 			scores = firstImage.getScores();
 		}
 		else {
-			VisualClassification result = service.classify(tempFile);
+			VisualClassification result = service.classify(tempFile).execute();
 			List<Image> images = result.getImages();
 			Image firstImage = images.get(0);
 			scores = firstImage.getScores();

@@ -11,12 +11,13 @@ package watsonservices.actions;
 
 import java.util.Iterator;
 import java.util.List;
+
 import com.ibm.watson.developer_cloud.language_translation.v2.LanguageTranslation;
 import com.ibm.watson.developer_cloud.language_translation.v2.model.IdentifiableLanguage;
 import com.mendix.core.Core;
 import com.mendix.systemwideinterfaces.core.IContext;
-import com.mendix.webui.CustomJavaAction;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
+import com.mendix.webui.CustomJavaAction;
 
 public class GetSupportLanguages extends CustomJavaAction<java.util.List<IMendixObject>>
 {
@@ -39,7 +40,7 @@ public class GetSupportLanguages extends CustomJavaAction<java.util.List<IMendix
 	    
 	    List<IMendixObject> results = new java.util.ArrayList<IMendixObject>();
 	    
-		List<IdentifiableLanguage> identifieableLanguages = service.getIdentifiableLanguages();
+		List<IdentifiableLanguage> identifieableLanguages = service.getIdentifiableLanguages().execute();
 		Iterator<IdentifiableLanguage> identifieableLanguagesIterator = identifieableLanguages.iterator();
 		while(identifieableLanguagesIterator.hasNext()) {
 			IdentifiableLanguage identifiableLanguage = identifieableLanguagesIterator.next();

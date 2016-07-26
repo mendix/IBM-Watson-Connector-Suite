@@ -14,10 +14,12 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+
+import com.ibm.watson.developer_cloud.alchemy.v1.model.ImageKeywords;
 import com.mendix.core.Core;
 import com.mendix.systemwideinterfaces.core.IContext;
-import com.mendix.webui.CustomJavaAction;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
+import com.mendix.webui.CustomJavaAction;
 
 public class CallAlchemyVisionTags extends CustomJavaAction<java.util.List<IMendixObject>>
 {
@@ -46,7 +48,7 @@ public class CallAlchemyVisionTags extends CustomJavaAction<java.util.List<IMend
 		Files.copy(stream, tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 		stream.close();
 		
-		com.ibm.watson.developer_cloud.alchemy.v1.model.ImageKeywords keywords = service.getImageKeywords(tempFile, true, true);
+		ImageKeywords keywords = service.getImageKeywords(tempFile, true, true).execute();
 		
 		java.util.List<IMendixObject> results = new java.util.ArrayList<IMendixObject>();
 		
