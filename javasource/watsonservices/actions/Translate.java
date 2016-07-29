@@ -10,7 +10,6 @@
 package watsonservices.actions;
 
 import java.util.List;
-
 import com.ibm.watson.developer_cloud.language_translation.v2.LanguageTranslation;
 import com.ibm.watson.developer_cloud.language_translation.v2.model.IdentifiableLanguage;
 import com.ibm.watson.developer_cloud.language_translation.v2.model.IdentifiedLanguage;

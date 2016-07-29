@@ -13,7 +13,6 @@ import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-
 import com.ibm.watson.developer_cloud.visual_recognition.v3.VisualRecognition;
 import com.ibm.watson.developer_cloud.visual_recognition.v3.model.CreateClassifierOptions;
 import com.ibm.watson.developer_cloud.visual_recognition.v3.model.VisualClassifier;
@@ -21,7 +20,6 @@ import com.mendix.core.Core;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 import com.mendix.webui.CustomJavaAction;
-
 import system.proxies.FileDocument;
 import watsonservices.proxies.trainingImagesZipFile;
 
@@ -63,10 +61,10 @@ public class TrainNewClassifier extends CustomJavaAction<String>
 		stream.close();
 		
 	    CreateClassifierOptions options = new CreateClassifierOptions.Builder().
-	    		classifierName(VRClassigier.getclassificationName()).
-	    		addClass("class-name", posTempFile).
-	    		negativeExamples(negTempFile).
-	    		build();
+	    		classifierName(VRClassigier.getclassificationName())
+	    		.addClass(posTrainingImagesZipFile.getName() + "_positive_examples", posTempFile)
+	    		.negativeExamples(negTempFile)
+	    		.build();
 	    
 		VisualClassifier classifier = service.createClassifier(options).execute();
 	    return classifier.getId();

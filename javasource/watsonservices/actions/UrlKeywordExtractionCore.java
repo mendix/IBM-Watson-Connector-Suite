@@ -15,7 +15,6 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
-
 import com.ibm.watson.developer_cloud.alchemy.v1.AlchemyLanguage;
 import com.ibm.watson.developer_cloud.alchemy.v1.model.Keyword;
 import com.ibm.watson.developer_cloud.alchemy.v1.model.Keywords;
@@ -23,7 +22,6 @@ import com.mendix.core.Core;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 import com.mendix.webui.CustomJavaAction;
-
 import watsonservices.proxies.KeywordExtraction;
 import watsonservices.proxies.KeywordsItem;
 
@@ -80,7 +78,7 @@ public class UrlKeywordExtractionCore extends CustomJavaAction<IMendixObject>
         Map<String, Object> params = new HashMap<String, Object>();
         params.put(AlchemyLanguage.HTML, htmlContent.toString());
         Keywords keywords = service.getKeywords(params).execute();
-
+        
         IMendixObject iMendixObject = Core.instantiate(getContext(), KeywordExtraction.entityName);
         KeywordExtraction keywordExtraction = KeywordExtraction.load(getContext(), iMendixObject.getId());
 

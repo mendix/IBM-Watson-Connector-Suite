@@ -15,7 +15,6 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
-
 import com.ibm.watson.developer_cloud.alchemy.v1.AlchemyVision;
 import com.ibm.watson.developer_cloud.alchemy.v1.model.ImageFace;
 import com.ibm.watson.developer_cloud.alchemy.v1.model.ImageFaces;
@@ -53,6 +52,7 @@ public class CallAlchemyVision extends CustomJavaAction<java.util.List<IMendixOb
 	
 
 		ImageFaces faces = service.recognizeFaces(tempFile, true).execute();
+		
 		
 		List<IMendixObject> results = new ArrayList<IMendixObject>();
 		

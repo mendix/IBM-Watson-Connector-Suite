@@ -14,14 +14,15 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.List;
 
-import com.ibm.watson.developer_cloud.visual_recognition.v2_beta.VisualRecognition;
-import com.ibm.watson.developer_cloud.visual_recognition.v2_beta.model.VisualClassification;
-import com.ibm.watson.developer_cloud.visual_recognition.v2_beta.model.VisualClassification.Image;
-import com.ibm.watson.developer_cloud.visual_recognition.v2_beta.model.VisualClassification.Score;
-import com.ibm.watson.developer_cloud.visual_recognition.v2_beta.model.VisualClassifier;
+import com.ibm.watson.developer_cloud.visual_recognition.v3.VisualRecognition;
+import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ClassifyImagesOptions;
+import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ImageClassification;
+import com.ibm.watson.developer_cloud.visual_recognition.v3.model.VisualClassification;
+import com.ibm.watson.developer_cloud.visual_recognition.v3.model.VisualClassifier;
+import com.ibm.watson.developer_cloud.visual_recognition.v3.model.VisualClassifier.VisualClass;
 import com.mendix.core.Core;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
@@ -51,7 +52,7 @@ public class RecognizeImage extends CustomJavaAction<java.util.List<IMendixObjec
 		this.VisualRequestObject = __VisualRequestObject == null ? null : watsonservices.proxies.VisualRecognitionImage.initialize(getContext(), __VisualRequestObject);
 
 		// BEGIN USER CODE
-		VisualRecognition service = new VisualRecognition(VisualRecognition.VERSION_DATE_2015_12_02);
+		VisualRecognition service = new VisualRecognition(VisualRecognition.VERSION_DATE_2016_05_19);
 		service.setApiKey(this.apikey);
 		
 		system.proxies.FileDocument fileDocument = VisualRequestObject;
@@ -60,30 +61,43 @@ public class RecognizeImage extends CustomJavaAction<java.util.List<IMendixObjec
 		Files.copy(stream, tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 		stream.close();
 		
-		List<Score> scores = null;
-		if(classifier != null && classifier.length() > 0) {
-			VisualClassifier classifier = new VisualClassifier(this.classifier);
-			VisualClassification result = service.classify(tempFile, classifier).execute();
-			List<Image> images = result.getImages();
-			Image firstImage = images.get(0);
-			scores = firstImage.getScores();
+		ClassifyImagesOptions options = null;
+		List<VisualClassifier> classifiers = null;
+		
+		if(!classifier.isEmpty()) {
+			List<String> classifierIds = new ArrayList<String>();
+			classifierIds.add(classifier);
+			
+			options = new ClassifyImagesOptions.Builder()
+					.classifierIds(classifierIds)
+					.images(tempFile)
+					.build();
+			
+			VisualClassification result = service.classify(options).execute();
+			
+			List<ImageClassification> images = result.getImages();
+			ImageClassification firstImage = images.get(0);
+			classifiers = firstImage.getClassifiers();
 		}
 		else {
-			VisualClassification result = service.classify(tempFile).execute();
-			List<Image> images = result.getImages();
-			Image firstImage = images.get(0);
-			scores = firstImage.getScores();
+			options = new ClassifyImagesOptions.Builder()
+					.images(tempFile)
+					.build();
+			
+			VisualClassification result = service.classify(options).execute();
+			List<ImageClassification> images = result.getImages();
+			ImageClassification firstImage = images.get(0);
+			classifiers = firstImage.getClassifiers();
 		}
 		
 		java.util.List<IMendixObject> mxresults = new java.util.ArrayList<IMendixObject>();
-		
-		Iterator<Score> scoreIterator = scores.iterator();
-		while(scoreIterator.hasNext()) {
-			Score score = scoreIterator.next();
+		for(VisualClassifier classifier : classifiers){
 			IMendixObject scoreObject = Core.instantiate(getContext(), "WatsonServices.Score");
 			
-			scoreObject.setValue(getContext(), "Name", score.getName());
-			scoreObject.setValue(getContext(), "Score", new BigDecimal(score.getScore()));
+			for(VisualClass visualClass : classifier.getClasses()){
+				scoreObject.setValue(getContext(), "Name", visualClass.getName());
+				scoreObject.setValue(getContext(), "Score", new BigDecimal(visualClass.getScore()));
+			}
 			
 			mxresults.add(scoreObject);
 		}

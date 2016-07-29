@@ -14,7 +14,6 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-
 import com.ibm.watson.developer_cloud.alchemy.v1.model.ImageKeywords;
 import com.mendix.core.Core;
 import com.mendix.systemwideinterfaces.core.IContext;

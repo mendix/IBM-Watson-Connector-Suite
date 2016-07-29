@@ -10,14 +10,12 @@
 package watsonservices.actions;
 
 import java.io.InputStream;
-
 import com.ibm.watson.developer_cloud.text_to_speech.v1.model.AudioFormat;
 import com.ibm.watson.developer_cloud.text_to_speech.v1.model.Voice;
 import com.mendix.core.Core;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 import com.mendix.webui.CustomJavaAction;
-
 import watsonservices.proxies.Speech;
 import watsonservices.proxies.VoiceEnum;
 

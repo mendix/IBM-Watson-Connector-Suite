@@ -10,7 +10,6 @@
 package watsonservices.actions;
 
 import java.util.List;
-
 import com.ibm.watson.developer_cloud.dialog.v1.DialogService;
 import com.ibm.watson.developer_cloud.dialog.v1.model.Conversation;
 import com.mendix.systemwideinterfaces.core.IContext;
@@ -44,8 +43,13 @@ public class Converse extends CustomJavaAction<Boolean>
 		
 		Conversation conv = new Conversation();
 		conv.setDialogId(conversation.getDialogID());
-		conv.setClientId(conversation.getClientID());
-		conv.setId(conversation.getConversationID());
+		
+		if(conversation.getClientID() != null){
+			conv.setClientId(conversation.getClientID());
+		}
+		if(conversation.getConversationID() != null){
+			conv.setId(conversation.getConversationID());
+		}
 		
 		Conversation response = service.converse(conv, message.getInput()).execute();
 
