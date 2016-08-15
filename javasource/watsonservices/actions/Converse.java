@@ -12,37 +12,40 @@ package watsonservices.actions;
 import java.util.List;
 import com.ibm.watson.developer_cloud.dialog.v1.DialogService;
 import com.ibm.watson.developer_cloud.dialog.v1.model.Conversation;
+import com.mendix.core.Core;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 import com.mendix.webui.CustomJavaAction;
+import watsonservices.proxies.Message;
 
-public class Converse extends CustomJavaAction<Boolean>
+public class Converse extends CustomJavaAction<IMendixObject>
 {
-	private IMendixObject __message;
-	private watsonservices.proxies.Message message;
+	private IMendixObject __conversation;
+	private watsonservices.proxies.Conversation conversation;
 	private String username;
 	private String password;
+	private String message;
 
-	public Converse(IContext context, IMendixObject message, String username, String password)
+	public Converse(IContext context, IMendixObject conversation, String username, String password, String message)
 	{
 		super(context);
-		this.__message = message;
+		this.__conversation = conversation;
 		this.username = username;
 		this.password = password;
+		this.message = message;
 	}
 
 	@Override
-	public Boolean executeAction() throws Exception
+	public IMendixObject executeAction() throws Exception
 	{
-		this.message = __message == null ? null : watsonservices.proxies.Message.initialize(getContext(), __message);
+		this.conversation = __conversation == null ? null : watsonservices.proxies.Conversation.initialize(getContext(), __conversation);
 
 		// BEGIN USER CODE
-		DialogService service = new DialogService();
+		final DialogService service = new DialogService();
 		service.setUsernameAndPassword(this.username,this.password);
-		watsonservices.proxies.Conversation conversation = message.getMessage_Conversation();
 		
-		Conversation conv = new Conversation();
-		conv.setDialogId(conversation.getDialogID());
+		final Conversation conv = new Conversation();
+		conv.setDialogId(conversation.getConversation_Dialog().getDialogID());
 		
 		if(conversation.getClientID() != null){
 			conv.setClientId(conversation.getClientID());
@@ -51,7 +54,7 @@ public class Converse extends CustomJavaAction<Boolean>
 			conv.setId(conversation.getConversationID());
 		}
 		
-		Conversation response = service.converse(conv, message.getInput()).execute();
+		Conversation response = service.converse(conv, this.message).execute();
 
 		//Update conversation if this is a new conversation
 		if (conversation.getConversationID() == null) {
@@ -60,6 +63,9 @@ public class Converse extends CustomJavaAction<Boolean>
 			conversation.commit();
 		}	
 
+		// Create a message object
+		final IMendixObject message = Core.instantiate(getContext(), Message.entityName);
+		
 		//Update message	
 		String completeString = "";
 		List<String> output = response.getResponse();
@@ -70,10 +76,14 @@ public class Converse extends CustomJavaAction<Boolean>
 				completeString = completeString + "\r\n" + string;
 			}
 		}
-		message.setOutput(completeString);
-		message.setFinished(true);
-		message.commit();
-		return true;
+		
+		message.setValue(getContext(), Message.MemberNames.Output.toString(), completeString);
+		message.setValue(getContext(), Message.MemberNames.Input.toString(), this.message);
+		message.setValue(getContext(), Message.MemberNames.Message_Conversation.toString(), this.conversation);
+		
+		Core.commit(getContext(), message);
+		
+		return message;
 		// END USER CODE
 	}
 
