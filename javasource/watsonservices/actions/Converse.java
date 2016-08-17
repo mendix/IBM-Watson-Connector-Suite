@@ -79,7 +79,7 @@ public class Converse extends CustomJavaAction<IMendixObject>
 		
 		message.setValue(getContext(), Message.MemberNames.Output.toString(), completeString);
 		message.setValue(getContext(), Message.MemberNames.Input.toString(), this.message);
-		message.setValue(getContext(), Message.MemberNames.Message_Conversation.toString(), this.conversation);
+		message.setValue(getContext(), Message.MemberNames.Message_Conversation.toString(), this.conversation.getMendixObject().getId());
 		
 		Core.commit(getContext(), message);
 		
