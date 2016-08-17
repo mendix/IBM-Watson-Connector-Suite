@@ -13,6 +13,8 @@ import java.util.List;
 import com.ibm.watson.developer_cloud.dialog.v1.DialogService;
 import com.ibm.watson.developer_cloud.dialog.v1.model.Conversation;
 import com.mendix.core.Core;
+import com.mendix.logging.ILogNode;
+import com.mendix.systemwideinterfaces.MendixException;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 import com.mendix.webui.CustomJavaAction;
@@ -41,6 +43,8 @@ public class Converse extends CustomJavaAction<IMendixObject>
 		this.conversation = __conversation == null ? null : watsonservices.proxies.Conversation.initialize(getContext(), __conversation);
 
 		// BEGIN USER CODE
+		LOGGER.debug("Executing Converse Connector...");
+		
 		final DialogService service = new DialogService();
 		service.setUsernameAndPassword(this.username,this.password);
 		
@@ -54,8 +58,14 @@ public class Converse extends CustomJavaAction<IMendixObject>
 			conv.setId(conversation.getConversationID());
 		}
 		
-		Conversation response = service.converse(conv, this.message).execute();
-
+		Conversation response = null;
+		try{
+			
+			 response = service.converse(conv, this.message).execute();			 
+		}catch(Exception e){
+			LOGGER.error("Watson Service connection - Failed conversing with Watson in the conversation: " + conv.getId(), e);
+			throw new MendixException(e);
+		}
 		//Update conversation if this is a new conversation
 		if (conversation.getConversationID() == null) {
 			conversation.setClientID(response.getClientId());
@@ -97,5 +107,7 @@ public class Converse extends CustomJavaAction<IMendixObject>
 	}
 
 	// BEGIN EXTRA CODE
+	private static final String WATSON_DIALOG_LOGNODE = "WatsonServices.IBM_WatsonConnector_Dialog";
+	private static final ILogNode LOGGER = Core.getLogger((Core.getConfiguration().getConstantValue(WATSON_DIALOG_LOGNODE).toString()));
 	// END EXTRA CODE
 }
