@@ -56,7 +56,7 @@ public class CreateDialog extends CustomJavaAction<String>
 		
 			Files.copy(is, dialogTemplateFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 		}catch(IOException e){
-			LOGGER.error("There was a problem with the template: " + dialogTemplateFile.toPath(), e);
+			LOGGER.error("There was a problem with the template: " + dialogTemplateFile.getPath(), e);
 			throw new MendixException(e);
 		}
 		

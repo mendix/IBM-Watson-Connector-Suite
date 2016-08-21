@@ -54,11 +54,11 @@ public class GetDialogs extends CustomJavaAction<java.util.List<IMendixObject>>
 		//Create output
 		final List<IMendixObject> result = new ArrayList<IMendixObject>();
 		for (Dialog dialog : dialogs) {
-			IMendixObject iMendixObject = Core.instantiate(getContext(), ExistingDialog.entityName);
-			ExistingDialog newExistingDialog = ExistingDialog.load(getContext(), iMendixObject.getId());
-			newExistingDialog.setDialogID(dialog.getId());
-			newExistingDialog.setDialogName(dialog.getName());
-			result.add(newExistingDialog.getMendixObject());
+			IMendixObject existingDialogObject = Core.instantiate(getContext(), ExistingDialog.entityName);
+			ExistingDialog newExistingDialogObject = ExistingDialog.load(getContext(), existingDialogObject.getId());
+			newExistingDialogObject.setDialogID(dialog.getId());
+			newExistingDialogObject.setDialogName(dialog.getName());
+			result.add(newExistingDialogObject.getMendixObject());
 		}
 		return result;
 		// END USER CODE

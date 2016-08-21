@@ -45,13 +45,13 @@ public class UserActionsRegistrar implements EventHandler
 			component.actionRegistry().registerUserAction(system.actions.VerifyPassword.class);
 			component.actionRegistry().registerUserAction(watsonservices.actions.CallAlchemyVision.class);
 			component.actionRegistry().registerUserAction(watsonservices.actions.CallAlchemyVisionTags.class);
+			component.actionRegistry().registerUserAction(watsonservices.actions.ClassifyImage.class);
 			component.actionRegistry().registerUserAction(watsonservices.actions.Converse.class);
+			component.actionRegistry().registerUserAction(watsonservices.actions.CreateClassifier.class);
 			component.actionRegistry().registerUserAction(watsonservices.actions.CreateDialog.class);
 			component.actionRegistry().registerUserAction(watsonservices.actions.GetDialogs.class);
 			component.actionRegistry().registerUserAction(watsonservices.actions.GetSupportLanguages.class);
-			component.actionRegistry().registerUserAction(watsonservices.actions.RecognizeImage.class);
 			component.actionRegistry().registerUserAction(watsonservices.actions.TextToSpeech.class);
-			component.actionRegistry().registerUserAction(watsonservices.actions.TrainNewClassifier.class);
 			component.actionRegistry().registerUserAction(watsonservices.actions.Translate.class);
 			component.actionRegistry().registerUserAction(watsonservices.actions.UpdateDialog.class);
 			component.actionRegistry().registerUserAction(watsonservices.actions.UrlKeywordExtractionCore.class);
