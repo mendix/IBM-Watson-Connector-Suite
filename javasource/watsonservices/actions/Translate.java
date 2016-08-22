@@ -9,63 +9,65 @@
 
 package watsonservices.actions;
 
-import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 import com.ibm.watson.developer_cloud.language_translation.v2.LanguageTranslation;
-import com.ibm.watson.developer_cloud.language_translation.v2.model.IdentifiableLanguage;
-import com.ibm.watson.developer_cloud.language_translation.v2.model.IdentifiedLanguage;
 import com.ibm.watson.developer_cloud.language_translation.v2.model.Language;
-import com.ibm.watson.developer_cloud.language_translation.v2.model.Translation;
 import com.ibm.watson.developer_cloud.language_translation.v2.model.TranslationResult;
+import com.mendix.core.Core;
+import com.mendix.logging.ILogNode;
+import com.mendix.systemwideinterfaces.MendixException;
 import com.mendix.systemwideinterfaces.core.IContext;
+import com.mendix.systemwideinterfaces.core.IMendixObject;
 import com.mendix.webui.CustomJavaAction;
 
 /**
  * FromLang could be empty. Language will be detected if possible. If not possible an exception will be thrown
  * 
  */
-public class Translate extends CustomJavaAction<String>
+public class Translate extends CustomJavaAction<IMendixObject>
 {
-	private String text;
-	private String FromLang;
-	private String ToLang;
+	private IMendixObject __translation;
+	private watsonservices.proxies.Translation translation;
 	private String username;
 	private String password;
 
-	public Translate(IContext context, String text, String FromLang, String ToLang, String username, String password)
+	public Translate(IContext context, IMendixObject translation, String username, String password)
 	{
 		super(context);
-		this.text = text;
-		this.FromLang = FromLang;
-		this.ToLang = ToLang;
+		this.__translation = translation;
 		this.username = username;
 		this.password = password;
 	}
 
 	@Override
-	public String executeAction() throws Exception
+	public IMendixObject executeAction() throws Exception
 	{
+		this.translation = __translation == null ? null : watsonservices.proxies.Translation.initialize(getContext(), __translation);
+
 		// BEGIN USER CODE
-		LanguageTranslation service = new LanguageTranslation();
+		LOGGER.debug("Executing Translate Connector...");
+		
+		final LanguageTranslation service = new LanguageTranslation();
 	    service.setUsernameAndPassword(username, password);
+	   
+	    final Language source = getLanguage(translation.getTranslation_SourceLanguage().getCode());
+	    final Language target = getLanguage(translation.getTranslation_TargetLanguage().getCode());
 	    
-	    if(FromLang == null | FromLang.length() == 0) 	    {
-	    	List<IdentifiedLanguage> identifiedLanguages = service.identify(text).execute();
-	    	if(identifiedLanguages != null && !identifiedLanguages.isEmpty()) {
-	    		IdentifiableLanguage identifiableLanguage = identifiedLanguages.get(0);
-	    		FromLang = identifiableLanguage.getLanguage();	    		
-	    	}
-	    	if(FromLang == null) {
-	    		throw new com.mendix.systemwideinterfaces.MendixRuntimeException("No language detected");
-	    	}
-	    }
+	    TranslationResult result;
+		try {
+			
+			result = service.translate(translation.getText(), source, target).execute();
+		} catch (Exception e) {
+			LOGGER.error("Watson Service connection - Failed translating from" + source + " to " + target + " the text " + StringUtils.abbreviate(translation.getText(), 20), e);
+			throw new MendixException(e);
+		}
 	    
-	    
-	    TranslationResult result = service.translate(text, getLanguage(FromLang), getLanguage(ToLang)).execute();
-	    List<Translation> translations = result.getTranslations();
-	    if(translations.size() > 0) {
-	    	return translations.get(0).getTranslation();
-	    }
-	    throw new com.mendix.systemwideinterfaces.MendixRuntimeException("No translation found for given text");
+	    translation.setWordCount(Long.valueOf(result.getWordCount()));
+	    translation.setCharacterCount(Long.valueOf(result.getCharacterCount()));
+	    translation.setOutput(result.getFirstTranslation());
+		Core.commit(getContext(), translation.getMendixObject());
+		
+		return translation.getMendixObject();
 		// END USER CODE
 	}
 
@@ -79,7 +81,10 @@ public class Translate extends CustomJavaAction<String>
 	}
 
 	// BEGIN EXTRA CODE
-	private static Language getLanguage(String lang){
+	private static final String WATSON_TRANSLATE_LOGNODE = "WatsonServices.IBM_WatsonConnector_Translate";
+	private static ILogNode LOGGER = Core.getLogger(Core.getConfiguration().getConstantValue(WATSON_TRANSLATE_LOGNODE).toString());
+
+	private static Language getLanguage(String lang) throws MendixException {
 		if(Language.ARABIC.toString().equals(lang)){
 			return Language.ARABIC;
 		}
@@ -99,7 +104,7 @@ public class Translate extends CustomJavaAction<String>
 			return Language.PORTUGUESE;
 		}
 		
-		return null; 
+		throw new MendixException("The language is not supported: " + lang);
 	}
 	// END EXTRA CODE
 }
