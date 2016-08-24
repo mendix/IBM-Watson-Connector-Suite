@@ -1,8 +1,7 @@
 /* ==========================================================================
    Special styles for Watsonm Text to Speech
 ========================================================================== */
-
-page-watson-speak {
+.page-watson-speak {
   width: 100% !important;
   height: 100% !important;
   left: 0 !important;
