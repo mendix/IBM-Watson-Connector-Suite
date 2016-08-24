@@ -1,0 +1,101 @@
+/* ==========================================================================
+   Special styles for Watsonm Text to Speech
+========================================================================== */
+
+page-watson-speak {
+  width: 100% !important;
+  height: 100% !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  top: 0 !important;
+}
+.page-watson-speak .mx-window-body {
+  top: 50%;
+  transform: translateY(-50%);
+  max-width: 700px;
+  width: 100%;
+  margin: auto;
+  height: auto !important;
+}
+.page-watson-speak .mx-window-content {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+.page-watson-speak .mx-window-content .mx-window-header {
+  display: none;
+}
+.page-watson-speak .btn {
+  width: 100%;
+  margin-top: 30px;
+}
+.page-watson-speak .bars {
+  height: 150px;
+  width: 350px;
+  margin: auto auto;
+  position: relative;
+  display: block;
+}
+.page-watson-speak .bar {
+  background: #FFF;
+  bottom: 1px;
+  height: 35px;
+  position: absolute;
+  width: 35px;
+  animation: sound 0ms -800ms linear infinite alternate;
+}
+@keyframes sound {
+  0% {
+    opacity: .35;
+    height: 3px;
+  }
+  100% {
+    opacity: 1;
+    height: 100%;
+  }
+}
+.page-watson-speak .bar:nth-child(1) {
+  left: 0;
+  animation-duration: 474ms;
+}
+.page-watson-speak .bar:nth-child(2) {
+  left: 37px;
+  animation-duration: 433ms;
+}
+.page-watson-speak .bar:nth-child(3) {
+  left: 72px;
+  animation-duration: 407ms;
+}
+.page-watson-speak .bar:nth-child(4) {
+  left: 109px;
+  animation-duration: 458ms;
+}
+.page-watson-speak .bar:nth-child(5) {
+  left: 146px;
+  animation-duration: 400ms;
+}
+.page-watson-speak .bar:nth-child(6) {
+  left: 183px;
+  animation-duration: 427ms;
+}
+.page-watson-speak .bar:nth-child(7) {
+  left: 220px;
+  animation-duration: 441ms;
+}
+.page-watson-speak .bar:nth-child(8) {
+  left: 257px;
+  animation-duration: 419ms;
+}
+.page-watson-speak .bar:nth-child(9) {
+  left: 294px;
+  animation-duration: 487ms;
+}
+.page-watson-speak .bar:nth-child(10) {
+  left: 331px;
+  animation-duration: 442ms;
+}
+
+.mx-underlay {
+  opacity: 0.9 !important;
+}
