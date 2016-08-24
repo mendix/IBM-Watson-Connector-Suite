@@ -66,25 +66,25 @@ public class ClassifyImage extends CustomJavaAction<java.util.List<IMendixObject
 		final VisualRecognition service = new VisualRecognition(VisualRecognition.VERSION_DATE_2016_05_19);
 		service.setApiKey(this.apikey);
 		
-		final File imageToRecognizeFile = new File(Core.getConfiguration().getTempPath() + VisualRequestObject.getName());	
+		final File imageToClassifyFile = new File(Core.getConfiguration().getTempPath() + VisualRequestObject.getName());	
 		try(InputStream stream = Core.getFileDocumentContent(getContext(), this.VisualRequestObject.getMendixObject())){
 			
-			Files.copy(stream, imageToRecognizeFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+			Files.copy(stream, imageToClassifyFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 		}catch(Exception e){
-			LOGGER.error("There was a problem with the image file: " + imageToRecognizeFile.getPath(), e);
+			LOGGER.error("There was a problem with the image file: " + imageToClassifyFile.getPath(), e);
 			throw new MendixException(e);
 		}
 		
-		ClassifyImagesOptions options = buildClassifyImagesOptions(this.classifiers, imageToRecognizeFile);
+		ClassifyImagesOptions options = buildClassifyImagesOptions(this.classifiers, imageToClassifyFile);
 		VisualClassification response = null;
 		try{
 			
 			response = service.classify(options).execute();
 		}catch(Exception e){
-			LOGGER.error("Watson Service connection - Failed classifying the image: " + imageToRecognizeFile.getName(), e);
+			LOGGER.error("Watson Service connection - Failed classifying the image: " + imageToClassifyFile.getName(), e);
 			throw new MendixException(e);
 		}finally{
-			imageToRecognizeFile.delete();
+			imageToClassifyFile.delete();
 		}
 			
 		final List<IMendixObject> responseResults = new ArrayList<IMendixObject>();
