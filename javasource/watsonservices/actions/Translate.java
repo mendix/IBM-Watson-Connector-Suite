@@ -48,25 +48,25 @@ public class Translate extends CustomJavaAction<IMendixObject>
 		LOGGER.debug("Executing Translate Connector...");
 		
 		final LanguageTranslation service = new LanguageTranslation();
-	    service.setUsernameAndPassword(username, password);
-	   
-	    final Language source = getLanguage(translation.getTranslation_SourceLanguage().getCode());
-	    final Language target = getLanguage(translation.getTranslation_TargetLanguage().getCode());
-	    
-	    TranslationResult result;
+		service.setUsernameAndPassword(username, password);
+
+		final Language source = getLanguage(translation.getTranslation_SourceLanguage().getCode());
+		final Language target = getLanguage(translation.getTranslation_TargetLanguage().getCode());
+
+		TranslationResult result;
 		try {
-			
+
 			result = service.translate(translation.getText(), source, target).execute();
 		} catch (Exception e) {
 			LOGGER.error("Watson Service connection - Failed translating from" + source + " to " + target + " the text " + StringUtils.abbreviate(translation.getText(), 20), e);
 			throw new MendixException(e);
 		}
-	    
-	    translation.setWordCount(Long.valueOf(result.getWordCount()));
-	    translation.setCharacterCount(Long.valueOf(result.getCharacterCount()));
-	    translation.setOutput(result.getFirstTranslation());
+
+		translation.setWordCount(Long.valueOf(result.getWordCount()));
+		translation.setCharacterCount(Long.valueOf(result.getCharacterCount()));
+		translation.setOutput(result.getFirstTranslation());
 		Core.commit(getContext(), translation.getMendixObject());
-		
+
 		return translation.getMendixObject();
 		// END USER CODE
 	}

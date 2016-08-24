@@ -38,28 +38,28 @@ public class GetIdentifiableLanguages extends CustomJavaAction<java.util.List<IM
 	{
 		// BEGIN USER CODE
 		LOGGER.debug("Executing IdentifiableLanagues Connector...");
-		
+
 		final LanguageTranslation service = new LanguageTranslation();
-	    service.setUsernameAndPassword(username, password);
-	    	        
+		service.setUsernameAndPassword(username, password);
+
 	    List<IdentifiableLanguage> identifieableLanguages;
-		try {
+		try{
 			identifieableLanguages = service.getIdentifiableLanguages().execute();
 		} catch (Exception e) {
 			LOGGER.error("Watson Service Connection - Failed retrieving the identifiable languages", e);
 			throw new MendixException(e);
 		}
-		
+
 		final List<IMendixObject> results = new ArrayList<IMendixObject>();
 		for(IdentifiableLanguage language : identifieableLanguages){
 			
-			IMendixObject result = Core.instantiate(getContext(), Language.entityName);			
-		
+			IMendixObject result = Core.instantiate(getContext(), Language.entityName);
+
 			result.setValue(getContext(), "Name", language.getName());
-			result.setValue(getContext(), "Code", language.getLanguage());			
+			result.setValue(getContext(), "Code", language.getLanguage());
 			results.add(result);
 		}
-		
+
 		return results;
 		// END USER CODE
 	}
@@ -75,6 +75,6 @@ public class GetIdentifiableLanguages extends CustomJavaAction<java.util.List<IM
 
 	// BEGIN EXTRA CODE
 	private static final String WATSON_TRANSLATE_LOGNODE = "WatsonServices.IBM_WatsonConnector_Translate";
-	private static ILogNode LOGGER = Core.getLogger(Core.getConfiguration().getConstantValue(WATSON_TRANSLATE_LOGNODE).toString());	
+	private static ILogNode LOGGER = Core.getLogger(Core.getConfiguration().getConstantValue(WATSON_TRANSLATE_LOGNODE).toString());
 	// END EXTRA CODE
 }

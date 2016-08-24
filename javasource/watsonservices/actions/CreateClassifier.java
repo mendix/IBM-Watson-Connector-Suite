@@ -48,15 +48,15 @@ public class CreateClassifier extends CustomJavaAction<String>
 		
 		final VisualRecognition service = new VisualRecognition(VisualRecognition.VERSION_DATE_2016_05_19);
 		service.setApiKey(this.apikey);
-		
+
 		final TrainingImagesZipFile posTrainingImagesZipFile = classifier.getClassifier_positiveTrainingImagesZipFile();
 		final FileDocument posZipFileDocument = posTrainingImagesZipFile;
 		final File posTempFile = new File(Core.getConfiguration().getTempPath() + posZipFileDocument.getName());
-		
+
 		final TrainingImagesZipFile negTrainingImagesZipFile = classifier.getClassifier_negativeTrainingImagesZipFile();
 		final FileDocument negZipFileDocument = negTrainingImagesZipFile;
 		final File negTempFile = new File(Core.getConfiguration().getTempPath() + negZipFileDocument.getName());
-		
+
 		try(InputStream postFileStream = Core.getFileDocumentContent(getContext(), posTrainingImagesZipFile.getMendixObject()); 
 			InputStream	negFileStream = Core.getFileDocumentContent(getContext(), negTrainingImagesZipFile.getMendixObject())){
 
@@ -66,7 +66,7 @@ public class CreateClassifier extends CustomJavaAction<String>
 		}catch(Exception e){
 			LOGGER.error("There was a problem with the ZIP files: " + posTempFile.getPath() + " and " + negTempFile.getPath(), e);
 		}		
-		
+
 	    final CreateClassifierOptions options = new CreateClassifierOptions.Builder().
 	    		classifierName(classifier.getName())
 	    		.addClass(posTrainingImagesZipFile.getName(), posTempFile)
@@ -80,7 +80,7 @@ public class CreateClassifier extends CustomJavaAction<String>
 			LOGGER.error("Watson Service connection - Failed creating the classifier:"  +  classifier.getName(), e);
 			throw new MendixException(e);
 		}
-	    
+
 		return visualClassifier.getId();
 		// END USER CODE
 	}

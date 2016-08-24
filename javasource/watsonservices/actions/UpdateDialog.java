@@ -61,9 +61,9 @@ public class UpdateDialog extends CustomJavaAction<String>
 			LOGGER.error("There was a problem with the template: " + dialogTemplateFile.getPath(), e);
 			throw new MendixException(e);
 		}
-		
+
 		try{
-			
+
 			service.updateDialog(DialogId, dialogTemplateFile).execute();
 		}catch(Exception e){
 			LOGGER.error("Watson Service connection - Failed updating the template: " + dialogName, e);	
@@ -71,7 +71,7 @@ public class UpdateDialog extends CustomJavaAction<String>
 		}finally{
 			dialogTemplateFile.delete();
 		}		
-		
+
 		return null;
 		// END USER CODE
 	}

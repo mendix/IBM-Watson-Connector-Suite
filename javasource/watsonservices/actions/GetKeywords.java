@@ -46,61 +46,61 @@ public class GetKeywords extends CustomJavaAction<IMendixObject>
 
 		// BEGIN USER CODE
 		LOGGER.debug("executing Keywords Connector...");
-		
-        final StringBuilder htmlContent = new StringBuilder();
-        try {
-            final URL url = new URL(request.getUrl());
-            final URLConnection connection = url.openConnection();
-            connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 5.1; rv:19.0) Gecko/20100101 Firefox/19.0");
-            connection.connect();
 
-            try(final BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
-            	
-            	String line;
-                while ((line = br.readLine()) != null) {
-                    htmlContent.append(line);
-                }
+		final StringBuilder htmlContent = new StringBuilder();
+		try {
+			final URL url = new URL(request.getUrl());
+			final URLConnection connection = url.openConnection();
+			connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 5.1; rv:19.0) Gecko/20100101 Firefox/19.0");
+			connection.connect();
+
+			try(final BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+
+				String line;
+				while ((line = br.readLine()) != null) {
+					htmlContent.append(line);
+				}
 			} catch (Exception e) {
 				LOGGER.error("Error parsing the content of the url parameter " + request.getUrl());
 				throw new MendixException(e);
-			}            
-        } catch(Exception e){
-        	LOGGER.error("There was a problem with the with the url parameter " + request.getUrl());
+			}
+		} catch(Exception e){
+			LOGGER.error("There was a problem with the with the url parameter " + request.getUrl());
 			throw new MendixException(e);
-        }
+		}
 
 
-        final AlchemyLanguage service = new AlchemyLanguage();
-        service.setApiKey(apikey);
+		final AlchemyLanguage service = new AlchemyLanguage();
+		service.setApiKey(apikey);
 
-        final Map<String, Object> params = new HashMap<String, Object>();
-        params.put(AlchemyLanguage.HTML, htmlContent.toString());
-        Keywords keywords;
+		final Map<String, Object> params = new HashMap<String, Object>();
+		params.put(AlchemyLanguage.HTML, htmlContent.toString());
+		Keywords keywords;
 		try {
 			keywords = service.getKeywords(params).execute();
 		} catch (Exception e) {
 			LOGGER.error("Watson Service connection - Failed getting keyword from url: " + request.getUrl(), e);
 			throw new MendixException(e);
 		}
-        
+
 		final IMendixObject keywordExtractionObject = Core.instantiate(getContext(), KeywordExtraction.entityName);
-        keywordExtractionObject.setValue(getContext(), KeywordExtraction.MemberNames.Usage.toString(), keywords.getText());
-        keywordExtractionObject.setValue(getContext(), KeywordExtraction.MemberNames.Url.toString(), keywords.getUrl());
-        keywordExtractionObject.setValue(getContext(), KeywordExtraction.MemberNames.Language.toString(), keywords.getLanguage());
-                
-        Core.commit(getContext(), keywordExtractionObject);
+		keywordExtractionObject.setValue(getContext(), KeywordExtraction.MemberNames.Usage.toString(), keywords.getText());
+		keywordExtractionObject.setValue(getContext(), KeywordExtraction.MemberNames.Url.toString(), keywords.getUrl());
+		keywordExtractionObject.setValue(getContext(), KeywordExtraction.MemberNames.Language.toString(), keywords.getLanguage());
 
-        for (Keyword keyword : keywords.getKeywords()) {
-        	
-        	final IMendixObject keywordObject = Core.instantiate(getContext(), watsonservices.proxies.Keyword.entityName);
-        	keywordObject.setValue(getContext(), watsonservices.proxies.Keyword.MemberNames.Text.toString(), keyword.getText());
-        	keywordObject.setValue(getContext(), watsonservices.proxies.Keyword.MemberNames.Relevance.toString(), keyword.getRelevance().toString());
-        	keywordObject.setValue(getContext(), watsonservices.proxies.Keyword.MemberNames.Keyword_KeywordExtraction.toString(), keywordExtractionObject.getId());
-        	
-        	Core.commit(getContext(), keywordObject);   
-        }
+		Core.commit(getContext(), keywordExtractionObject);
 
-        return keywordExtractionObject;
+		for (Keyword keyword : keywords.getKeywords()) {
+
+			final IMendixObject keywordObject = Core.instantiate(getContext(), watsonservices.proxies.Keyword.entityName);
+			keywordObject.setValue(getContext(), watsonservices.proxies.Keyword.MemberNames.Text.toString(), keyword.getText());
+			keywordObject.setValue(getContext(), watsonservices.proxies.Keyword.MemberNames.Relevance.toString(), keyword.getRelevance().toString());
+			keywordObject.setValue(getContext(), watsonservices.proxies.Keyword.MemberNames.Keyword_KeywordExtraction.toString(), keywordExtractionObject.getId());
+
+			Core.commit(getContext(), keywordObject);   
+		}
+
+		return keywordExtractionObject;
 		// END USER CODE
 	}
 

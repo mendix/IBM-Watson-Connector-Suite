@@ -59,8 +59,8 @@ public class Synthesize extends CustomJavaAction<IMendixObject>
 		}
 
 		final IMendixObject speechObject = Core.instantiate(getContext(), Speech.entityName);
-		Core.storeFileDocumentContent(getContext(), speechObject, stream);		
-		
+		Core.storeFileDocumentContent(getContext(), speechObject, stream);
+
 		return speechObject;
 		// END USER CODE
 	}
@@ -78,7 +78,7 @@ public class Synthesize extends CustomJavaAction<IMendixObject>
 	private static final String WATSON_TEXT_TO_SPEECH_LOGNODE = "WatsonServices.IBM_WatsonConnector_TextToSpeech";
 	private static ILogNode LOGGER = Core.getLogger(Core.getConfiguration().getConstantValue(WATSON_TEXT_TO_SPEECH_LOGNODE).toString());
 	
-    private Voice getVoice(VoiceEnum parameter) throws MendixException {
+	private Voice getVoice(VoiceEnum parameter) throws MendixException {
 		Voice voice = null;
 		
 		switch(parameter){

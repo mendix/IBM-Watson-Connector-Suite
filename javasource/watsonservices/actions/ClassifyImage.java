@@ -62,23 +62,23 @@ public class ClassifyImage extends CustomJavaAction<java.util.List<IMendixObject
 
 		// BEGIN USER CODE
 		LOGGER.debug("Executing RecognizeImage Connector...");
-		
+
 		final VisualRecognition service = new VisualRecognition(VisualRecognition.VERSION_DATE_2016_05_19);
 		service.setApiKey(this.apikey);
-		
+
 		final File imageToClassifyFile = new File(Core.getConfiguration().getTempPath() + VisualRequestObject.getName());	
 		try(InputStream stream = Core.getFileDocumentContent(getContext(), this.VisualRequestObject.getMendixObject())){
-			
+
 			Files.copy(stream, imageToClassifyFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 		}catch(Exception e){
 			LOGGER.error("There was a problem with the image file: " + imageToClassifyFile.getPath(), e);
 			throw new MendixException(e);
 		}
-		
+
 		ClassifyImagesOptions options = buildClassifyImagesOptions(this.classifiers, imageToClassifyFile);
 		VisualClassification response = null;
 		try{
-			
+
 			response = service.classify(options).execute();
 		}catch(Exception e){
 			LOGGER.error("Watson Service connection - Failed classifying the image: " + imageToClassifyFile.getName(), e);
@@ -86,40 +86,40 @@ public class ClassifyImage extends CustomJavaAction<java.util.List<IMendixObject
 		}finally{
 			imageToClassifyFile.delete();
 		}
-			
+
 		final List<IMendixObject> responseResults = new ArrayList<IMendixObject>();
 		for(ImageClassification image : response.getImages()){
-						
+
 			for(VisualClassifier classifier : image.getClassifiers()){
-								
+
 				IMendixObject classifierObject;
 				try {
 					classifierObject = getClassifierEntity(classifier.getName());
 				} catch (MendixException e) {
 					LOGGER.error(e);
-					
+
 					if("default".equals(classifier.getName())){
 						LOGGER.warn("You may have forgotten to create the default classifier on the app startup microflow");
 					}
-					
+
 					throw new MendixException(e);
 				}
-				
+
 				for(VisualClass visualClass : classifier.getClasses()){
 					IMendixObject classifierClassObject = Core.instantiate(getContext(), ClassifierClass.entityName);
-					
+
 					classifierClassObject.setValue(getContext(), ClassifierClass.MemberNames.Name.toString(), visualClass.getName());
 					classifierClassObject.setValue(getContext(), ClassifierClass.MemberNames.Score.toString(), new BigDecimal(visualClass.getScore()));
 					classifierClassObject.setValue(getContext(), ClassifierClass.MemberNames.ClassifierClass_Classifier.toString(), classifierObject.getId());
 					classifierClassObject.setValue(getContext(), ClassifierClass.MemberNames.ClassifierClass_VisualRecognitionImage.toString(), VisualRequestObject.getMendixObject().getId());
-					
+
 					Core.commit(getContext(), classifierClassObject);
 				}
-				
+
 				responseResults.add(classifierObject);
 			}
 		}
-		
+
 		return responseResults;
 		// END USER CODE
 	}
@@ -138,17 +138,17 @@ public class ClassifyImage extends CustomJavaAction<java.util.List<IMendixObject
 	private static final ILogNode LOGGER = Core.getLogger(Core.getConfiguration().getConstantValue(WATSON_VISUAL_RECOGNITION_LOGNODE).toString());
 	private static final String CLASSIFIER_ENTITY_NAME = Classifier.entityName;
 	private static final String CLASSIFIER_ENTITY_PROPERTY = Classifier.MemberNames.Name.name();
-	
+
 	private static ClassifyImagesOptions buildClassifyImagesOptions(List<Classifier> classifiers, File imageToRecognizeFile){
 		ClassifyImagesOptions options = null;
-		
+
 		if(!classifiers.isEmpty()) {
 			List<String> classifierIds = new ArrayList<String>();
-			
+
 			for(Classifier classifier : classifiers){
 				classifierIds.add(classifier.getName());
 			}
-			
+
 			options = new ClassifyImagesOptions.Builder()
 					.classifierIds(classifierIds)
 					.images(imageToRecognizeFile)
@@ -159,18 +159,18 @@ public class ClassifyImage extends CustomJavaAction<java.util.List<IMendixObject
 					.images(imageToRecognizeFile)
 					.build();	
 		}
-		
+
 		return options;
 	}
-	
+
 	private IMendixObject getClassifierEntity(String classifierName) throws MendixException{
-	
-		final List<IMendixObject> classifierObjectList = Core.retrieveXPathQueryEscaped(getContext(), "//%s[%s ='%s']", CLASSIFIER_ENTITY_NAME, CLASSIFIER_ENTITY_PROPERTY, classifierName);		
-		
+
+		final List<IMendixObject> classifierObjectList = Core.retrieveXPathQueryEscaped(getContext(), "//%s[%s ='%s']", CLASSIFIER_ENTITY_NAME, CLASSIFIER_ENTITY_PROPERTY, classifierName);
+
 		if(classifierObjectList.isEmpty()){
 			throw new MendixException("Not found a classifier object with id: " + classifierName);
 		}
-		
+
 		return classifierObjectList.get(0);
 	}
 	// END EXTRA CODE

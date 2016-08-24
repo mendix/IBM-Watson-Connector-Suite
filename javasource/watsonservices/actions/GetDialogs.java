@@ -38,19 +38,19 @@ public class GetDialogs extends CustomJavaAction<java.util.List<IMendixObject>>
 	{
 		// BEGIN USER CODE
 		LOGGER.debug("Executing GetDialogs Connector...");
-		
+
 		final DialogService service = new DialogService();
 		service.setUsernameAndPassword(this.username,this.password);
-		
+
 		List<Dialog> dialogs = null;
 		try{
-			
+
 			dialogs = service.getDialogs().execute();			
 		}catch(Exception e){
 			LOGGER.error("Watson Service connection - Failed fetching the list of dialogs", e);
 			throw new MendixException(e);
 		}
-		
+
 		//Create output
 		final List<IMendixObject> result = new ArrayList<IMendixObject>();
 		for (Dialog dialog : dialogs) {

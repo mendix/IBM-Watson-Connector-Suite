@@ -60,7 +60,7 @@ public class DetectFaces extends CustomJavaAction<java.util.List<IMendixObject>>
 				
 		DetectedFaces response;
 		try {
-			
+
 			response = service.detectFaces(options).execute();
 		} catch (Exception e) {
 			LOGGER.error("Watson Service connection - Failed detecting the faces in the image: " + imageToDetectFaces.getName(), e);
@@ -69,43 +69,43 @@ public class DetectFaces extends CustomJavaAction<java.util.List<IMendixObject>>
 		finally{
 			imageToDetectFaces.delete();
 		}
-		
+
 		final List<IMendixObject> results = new ArrayList<IMendixObject>();
 		for (ImageFace imageFace : response.getImages()) {
-			
+
 			if(imageFace.getError() != null){
 				LOGGER.warn("Error processing the image "+ imageFace.getImage() + ": " + imageFace.getError().getDescription());
 				continue;
 			}
-			
+
 			for(Face face :imageFace.getFaces()){
-				
+
 				IMendixObject faceObject = Core.instantiate(getContext(), watsonservices.proxies.Face.entityName);
-				
+
 				if(face.getAge() != null){
 					faceObject.setValue(getContext(), watsonservices.proxies.Face.MemberNames.AgeMax.toString(), face.getAge().getMax());
 					faceObject.setValue(getContext(), watsonservices.proxies.Face.MemberNames.AgeMin.toString(), face.getAge().getMin());
 					faceObject.setValue(getContext(), watsonservices.proxies.Face.MemberNames.AgeScore.toString(), face.getAge().getScore().toString());
 				}
-				
+
 				if(face.getGender() != null){
 					faceObject.setValue(getContext(), watsonservices.proxies.Face.MemberNames.GenderName.toString(), face.getGender().getGender());
-					faceObject.setValue(getContext(), watsonservices.proxies.Face.MemberNames.GenderScore.toString(), face.getGender().getScore().toString());					
+					faceObject.setValue(getContext(), watsonservices.proxies.Face.MemberNames.GenderScore.toString(), face.getGender().getScore().toString());
 				}
-				
+
 				if(face.getLocation() != null){
 					faceObject.setValue(getContext(), watsonservices.proxies.Face.MemberNames.LocationHeight.toString(), face.getLocation().getHeight());
 					faceObject.setValue(getContext(), watsonservices.proxies.Face.MemberNames.LocationLeft.toString(), face.getLocation().getLeft());
 					faceObject.setValue(getContext(), watsonservices.proxies.Face.MemberNames.LocationTop.toString(), face.getLocation().getTop());
 					faceObject.setValue(getContext(), watsonservices.proxies.Face.MemberNames.LocationWidth.toString(), face.getLocation().getWidth());
 				}
-				
+
 				if(face.getIdentity() != null){
 					faceObject.setValue(getContext(), watsonservices.proxies.Face.MemberNames.IdentityName.toString(), face.getIdentity().getName());
 					faceObject.setValue(getContext(), watsonservices.proxies.Face.MemberNames.IdentityScore.toString(), face.getIdentity().getScore().toString());
 					faceObject.setValue(getContext(), watsonservices.proxies.Face.MemberNames.TypeHierarchy.toString(), face.getIdentity().getTypeHierarchy());
 				} 
-				
+
 				results.add(faceObject);
 			}			
 		}
@@ -143,17 +143,17 @@ public class DetectFaces extends CustomJavaAction<java.util.List<IMendixObject>>
 			LOGGER.error(errorMessage);
 			throw new MendixException(errorMessage);	
 		}
-		
-		final File imageToDetectFaces = new File(Core.getConfiguration().getTempPath() + DETECT_FACES_FILENAME);	
+
+		final File imageToDetectFaces = new File(Core.getConfiguration().getTempPath() + DETECT_FACES_FILENAME);
 		
 		try(final InputStream stream = Core.getFileDocumentContent(getContext(), this.image.getMendixObject());) {
-			
-			Files.copy(stream, imageToDetectFaces.toPath(), StandardCopyOption.REPLACE_EXISTING);			
+
+			Files.copy(stream, imageToDetectFaces.toPath(), StandardCopyOption.REPLACE_EXISTING);
 		} catch (Exception e) {
 			LOGGER.error("There was a problem with the image file: " + imageToDetectFaces.getPath(), e);
 			throw new MendixException(e);
 		}
-		
+
 		return imageToDetectFaces;
 	}
 	// END EXTRA CODE

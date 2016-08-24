@@ -61,7 +61,7 @@ public class Converse extends CustomJavaAction<IMendixObject>
 		Conversation response = null;
 		try{
 			
-			 response = service.converse(conv, this.message).execute();			 
+			 response = service.converse(conv, this.message).execute();
 		}catch(Exception e){
 			LOGGER.error("Watson Service connection - Failed conversing with Watson in the conversation: " + conv.getId(), e);
 			throw new MendixException(e);
@@ -76,7 +76,7 @@ public class Converse extends CustomJavaAction<IMendixObject>
 		// Create a message object
 		final IMendixObject message = Core.instantiate(getContext(), Message.entityName);
 		
-		//Update message	
+		//Update message
 		String completeString = "";
 		List<String> output = response.getResponse();
 		for (String string : output) {
@@ -86,13 +86,13 @@ public class Converse extends CustomJavaAction<IMendixObject>
 				completeString = completeString + "\r\n" + string;
 			}
 		}
-		
+
 		message.setValue(getContext(), Message.MemberNames.Output.toString(), completeString);
 		message.setValue(getContext(), Message.MemberNames.Input.toString(), this.message);
 		message.setValue(getContext(), Message.MemberNames.Message_Conversation.toString(), this.conversation.getMendixObject().getId());
 		
 		Core.commit(getContext(), message);
-		
+
 		return message;
 		// END USER CODE
 	}

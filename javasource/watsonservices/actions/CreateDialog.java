@@ -50,16 +50,16 @@ public class CreateDialog extends CustomJavaAction<String>
 
 		final DialogService dialogService = new DialogService();
 		dialogService.setUsernameAndPassword(this.username, this.password);
-		
+
 		final File dialogTemplateFile = new File(Core.getConfiguration().getTempPath() + dialogName);
 		try(final InputStream is = Core.getFileDocumentContent(getContext(), this.dialogContent.getMendixObject())){
-		
+
 			Files.copy(is, dialogTemplateFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 		}catch(IOException e){
 			LOGGER.error("There was a problem with the template: " + dialogTemplateFile.getPath(), e);
 			throw new MendixException(e);
 		}
-		
+
 		Dialog dialog = null;
 		try{
 			dialog = dialogService.createDialog(dialogName, dialogTemplateFile).execute();
@@ -70,7 +70,7 @@ public class CreateDialog extends CustomJavaAction<String>
 		}finally{
 			dialogTemplateFile.delete();
 		}
-		
+
 		return dialog.getId();
 		// END USER CODE
 	}
