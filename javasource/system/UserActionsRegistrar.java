@@ -43,7 +43,6 @@ public class UserActionsRegistrar implements EventHandler
 			component.actionRegistry().registerUserAction(appcloudservices.actions.StartSignOnServlet.class);
 			component.actionRegistry().registerUserAction(cfcommons.actions.getEnvVariables.class);
 			component.actionRegistry().registerUserAction(system.actions.VerifyPassword.class);
-			component.actionRegistry().registerUserAction(watsonservices.actions.CallAlchemyVisionTags.class);
 			component.actionRegistry().registerUserAction(watsonservices.actions.ClassifyImage.class);
 			component.actionRegistry().registerUserAction(watsonservices.actions.Converse.class);
 			component.actionRegistry().registerUserAction(watsonservices.actions.CreateClassifier.class);
