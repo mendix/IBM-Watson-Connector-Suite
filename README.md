@@ -86,4 +86,4 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 
 ## License
 
-This project is licensed under the Apache License v2 - see the [LICENSE.text](LICENSE.text) file for details
+This project is licensed under the Apache License v2 - see the [LICENSE](LICENSE-2.0.txt) file for details
