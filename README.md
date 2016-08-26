@@ -65,7 +65,6 @@ Or if the service does not require apikey, it will require instead username and 
   }
 }
 ```
-
 Please following the instructions in the Example app to provide the service credentials accordingly in the app.
 
 ## Built With
@@ -75,7 +74,7 @@ Please following the instructions in the Example app to provide the service cred
 
 ## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/IBM-Watson-Connector-Kit/project/tags).
+We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/mendix/IBM-Watson-Connector-Kit/tags).
 
 ## License
 
