@@ -77,13 +77,6 @@ Please following the instructions in the Example app to provide the service cred
 
 We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/IBM-Watson-Connector-Kit/project/tags).
 
-## Authors
-
-* **Erno Rorive** - *Initial work* - [ernororive](https://github.com/ernororive)
-* **Carlos Salinas** - *Main contribution* - [carlos-salinas](https://github.com/carlos-salinas)
-* **Remco Van Herwijnen** - *UX Design* - [remcovh](https://github.com/remcovh)
-
-
 ## License
 
 This project is licensed under the Apache License v2 - see the [LICENSE](LICENSE-2.0.txt) file for details
