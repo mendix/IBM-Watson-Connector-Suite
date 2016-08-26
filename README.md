@@ -67,6 +67,15 @@ Or if the service does not require apikey, it will require instead username and 
 ```
 Please following the instructions in the Example app to provide the service credentials accordingly in the app.
 
+
+## Test environments
+
+The Example app has been tested locally and in sandbox. It has not been text in IBM Bluemix yet, although the model provides the configuration files. 
+
+## Known issues
+
+The ChatWidget doesn't show the username when the Example App is deployed in a sandbox
+
 ## Built With
 
 * Mendix Modeler 6.6.0
