@@ -70,11 +70,11 @@ Please following the instructions in the Example app to provide the service cred
 
 ## Test environments
 
-The Example app has been tested locally and in sandbox. It has not been text in IBM Bluemix yet, although the model provides the configuration files. 
+The Example app has been tested locally and in a sandbox. It has not been tested in IBM Bluemix yet, although the model provides the configuration files. 
 
 ## Known issues
 
-The ChatWidget doesn't show the username when the Example App is deployed in a sandbox
+The ChatWidget doesn't show the username properly when the Example App is deployed in a sandbox
 
 ## Built With
 
