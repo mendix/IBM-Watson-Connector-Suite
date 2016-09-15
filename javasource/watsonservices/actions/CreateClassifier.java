@@ -9,21 +9,10 @@
 
 package watsonservices.actions;
 
-import java.io.File;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
-import com.ibm.watson.developer_cloud.visual_recognition.v3.VisualRecognition;
-import com.ibm.watson.developer_cloud.visual_recognition.v3.model.CreateClassifierOptions;
-import com.ibm.watson.developer_cloud.visual_recognition.v3.model.VisualClassifier;
-import com.mendix.core.Core;
-import com.mendix.logging.ILogNode;
-import com.mendix.systemwideinterfaces.MendixException;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 import com.mendix.webui.CustomJavaAction;
-import system.proxies.FileDocument;
-import watsonservices.proxies.TrainingImagesZipFile;
+import watsonservices.utils.VisualRecognitionService;
 
 public class CreateClassifier extends CustomJavaAction<String>
 {
@@ -44,44 +33,7 @@ public class CreateClassifier extends CustomJavaAction<String>
 		this.classifier = __classifier == null ? null : watsonservices.proxies.Classifier.initialize(getContext(), __classifier);
 
 		// BEGIN USER CODE
-		LOGGER.debug("Executing CreateClassifier Connector...");
-		
-		final VisualRecognition service = new VisualRecognition(VisualRecognition.VERSION_DATE_2016_05_19);
-		service.setApiKey(this.apikey);
-
-		final TrainingImagesZipFile posTrainingImagesZipFile = classifier.getClassifier_positiveTrainingImagesZipFile();
-		final FileDocument posZipFileDocument = posTrainingImagesZipFile;
-		final File posTempFile = new File(Core.getConfiguration().getTempPath() + posZipFileDocument.getName());
-
-		final TrainingImagesZipFile negTrainingImagesZipFile = classifier.getClassifier_negativeTrainingImagesZipFile();
-		final FileDocument negZipFileDocument = negTrainingImagesZipFile;
-		final File negTempFile = new File(Core.getConfiguration().getTempPath() + negZipFileDocument.getName());
-
-		try(InputStream postFileStream = Core.getFileDocumentContent(getContext(), posTrainingImagesZipFile.getMendixObject()); 
-			InputStream	negFileStream = Core.getFileDocumentContent(getContext(), negTrainingImagesZipFile.getMendixObject())){
-
-			Files.copy(postFileStream, posTempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-			Files.copy(negFileStream, negTempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-
-		}catch(Exception e){
-			LOGGER.error("There was a problem with the ZIP files: " + posTempFile.getPath() + " and " + negTempFile.getPath(), e);
-		}		
-
-	    final CreateClassifierOptions options = new CreateClassifierOptions.Builder().
-	    		classifierName(classifier.getName())
-	    		.addClass(posTrainingImagesZipFile.getName(), posTempFile)
-	    		.negativeExamples(negTempFile)
-	    		.build();
-	    
-		VisualClassifier visualClassifier;
-		try {
-			visualClassifier = service.createClassifier(options).execute();
-		} catch (Exception e) {
-			LOGGER.error("Watson Service connection - Failed creating the classifier:"  +  classifier.getName(), e);
-			throw new MendixException(e);
-		}
-
-		return visualClassifier.getId();
+		return VisualRecognitionService.createClassifier(getContext(), classifier, apikey);
 		// END USER CODE
 	}
 
@@ -95,7 +47,5 @@ public class CreateClassifier extends CustomJavaAction<String>
 	}
 
 	// BEGIN EXTRA CODE
-	private static final String WATSON_VISUAL_RECOGNITION_LOGNODE = "IBM_WatsonConnector_VisualRecognition";
-	private static final ILogNode LOGGER = Core.getLogger(Core.getConfiguration().getConstantValue(WATSON_VISUAL_RECOGNITION_LOGNODE).toString());
 	// END EXTRA CODE
 }

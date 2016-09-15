@@ -9,27 +9,10 @@
 
 package watsonservices.actions;
 
-import java.io.File;
-import java.io.InputStream;
-import java.math.BigDecimal;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.List;
-import com.ibm.watson.developer_cloud.visual_recognition.v3.VisualRecognition;
-import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ClassifyImagesOptions;
-import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ImageClassification;
-import com.ibm.watson.developer_cloud.visual_recognition.v3.model.VisualClassification;
-import com.ibm.watson.developer_cloud.visual_recognition.v3.model.VisualClassifier;
-import com.ibm.watson.developer_cloud.visual_recognition.v3.model.VisualClassifier.VisualClass;
-import com.mendix.core.Core;
-import com.mendix.logging.ILogNode;
-import com.mendix.systemwideinterfaces.MendixException;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 import com.mendix.webui.CustomJavaAction;
-import watsonservices.proxies.Classifier;
-import watsonservices.proxies.ClassifierClass;
+import watsonservices.utils.VisualRecognitionService;
 
 /**
  * If Classifier is an empty string all existing classifiers will be used
@@ -61,66 +44,7 @@ public class ClassifyImage extends CustomJavaAction<java.util.List<IMendixObject
 				this.classifiers.add(watsonservices.proxies.Classifier.initialize(getContext(), __classifiersElement));
 
 		// BEGIN USER CODE
-		LOGGER.debug("Executing RecognizeImage Connector...");
-
-		final VisualRecognition service = new VisualRecognition(VisualRecognition.VERSION_DATE_2016_05_19);
-		service.setApiKey(this.apikey);
-
-		final File imageToClassifyFile = new File(Core.getConfiguration().getTempPath() + VisualRequestObject.getName());	
-		try(InputStream stream = Core.getFileDocumentContent(getContext(), this.VisualRequestObject.getMendixObject())){
-
-			Files.copy(stream, imageToClassifyFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-		}catch(Exception e){
-			LOGGER.error("There was a problem with the image file: " + imageToClassifyFile.getPath(), e);
-			throw new MendixException(e);
-		}
-
-		ClassifyImagesOptions options = buildClassifyImagesOptions(this.classifiers, imageToClassifyFile);
-		VisualClassification response = null;
-		try{
-
-			response = service.classify(options).execute();
-		}catch(Exception e){
-			LOGGER.error("Watson Service connection - Failed classifying the image: " + imageToClassifyFile.getName(), e);
-			throw new MendixException(e);
-		}finally{
-			imageToClassifyFile.delete();
-		}
-
-		final List<IMendixObject> responseResults = new ArrayList<IMendixObject>();
-		for(ImageClassification image : response.getImages()){
-
-			for(VisualClassifier classifier : image.getClassifiers()){
-
-				IMendixObject classifierObject;
-				try {
-					classifierObject = getClassifierEntity(classifier.getName());
-				} catch (MendixException e) {
-					LOGGER.error(e);
-
-					if("default".equals(classifier.getName())){
-						LOGGER.warn("You may have forgotten to create the default classifier on the app startup microflow");
-					}
-
-					throw new MendixException(e);
-				}
-
-				for(VisualClass visualClass : classifier.getClasses()){
-					IMendixObject classifierClassObject = Core.instantiate(getContext(), ClassifierClass.entityName);
-
-					classifierClassObject.setValue(getContext(), ClassifierClass.MemberNames.Name.toString(), visualClass.getName());
-					classifierClassObject.setValue(getContext(), ClassifierClass.MemberNames.Score.toString(), new BigDecimal(visualClass.getScore()));
-					classifierClassObject.setValue(getContext(), ClassifierClass.MemberNames.ClassifierClass_Classifier.toString(), classifierObject.getId());
-					classifierClassObject.setValue(getContext(), ClassifierClass.MemberNames.ClassifierClass_VisualRecognitionImage.toString(), VisualRequestObject.getMendixObject().getId());
-
-					Core.commit(getContext(), classifierClassObject);
-				}
-
-				responseResults.add(classifierObject);
-			}
-		}
-
-		return responseResults;
+		return VisualRecognitionService.classifyImage(getContext(), VisualRequestObject, classifiers, apikey);
 		// END USER CODE
 	}
 
@@ -134,44 +58,5 @@ public class ClassifyImage extends CustomJavaAction<java.util.List<IMendixObject
 	}
 
 	// BEGIN EXTRA CODE
-	private static final String WATSON_VISUAL_RECOGNITION_LOGNODE = "WatsonServices.IBM_WatsonConnector_VisualRecognition";
-	private static final ILogNode LOGGER = Core.getLogger(Core.getConfiguration().getConstantValue(WATSON_VISUAL_RECOGNITION_LOGNODE).toString());
-	private static final String CLASSIFIER_ENTITY_NAME = Classifier.entityName;
-	private static final String CLASSIFIER_ENTITY_PROPERTY = Classifier.MemberNames.Name.name();
-
-	private static ClassifyImagesOptions buildClassifyImagesOptions(List<Classifier> classifiers, File imageToRecognizeFile){
-		ClassifyImagesOptions options = null;
-
-		if(!classifiers.isEmpty()) {
-			List<String> classifierIds = new ArrayList<String>();
-
-			for(Classifier classifier : classifiers){
-				classifierIds.add(classifier.getName());
-			}
-
-			options = new ClassifyImagesOptions.Builder()
-					.classifierIds(classifierIds)
-					.images(imageToRecognizeFile)
-					.build();
-		}
-		else {
-			options = new ClassifyImagesOptions.Builder()
-					.images(imageToRecognizeFile)
-					.build();	
-		}
-
-		return options;
-	}
-
-	private IMendixObject getClassifierEntity(String classifierName) throws MendixException{
-
-		final List<IMendixObject> classifierObjectList = Core.retrieveXPathQueryEscaped(getContext(), "//%s[%s ='%s']", CLASSIFIER_ENTITY_NAME, CLASSIFIER_ENTITY_PROPERTY, classifierName);
-
-		if(classifierObjectList.isEmpty()){
-			throw new MendixException("Not found a classifier object with id: " + classifierName);
-		}
-
-		return classifierObjectList.get(0);
-	}
 	// END EXTRA CODE
 }

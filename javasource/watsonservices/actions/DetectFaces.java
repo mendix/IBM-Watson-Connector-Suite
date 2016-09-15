@@ -9,24 +9,10 @@
 
 package watsonservices.actions;
 
-import java.io.File;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.List;
-import org.apache.commons.io.FilenameUtils;
-import com.ibm.watson.developer_cloud.visual_recognition.v3.VisualRecognition;
-import com.ibm.watson.developer_cloud.visual_recognition.v3.model.DetectedFaces;
-import com.ibm.watson.developer_cloud.visual_recognition.v3.model.Face;
-import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ImageFace;
-import com.ibm.watson.developer_cloud.visual_recognition.v3.model.VisualRecognitionOptions;
-import com.mendix.core.Core;
-import com.mendix.logging.ILogNode;
-import com.mendix.systemwideinterfaces.MendixException;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 import com.mendix.webui.CustomJavaAction;
+import watsonservices.utils.VisualRecognitionService;
 
 public class DetectFaces extends CustomJavaAction<java.util.List<IMendixObject>>
 {
@@ -47,70 +33,7 @@ public class DetectFaces extends CustomJavaAction<java.util.List<IMendixObject>>
 		this.image = __image == null ? null : system.proxies.Image.initialize(getContext(), __image);
 
 		// BEGIN USER CODE
-		LOGGER.debug("Executing DetectFaces Connector...");
-		
-		final VisualRecognition service = new VisualRecognition(VisualRecognition.VERSION_DATE_2016_05_19);
-		service.setApiKey(this.apiKey);		
-			
-		final File imageToDetectFaces = createImageFile(this.image.getMendixObject());
-
-		final VisualRecognitionOptions options = new VisualRecognitionOptions.Builder().
-				images(imageToDetectFaces).
-				build();
-				
-		DetectedFaces response;
-		try {
-
-			response = service.detectFaces(options).execute();
-		} catch (Exception e) {
-			LOGGER.error("Watson Service connection - Failed detecting the faces in the image: " + imageToDetectFaces.getName(), e);
-			throw new MendixException(e);
-		}
-		finally{
-			imageToDetectFaces.delete();
-		}
-
-		final List<IMendixObject> results = new ArrayList<IMendixObject>();
-		for (ImageFace imageFace : response.getImages()) {
-
-			if(imageFace.getError() != null){
-				LOGGER.warn("Error processing the image "+ imageFace.getImage() + ": " + imageFace.getError().getDescription());
-				continue;
-			}
-
-			for(Face face :imageFace.getFaces()){
-
-				IMendixObject faceObject = Core.instantiate(getContext(), watsonservices.proxies.Face.entityName);
-
-				if(face.getAge() != null){
-					faceObject.setValue(getContext(), watsonservices.proxies.Face.MemberNames.AgeMax.toString(), face.getAge().getMax());
-					faceObject.setValue(getContext(), watsonservices.proxies.Face.MemberNames.AgeMin.toString(), face.getAge().getMin());
-					faceObject.setValue(getContext(), watsonservices.proxies.Face.MemberNames.AgeScore.toString(), face.getAge().getScore().toString());
-				}
-
-				if(face.getGender() != null){
-					faceObject.setValue(getContext(), watsonservices.proxies.Face.MemberNames.GenderName.toString(), face.getGender().getGender());
-					faceObject.setValue(getContext(), watsonservices.proxies.Face.MemberNames.GenderScore.toString(), face.getGender().getScore().toString());
-				}
-
-				if(face.getLocation() != null){
-					faceObject.setValue(getContext(), watsonservices.proxies.Face.MemberNames.LocationHeight.toString(), face.getLocation().getHeight());
-					faceObject.setValue(getContext(), watsonservices.proxies.Face.MemberNames.LocationLeft.toString(), face.getLocation().getLeft());
-					faceObject.setValue(getContext(), watsonservices.proxies.Face.MemberNames.LocationTop.toString(), face.getLocation().getTop());
-					faceObject.setValue(getContext(), watsonservices.proxies.Face.MemberNames.LocationWidth.toString(), face.getLocation().getWidth());
-				}
-
-				if(face.getIdentity() != null){
-					faceObject.setValue(getContext(), watsonservices.proxies.Face.MemberNames.IdentityName.toString(), face.getIdentity().getName());
-					faceObject.setValue(getContext(), watsonservices.proxies.Face.MemberNames.IdentityScore.toString(), face.getIdentity().getScore().toString());
-					faceObject.setValue(getContext(), watsonservices.proxies.Face.MemberNames.TypeHierarchy.toString(), face.getIdentity().getTypeHierarchy());
-				} 
-
-				results.add(faceObject);
-			}			
-		}
-
-		return results;
+		return VisualRecognitionService.detectFaces(getContext(), image, apiKey);
 		// END USER CODE
 	}
 
@@ -124,37 +47,5 @@ public class DetectFaces extends CustomJavaAction<java.util.List<IMendixObject>>
 	}
 
 	// BEGIN EXTRA CODE
-	private static final String WATSON_DETECT_FACES_SUPPORTED_IMAGE_EXTENSION_JPG = "jpg";
-	private static final String WATSON_DETECT_FACES_SUPPORTED_IMAGE_EXTENSION_PNG = "png";
-	private static final String WATSON_DETECT_FACES_SUPPORTED_IMAGE_EXTENSION_ZIP = "zip";
-	private static final String DETECT_FACES_FILENAME = "VisualRecognition_DetectFaces_image.jpg";
-	private static final String WATSON_VISUAL_RECOGNITION_LOGNODE = "WatsonServices.IBM_WatsonConnector_VisualRecognition";
-	private static final ILogNode LOGGER = Core.getLogger(Core.getConfiguration().getConstantValue(WATSON_VISUAL_RECOGNITION_LOGNODE).toString());
-	
-	private File createImageFile(IMendixObject image) throws MendixException {
-		
-		final String imageFileExtension = FilenameUtils.getExtension(this.image.getName());
-		
-		if(!WATSON_DETECT_FACES_SUPPORTED_IMAGE_EXTENSION_JPG.equals(imageFileExtension.toLowerCase()) && 
-				!WATSON_DETECT_FACES_SUPPORTED_IMAGE_EXTENSION_PNG.equals(imageFileExtension.toLowerCase()) &&
-				!WATSON_DETECT_FACES_SUPPORTED_IMAGE_EXTENSION_ZIP.equals(imageFileExtension.toLowerCase())){
-			
-			final String errorMessage = "The input file doesn't have a valid extension (jpg, png or zip) :" + this.image.getName();
-			LOGGER.error(errorMessage);
-			throw new MendixException(errorMessage);	
-		}
-
-		final File imageToDetectFaces = new File(Core.getConfiguration().getTempPath() + DETECT_FACES_FILENAME);
-		
-		try(final InputStream stream = Core.getFileDocumentContent(getContext(), this.image.getMendixObject());) {
-
-			Files.copy(stream, imageToDetectFaces.toPath(), StandardCopyOption.REPLACE_EXISTING);
-		} catch (Exception e) {
-			LOGGER.error("There was a problem with the image file: " + imageToDetectFaces.getPath(), e);
-			throw new MendixException(e);
-		}
-
-		return imageToDetectFaces;
-	}
 	// END EXTRA CODE
 }
