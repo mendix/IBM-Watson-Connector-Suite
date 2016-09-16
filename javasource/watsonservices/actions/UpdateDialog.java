@@ -9,34 +9,26 @@
 
 package watsonservices.actions;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
-import com.ibm.watson.developer_cloud.dialog.v1.DialogService;
-import com.mendix.core.Core;
-import com.mendix.logging.ILogNode;
-import com.mendix.systemwideinterfaces.MendixException;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 import com.mendix.webui.CustomJavaAction;
+import watsonservices.utils.DialogService;
 
 public class UpdateDialog extends CustomJavaAction<String>
 {
 	private String dialogName;
 	private IMendixObject __dialogContent;
 	private system.proxies.FileDocument dialogContent;
-	private String DialogId;
+	private String dialogId;
 	private String username;
 	private String password;
 
-	public UpdateDialog(IContext context, String dialogName, IMendixObject dialogContent, String DialogId, String username, String password)
+	public UpdateDialog(IContext context, String dialogName, IMendixObject dialogContent, String dialogId, String username, String password)
 	{
 		super(context);
 		this.dialogName = dialogName;
 		this.__dialogContent = dialogContent;
-		this.DialogId = DialogId;
+		this.dialogId = dialogId;
 		this.username = username;
 		this.password = password;
 	}
@@ -47,32 +39,7 @@ public class UpdateDialog extends CustomJavaAction<String>
 		this.dialogContent = __dialogContent == null ? null : system.proxies.FileDocument.initialize(getContext(), __dialogContent);
 
 		// BEGIN USER CODE
-		LOGGER.debug("Executing CreateDialog Connector...");
-		
-		final DialogService service = new DialogService();
-		service.setUsernameAndPassword(this.username, this.password);
-		
-		//Create temporary file to easily upload the script
-		final File dialogTemplateFile = new File(Core.getConfiguration().getTempPath() + dialogName);
-		try(InputStream is = Core.getFileDocumentContent(getContext(), dialogContent.getMendixObject())){
-			
-			Files.copy(is, dialogTemplateFile.toPath(), StandardCopyOption.REPLACE_EXISTING);	
-		}catch(IOException e){
-			LOGGER.error("There was a problem with the template: " + dialogTemplateFile.getPath(), e);
-			throw new MendixException(e);
-		}
-
-		try{
-
-			service.updateDialog(DialogId, dialogTemplateFile).execute();
-		}catch(Exception e){
-			LOGGER.error("Watson Service connection - Failed updating the template: " + dialogName, e);	
-			throw new MendixException(e);
-		}finally{
-			dialogTemplateFile.delete();
-		}		
-
-		return null;
+		return DialogService.updateDialog(getContext(), dialogId, dialogName, dialogContent, username, password);
 		// END USER CODE
 	}
 
@@ -86,7 +53,5 @@ public class UpdateDialog extends CustomJavaAction<String>
 	}
 
 	// BEGIN EXTRA CODE
-	private static final String WATSON_DIALOG_LOGNODE = "WatsonServices.IBM_WatsonConnector_Dialog";
-	private static final ILogNode LOGGER = Core.getLogger((Core.getConfiguration().getConstantValue(WATSON_DIALOG_LOGNODE).toString()));
 	// END EXTRA CODE
 }

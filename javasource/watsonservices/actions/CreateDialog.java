@@ -9,19 +9,10 @@
 
 package watsonservices.actions;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
-import com.ibm.watson.developer_cloud.dialog.v1.DialogService;
-import com.ibm.watson.developer_cloud.dialog.v1.model.Dialog;
-import com.mendix.core.Core;
-import com.mendix.logging.ILogNode;
-import com.mendix.systemwideinterfaces.MendixException;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 import com.mendix.webui.CustomJavaAction;
+import watsonservices.utils.DialogService;
 
 public class CreateDialog extends CustomJavaAction<String>
 {
@@ -46,32 +37,7 @@ public class CreateDialog extends CustomJavaAction<String>
 		this.dialogContent = __dialogContent == null ? null : system.proxies.FileDocument.initialize(getContext(), __dialogContent);
 
 		// BEGIN USER CODE
-		LOGGER.debug("Executing CreateDialog Connector...");
-
-		final DialogService dialogService = new DialogService();
-		dialogService.setUsernameAndPassword(this.username, this.password);
-
-		final File dialogTemplateFile = new File(Core.getConfiguration().getTempPath() + dialogName);
-		try(final InputStream is = Core.getFileDocumentContent(getContext(), this.dialogContent.getMendixObject())){
-
-			Files.copy(is, dialogTemplateFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-		}catch(IOException e){
-			LOGGER.error("There was a problem with the template: " + dialogTemplateFile.getPath(), e);
-			throw new MendixException(e);
-		}
-
-		Dialog dialog = null;
-		try{
-			dialog = dialogService.createDialog(dialogName, dialogTemplateFile).execute();
-			
-		}catch(Exception e){
-			LOGGER.error("Watson Service connection - Failed creating the template: " + dialogName, e);	
-			throw new MendixException(e);
-		}finally{
-			dialogTemplateFile.delete();
-		}
-
-		return dialog.getId();
+		return DialogService.createDialog(getContext(), dialogName, dialogContent, username, password);
 		// END USER CODE
 	}
 
@@ -85,7 +51,5 @@ public class CreateDialog extends CustomJavaAction<String>
 	}
 
 	// BEGIN EXTRA CODE
-	private static final String WATSON_DIALOG_LOGNODE = "WatsonServices.IBM_WatsonConnector_Dialog";
-	private static final ILogNode LOGGER = Core.getLogger((Core.getConfiguration().getConstantValue(WATSON_DIALOG_LOGNODE).toString()));
 	// END EXTRA CODE
 }

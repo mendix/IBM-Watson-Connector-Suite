@@ -12,7 +12,7 @@ package watsonservices.actions;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 import com.mendix.webui.CustomJavaAction;
-import watsonservices.utils.SpeechService;
+import watsonservices.utils.TextToSpeechService;
 
 public class Synthesize extends CustomJavaAction<IMendixObject>
 {
@@ -34,7 +34,7 @@ public class Synthesize extends CustomJavaAction<IMendixObject>
 	public IMendixObject executeAction() throws Exception
 	{
 		// BEGIN USER CODE
-		return SpeechService.Synthesize(getContext(), text, voice, username, password);
+		return TextToSpeechService.Synthesize(getContext(), text, voice, username, password);
 		// END USER CODE
 	}
 

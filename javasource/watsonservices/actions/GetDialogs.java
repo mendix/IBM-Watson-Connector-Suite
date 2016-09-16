@@ -9,17 +9,10 @@
 
 package watsonservices.actions;
 
-import java.util.ArrayList;
-import java.util.List;
-import com.ibm.watson.developer_cloud.dialog.v1.DialogService;
-import com.ibm.watson.developer_cloud.dialog.v1.model.Dialog;
-import com.mendix.core.Core;
-import com.mendix.logging.ILogNode;
-import com.mendix.systemwideinterfaces.MendixException;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 import com.mendix.webui.CustomJavaAction;
-import watsonservices.proxies.ExistingDialog;
+import watsonservices.utils.DialogService;
 
 public class GetDialogs extends CustomJavaAction<java.util.List<IMendixObject>>
 {
@@ -37,30 +30,7 @@ public class GetDialogs extends CustomJavaAction<java.util.List<IMendixObject>>
 	public java.util.List<IMendixObject> executeAction() throws Exception
 	{
 		// BEGIN USER CODE
-		LOGGER.debug("Executing GetDialogs Connector...");
-
-		final DialogService service = new DialogService();
-		service.setUsernameAndPassword(this.username,this.password);
-
-		List<Dialog> dialogs = null;
-		try{
-
-			dialogs = service.getDialogs().execute();			
-		}catch(Exception e){
-			LOGGER.error("Watson Service connection - Failed fetching the list of dialogs", e);
-			throw new MendixException(e);
-		}
-
-		//Create output
-		final List<IMendixObject> result = new ArrayList<IMendixObject>();
-		for (Dialog dialog : dialogs) {
-			IMendixObject existingDialogObject = Core.instantiate(getContext(), ExistingDialog.entityName);
-			ExistingDialog newExistingDialogObject = ExistingDialog.load(getContext(), existingDialogObject.getId());
-			newExistingDialogObject.setDialogID(dialog.getId());
-			newExistingDialogObject.setDialogName(dialog.getName());
-			result.add(newExistingDialogObject.getMendixObject());
-		}
-		return result;
+		return DialogService.getDialogs(getContext(), username, password);
 		// END USER CODE
 	}
 
@@ -74,7 +44,5 @@ public class GetDialogs extends CustomJavaAction<java.util.List<IMendixObject>>
 	}
 
 	// BEGIN EXTRA CODE
-	private static final String WATSON_DIALOG_LOGNODE = "WatsonServices.IBM_WatsonConnector_Dialog";
-	private static final ILogNode LOGGER = Core.getLogger((Core.getConfiguration().getConstantValue(WATSON_DIALOG_LOGNODE).toString()));
 	// END EXTRA CODE
 }

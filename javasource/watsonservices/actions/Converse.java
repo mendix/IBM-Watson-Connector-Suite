@@ -9,16 +9,10 @@
 
 package watsonservices.actions;
 
-import java.util.List;
-import com.ibm.watson.developer_cloud.dialog.v1.DialogService;
-import com.ibm.watson.developer_cloud.dialog.v1.model.Conversation;
-import com.mendix.core.Core;
-import com.mendix.logging.ILogNode;
-import com.mendix.systemwideinterfaces.MendixException;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 import com.mendix.webui.CustomJavaAction;
-import watsonservices.proxies.Message;
+import watsonservices.utils.DialogService;
 
 public class Converse extends CustomJavaAction<IMendixObject>
 {
@@ -43,57 +37,7 @@ public class Converse extends CustomJavaAction<IMendixObject>
 		this.conversation = __conversation == null ? null : watsonservices.proxies.Conversation.initialize(getContext(), __conversation);
 
 		// BEGIN USER CODE
-		LOGGER.debug("Executing Converse Connector...");
-		
-		final DialogService service = new DialogService();
-		service.setUsernameAndPassword(this.username,this.password);
-		
-		final Conversation conv = new Conversation();
-		conv.setDialogId(conversation.getConversation_Dialog().getDialogID());
-		
-		if(conversation.getClientID() != null){
-			conv.setClientId(conversation.getClientID());
-		}
-		if(conversation.getConversationID() != null){
-			conv.setId(conversation.getConversationID());
-		}
-		
-		Conversation response = null;
-		try{
-			
-			 response = service.converse(conv, this.message).execute();
-		}catch(Exception e){
-			LOGGER.error("Watson Service connection - Failed conversing with Watson in the conversation: " + conv.getId(), e);
-			throw new MendixException(e);
-		}
-		//Update conversation if this is a new conversation
-		if (conversation.getConversationID() == null) {
-			conversation.setClientID(response.getClientId());
-			conversation.setConversationID(response.getId());
-			conversation.commit();
-		}	
-
-		// Create a message object
-		final IMendixObject message = Core.instantiate(getContext(), Message.entityName);
-		
-		//Update message
-		String completeString = "";
-		List<String> output = response.getResponse();
-		for (String string : output) {
-			if (completeString == "") {
-				completeString = string;
-			} else {
-				completeString = completeString + "\r\n" + string;
-			}
-		}
-
-		message.setValue(getContext(), Message.MemberNames.Output.toString(), completeString);
-		message.setValue(getContext(), Message.MemberNames.Input.toString(), this.message);
-		message.setValue(getContext(), Message.MemberNames.Message_Conversation.toString(), this.conversation.getMendixObject().getId());
-		
-		Core.commit(getContext(), message);
-
-		return message;
+		return  DialogService.converse(getContext(), message, conversation, username, password);
 		// END USER CODE
 	}
 
@@ -107,7 +51,5 @@ public class Converse extends CustomJavaAction<IMendixObject>
 	}
 
 	// BEGIN EXTRA CODE
-	private static final String WATSON_DIALOG_LOGNODE = "WatsonServices.IBM_WatsonConnector_Dialog";
-	private static final ILogNode LOGGER = Core.getLogger((Core.getConfiguration().getConstantValue(WATSON_DIALOG_LOGNODE).toString()));
 	// END EXTRA CODE
 }
