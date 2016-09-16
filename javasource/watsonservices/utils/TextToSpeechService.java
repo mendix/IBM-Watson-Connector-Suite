@@ -16,7 +16,7 @@ import com.mendix.systemwideinterfaces.core.IMendixObject;
 import watsonservices.proxies.Speech;
 import watsonservices.proxies.VoiceEnum;
 
-public class SpeechService {
+public class TextToSpeechService {
 
 	private static final String WATSON_TEXT_TO_SPEECH_LOGNODE = "WatsonServices.IBM_WatsonConnector_TextToSpeech";
 	private static ILogNode LOGGER = Core.getLogger(Core.getConfiguration().getConstantValue(WATSON_TEXT_TO_SPEECH_LOGNODE).toString());
