@@ -33,7 +33,7 @@ The project includes two modules that represents the list of available connector
 
 ![Project module structure words](documentation/images/documentation_image_project_module_structure.png)
 
-To be able to use the Watson Connector Kit in your project, you will have to export the WatsonServices module and import it in the project you may want to it.
+To be able to use the Watson Connector Suite in your project, you will have to export the WatsonServices module and import it in the project you may want to it.
 
 ![EXport module](documentation/images/documentation_image_export_module.png)
 
