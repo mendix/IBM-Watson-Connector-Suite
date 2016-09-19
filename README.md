@@ -1,4 +1,4 @@
-# IBM Watson Connector Kit
+# IBM Watson Connector Suite
 
 Collection of connectors which brings the [IBM Watson Cognitive services](https://www.ibm.com/watson/developercloud/) to the Mendix Platform.
 
