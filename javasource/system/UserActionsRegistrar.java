@@ -44,17 +44,13 @@ public class UserActionsRegistrar implements EventHandler
 			component.actionRegistry().registerUserAction(cfcommons.actions.getEnvVariables.class);
 			component.actionRegistry().registerUserAction(system.actions.VerifyPassword.class);
 			component.actionRegistry().registerUserAction(watsonservices.actions.ClassifyImage.class);
-			component.actionRegistry().registerUserAction(watsonservices.actions.Converse.class);
 			component.actionRegistry().registerUserAction(watsonservices.actions.CreateClassifier.class);
-			component.actionRegistry().registerUserAction(watsonservices.actions.CreateDialog.class);
 			component.actionRegistry().registerUserAction(watsonservices.actions.DetectFaces.class);
-			component.actionRegistry().registerUserAction(watsonservices.actions.GetDialogs.class);
 			component.actionRegistry().registerUserAction(watsonservices.actions.GetIdentifiableLanguages.class);
 			component.actionRegistry().registerUserAction(watsonservices.actions.GetKeywords.class);
 			component.actionRegistry().registerUserAction(watsonservices.actions.SendMessage.class);
 			component.actionRegistry().registerUserAction(watsonservices.actions.Synthesize.class);
 			component.actionRegistry().registerUserAction(watsonservices.actions.Translate.class);
-			component.actionRegistry().registerUserAction(watsonservices.actions.UpdateDialog.class);
 		}
 	}
 }

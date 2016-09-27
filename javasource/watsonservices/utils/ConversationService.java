@@ -24,7 +24,7 @@ import watsonservices.proxies.ConversationContext;
 import watsonservices.proxies.ConversationEntity;
 import watsonservices.proxies.ConversationIntent;
 import watsonservices.proxies.ConversationMessageResponse;
-import watsonservices.proxies.ConversationSetup;
+import watsonservices.proxies.Conversation;
 import watsonservices.proxies.DialogNode;
 
 public class ConversationService {
@@ -41,18 +41,18 @@ public class ConversationService {
 
 		MessageRequest messageRequest = createMessageRequest(conversationContext, input);
 
-		ConversationSetup conversationSetup = conversationContext.getConversationContext_ConversationSetup();
-		if(conversationSetup == null){
-			throw new MendixException("There is no ConversationSetup entity associated to the input ConversationContext");
+		Conversation conversation = conversationContext.getConversationContext_Conversation();
+		if(conversation == null){
+			throw new MendixException("There is no Conversation entity associated to the input ConversationContext");
 		}
 
 		MessageResponse response;
 		try {
 			response = service
-					  .message(conversationSetup.getWorkspaceId(), messageRequest)
+					  .message(conversation.getWorkspaceId(), messageRequest)
 					  .execute();
 		} catch (Exception e) {
-			LOGGER.error("Watson Service connection - Failed conversing with Watson in the workspace: " + conversationSetup.getWorkspaceId(), e);
+			LOGGER.error("Watson Service connection - Failed conversing with Watson in the workspace: " + conversation.getWorkspaceId(), e);
 			throw new MendixException(e);
 		}
 
