@@ -11,8 +11,8 @@ import java.util.List;
 import org.apache.commons.io.FilenameUtils;
 
 import com.ibm.watson.developer_cloud.visual_recognition.v3.VisualRecognition;
+import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ClassifierOptions;
 import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ClassifyImagesOptions;
-import com.ibm.watson.developer_cloud.visual_recognition.v3.model.CreateClassifierOptions;
 import com.ibm.watson.developer_cloud.visual_recognition.v3.model.DetectedFaces;
 import com.ibm.watson.developer_cloud.visual_recognition.v3.model.Face;
 import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ImageClassification;
@@ -49,7 +49,7 @@ public class VisualRecognitionService {
 	public static List<IMendixObject> classifyImage(IContext context, VisualRecognitionImage VisualRequestObject, List<Classifier> classifiers, String apikey) throws MendixException, CoreException {
 		LOGGER.debug("Executing RecognizeImage Connector...");
 
-		final VisualRecognition service = new VisualRecognition(VisualRecognition.VERSION_DATE_2016_05_19);
+		final VisualRecognition service = new VisualRecognition(VisualRecognition.VERSION_DATE_2016_05_20);
 		service.setApiKey(apikey);
 
 		final File imageToClassifyFile = new File(Core.getConfiguration().getTempPath() + VisualRequestObject.getName());	
@@ -111,7 +111,7 @@ public class VisualRecognitionService {
 	public static String createClassifier(IContext context, Classifier classifier, String apikey) throws CoreException, MendixException {
 		LOGGER.debug("Executing CreateClassifier Connector...");
 		
-		final VisualRecognition service = new VisualRecognition(VisualRecognition.VERSION_DATE_2016_05_19);
+		final VisualRecognition service = new VisualRecognition(VisualRecognition.VERSION_DATE_2016_05_20);
 		service.setApiKey(apikey);
 
 		final TrainingImagesZipFile posTrainingImagesZipFile = classifier.getClassifier_positiveTrainingImagesZipFile();
@@ -132,7 +132,7 @@ public class VisualRecognitionService {
 			LOGGER.error("There was a problem with the ZIP files: " + posTempFile.getPath() + " and " + negTempFile.getPath(), e);
 		}		
 
-	    final CreateClassifierOptions options = new CreateClassifierOptions.Builder().
+	    final ClassifierOptions options = new ClassifierOptions.Builder().
 	    		classifierName(classifier.getName())
 	    		.addClass(posTrainingImagesZipFile.getName(), posTempFile)
 	    		.negativeExamples(negTempFile)
@@ -152,7 +152,7 @@ public class VisualRecognitionService {
 	public static List<IMendixObject> detectFaces(IContext context, Image image, String apikey) throws MendixException {
 		LOGGER.debug("Executing DetectFaces Connector...");
 		
-		final VisualRecognition service = new VisualRecognition(VisualRecognition.VERSION_DATE_2016_05_19);
+		final VisualRecognition service = new VisualRecognition(VisualRecognition.VERSION_DATE_2016_05_20);
 		service.setApiKey(apikey);
 			
 		final File imageToDetectFaces = createImageFile(context, image);
