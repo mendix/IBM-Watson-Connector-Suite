@@ -9,29 +9,10 @@
 
 package watsonservices.actions;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import org.apache.commons.lang3.StringUtils;
-import com.ibm.watson.developer_cloud.conversation.v1_experimental.ConversationService;
-import com.ibm.watson.developer_cloud.conversation.v1_experimental.model.MessageRequest;
-import com.ibm.watson.developer_cloud.conversation.v1_experimental.model.MessageResponse;
-import com.ibm.watson.developer_cloud.conversation.v1_experimental.model.MessageResponse.Entity;
-import com.ibm.watson.developer_cloud.conversation.v1_experimental.model.MessageResponse.Intent;
-import com.mendix.core.Core;
-import com.mendix.logging.ILogNode;
-import com.mendix.systemwideinterfaces.MendixException;
 import com.mendix.systemwideinterfaces.core.IContext;
-import com.mendix.systemwideinterfaces.core.IMendixIdentifier;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 import com.mendix.webui.CustomJavaAction;
-import watsonservices.proxies.ConversationEntity;
-import watsonservices.proxies.ConversationIntent;
-import watsonservices.proxies.ConversationMessageResponse;
-import watsonservices.proxies.ConversationSetup;
-import watsonservices.proxies.DialogNode;
+import watsonservices.utils.ConversationService;
 
 /**
  * Add a natural language interface to your application to automate interactions with your end users. Common applications include virtual agents and chat bots that can integrate and communicate on any channel or device.
@@ -59,103 +40,7 @@ public class SendMessage extends CustomJavaAction<IMendixObject>
 		this.conversationContext = __conversationContext == null ? null : watsonservices.proxies.ConversationContext.initialize(getContext(), __conversationContext);
 
 		// BEGIN USER CODE
-		LOGGER.debug("Executing Watson Send Message Connector...");
-		
-		final ConversationService service = new ConversationService("2016-07-11");
-		service.setUsernameAndPassword(username, password);
-		service.setEndPoint("https://gateway.watsonplatform.net/conversation/api");
-
-		MessageRequest messageRequest = null;
-		if(StringUtils.isNotEmpty(conversationContext.getConversationId())){
-			final Map<String, Object> conversationContextInput = new HashMap<String, Object>();
-			
-			List<String> dialogNodes = new ArrayList<String>();
-			for(DialogNode node : conversationContext.getDialog_Stack()){
-				dialogNodes.add(node.getName());
-			}
-
-			final Map<String, Object> contextSystemInput = new HashMap<String, Object>();
-			contextSystemInput.put("dialog_stack", dialogNodes);
-			contextSystemInput.put("dialog_turn_counter", conversationContext.getDialogTurnCounter());
-			contextSystemInput.put("dialog_request_counter", conversationContext.getDialogRequestCounter());
-
-			conversationContextInput.put("system", contextSystemInput);
-			conversationContextInput.put("conversation_id", conversationContext.getConversationId());
-
-			messageRequest = new MessageRequest.Builder()
-					  .inputText(input)
-					  .context(conversationContextInput)
-					  .build();
-		}
-		else{
-			messageRequest = new MessageRequest.Builder()
-					  .inputText(input)
-					  .build();
-		}
-
-		ConversationSetup conversationSetup = conversationContext.getConversationContext_ConversationSetup();
-		if(conversationSetup == null){
-			throw new MendixException("There is no ConversationSetup entity associated to the input ConversationContext");
-		}
-
-		MessageResponse response;
-		try {
-			response = service
-					  .message(conversationSetup.getWorkspaceId(), messageRequest)
-					  .execute();
-		} catch (Exception e) {
-			LOGGER.error("Watson Service connection - Failed conversing with Watson in the workspace: " + conversationSetup.getWorkspaceId(), e);
-			throw new MendixException(e);
-		}
-		
-		conversationContext.setConversationId(getContext(), response.getContext().get("conversation_id").toString());
-		Map<String, Object> responseContext = response.getContext();
-		Map<String, Object> resposeSystemContext = (Map<String, Object>) responseContext.get("system");
-		conversationContext.setDialogTurnCounter(new BigDecimal(resposeSystemContext.get("dialog_turn_counter").toString()));
-		conversationContext.setDialogRequestCounter(new BigDecimal(resposeSystemContext.get("dialog_request_counter").toString()));
-
-		conversationContext.commit();
-
-		final IMendixObject conversationMessageObject = Core.instantiate(getContext(), ConversationMessageResponse.entityName);
-		conversationMessageObject.setValue(getContext(), ConversationMessageResponse.MemberNames.ConversationId.toString(), response.getContext().get("conversation_id"));
-		conversationMessageObject.setValue(getContext(), ConversationMessageResponse.MemberNames.Input.toString(), response.getInputText());
-		conversationMessageObject.setValue(getContext(), ConversationMessageResponse.MemberNames.Output.toString(), response.getTextConcatenated(","));
-
-		Core.commit(getContext(), conversationMessageObject);
-
-		
-		List<String> dialogStack = (List<String>) resposeSystemContext.get("dialog_stack");
-		for(String dialogNode : dialogStack){
-			final IMendixObject dialogNodeObject = Core.instantiate(getContext(), DialogNode.entityName );
-			dialogNodeObject.setValue(getContext(), DialogNode.MemberNames.Name.toString(), dialogNode);
-			final List<IMendixIdentifier> conversationContextList = new ArrayList<IMendixIdentifier>();
-			conversationContextList.add(conversationContext.getMendixObject().getId());
-			dialogNodeObject.setValue(getContext(), DialogNode.MemberNames.Dialog_Stack.toString(), conversationContextList);
-
-			Core.commit(getContext(), dialogNodeObject);
-		}
-		
-		
-
-		for(Intent intent : response.getIntents()){
-			final IMendixObject conversationIntentObject = Core.instantiate(getContext(), ConversationIntent.entityName);
-			conversationIntentObject.setValue(getContext(), ConversationIntent.MemberNames.Name.toString(), intent.getIntent());
-			conversationIntentObject.setValue(getContext(), ConversationIntent.MemberNames.Confidence.toString(), intent.getConfidence().toString());
-			conversationIntentObject.setValue(getContext(), ConversationIntent.MemberNames.ConversationIntent_ConversationResponse.toString(), conversationMessageObject.getId());
-
-			Core.commit(getContext(), conversationIntentObject);
-		}
-		
-		for(Entity entity : response.getEntities()){
-			final IMendixObject conversationEntityObject = Core.instantiate(getContext(), ConversationEntity.entityName);
-			conversationEntityObject.setValue(getContext(), ConversationEntity.MemberNames.Name.toString(), entity.getEntity());
-			conversationEntityObject.setValue(getContext(), ConversationEntity.MemberNames.Value.toString(), entity.getValue());
-			conversationEntityObject.setValue(getContext(), ConversationEntity.MemberNames.ConversationEntity_ConversationResponse.toString(), conversationMessageObject.getId());
-
-			Core.commit(getContext(), conversationEntityObject);
-		}
-
-		return conversationMessageObject;
+		return ConversationService.sendMessage(getContext(), conversationContext, input, username, password);
 		// END USER CODE
 	}
 
@@ -169,7 +54,5 @@ public class SendMessage extends CustomJavaAction<IMendixObject>
 	}
 
 	// BEGIN EXTRA CODE
-	private static final String WATSON_CONVERSATION_LOGNODE = "WatsonServices.IBM_WatsonConnector_Conversation";
-	private static final ILogNode LOGGER = Core.getLogger((Core.getConfiguration().getConstantValue(WATSON_CONVERSATION_LOGNODE).toString()));
 	// END EXTRA CODE
 }
