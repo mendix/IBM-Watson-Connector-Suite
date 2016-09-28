@@ -16,10 +16,7 @@ Check out this project and you will ready to go using the [Mendix Modeler](https
 
 These are the Watson APIs which have a connector implemented:
 - Alchemy Language - [Keywords](https://www.ibm.com/watson/developercloud/alchemy-language/api/v1/#keywords)
-- Dialog - [Converse](http://www.ibm.com/watson/developercloud/dialog/api/v1/#converse)
-- Dialog - [Create Dialog](http://www.ibm.com/watson/developercloud/dialog/api/v1/#create-dialog)
-- Dialog - [Get Dialogs](http://www.ibm.com/watson/developercloud/dialog/api/v1/#get-dialogs)
-- Dialog - [Update Dialog](http://www.ibm.com/watson/developercloud/dialog/api/v1/#update-dialog)
+- Conversation - [Send Message](http://www.ibm.com/watson/developercloud/conversation/api/v1/#send_message)
 - Language Translation - [Translate](http://www.ibm.com/watson/developercloud/language-translation/api/v2/#translate)
 - Language Translation - [Get Identifiable Languages](http://www.ibm.com/watson/developercloud/language-translation/api/v2/#identifiable_languages)
 - Text to Speech - [Synthesize](http://www.ibm.com/watson/developercloud/text-to-speech/api/v1/#synthesize audio)
