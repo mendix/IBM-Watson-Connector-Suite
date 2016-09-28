@@ -1,6 +1,7 @@
 package watsonservices.utils;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,11 +32,12 @@ public class ConversationService {
 
 	private static final String WATSON_CONVERSATION_LOGNODE = "WatsonServices.IBM_WatsonConnector_Conversation";
 	private static final ILogNode LOGGER = Core.getLogger((Core.getConfiguration().getConstantValue(WATSON_CONVERSATION_LOGNODE).toString()));
-
+	private static final  com.ibm.watson.developer_cloud.conversation.v1_experimental.ConversationService service = new com.ibm.watson.developer_cloud.conversation.v1_experimental.ConversationService("2016-07-11");
+	private static final DecimalFormat conversationCountersFormat = new DecimalFormat("#0.0");
+	
 	static public IMendixObject sendMessage(IContext context, ConversationContext conversationContext, String input, String username, String password) throws CoreException, MendixException {
 		LOGGER.debug("Executing Watson Send Message Connector...");
-		
-		final  com.ibm.watson.developer_cloud.conversation.v1_experimental.ConversationService service = new com.ibm.watson.developer_cloud.conversation.v1_experimental.ConversationService("2016-07-11");
+
 		service.setUsernameAndPassword(username, password);
 		service.setEndPoint("https://gateway.watsonplatform.net/conversation/api");
 
@@ -52,7 +54,14 @@ public class ConversationService {
 					  .message(conversation.getWorkspaceId(), messageRequest)
 					  .execute();
 		} catch (Exception e) {
-			LOGGER.error("Watson Service connection - Failed conversing with Watson in the workspace: " + conversation.getWorkspaceId(), e);
+			
+			if(StringUtils.isNotEmpty(conversationContext.getConversationId())){
+				LOGGER.error("Watson Service connection - Failed conversing with Watson with workspaceID " + conversation.getWorkspaceId() +
+						" and conversationID " + conversationContext.getConversationId(), e);
+			}
+			else{
+				LOGGER.error("Watson Service connection - Failed conversing with Watson in the workspaceID " + conversation.getWorkspaceId(), e);
+			}
 			throw new MendixException(e);
 		}
 
@@ -69,10 +78,11 @@ public class ConversationService {
 				dialogNodes.add(node.getName());
 			}
 
+			
 			final Map<String, Object> contextSystemInput = new HashMap<String, Object>();
 			contextSystemInput.put("dialog_stack", dialogNodes);
-			contextSystemInput.put("dialog_turn_counter", conversationContext.getDialogTurnCounter());
-			contextSystemInput.put("dialog_request_counter", conversationContext.getDialogRequestCounter());
+			contextSystemInput.put("dialog_turn_counter", conversationCountersFormat.format(conversationContext.getDialogTurnCounter()));
+			contextSystemInput.put("dialog_request_counter", conversationCountersFormat.format(conversationContext.getDialogRequestCounter()));
 
 			conversationContextInput.put("system", contextSystemInput);
 			conversationContextInput.put("conversation_id", conversationContext.getConversationId());
@@ -90,6 +100,7 @@ public class ConversationService {
 		return messageRequest;
 	}
 
+	@SuppressWarnings("unchecked")
 	static private IMendixObject createMessageResponse(IContext context, ConversationContext conversationContext, MessageResponse response) throws CoreException {
 		Map<String, Object> resposeSystemContext = updateConversationContext(context, conversationContext, response);
 
@@ -100,7 +111,6 @@ public class ConversationService {
 
 		Core.commit(context, conversationMessageObject);
 
-		
 		List<String> dialogStack = (List<String>) resposeSystemContext.get("dialog_stack");
 		for(String dialogNode : dialogStack){
 			final IMendixObject dialogNodeObject = Core.instantiate(context, DialogNode.entityName );
@@ -111,8 +121,6 @@ public class ConversationService {
 
 			Core.commit(context, dialogNodeObject);
 		}
-		
-		
 
 		for(Intent intent : response.getIntents()){
 			final IMendixObject conversationIntentObject = Core.instantiate(context, ConversationIntent.entityName);
@@ -135,6 +143,7 @@ public class ConversationService {
 		return conversationMessageObject;
 	}
 
+	@SuppressWarnings("unchecked")
 	static private Map<String, Object> updateConversationContext(IContext context, ConversationContext conversationContext, MessageResponse response) throws CoreException {
 		conversationContext.setConversationId(context, response.getContext().get("conversation_id").toString());
 		Map<String, Object> responseContext = response.getContext();

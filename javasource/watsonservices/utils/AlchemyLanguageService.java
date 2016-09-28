@@ -24,7 +24,8 @@ public class AlchemyLanguageService {
 
 	private static final String WATSON_ALCHEMY_LOGNODE = "WatsonServices.IBM_WatsonConnector_Alchemy";
 	private static ILogNode LOGGER = Core.getLogger(Core.getConfiguration().getConstantValue(WATSON_ALCHEMY_LOGNODE).toString());
-	
+	private static final AlchemyLanguage service = new AlchemyLanguage();
+
 	public static IMendixObject getKeywords(IContext context, KeywordRequest request, String apikey) throws MendixException, CoreException {
 		LOGGER.debug("executing Keywords Connector...");
 
@@ -50,7 +51,6 @@ public class AlchemyLanguageService {
 			throw new MendixException(e);
 		}
 
-		final AlchemyLanguage service = new AlchemyLanguage();
 		service.setApiKey(apikey);
 
 		final Map<String, Object> params = new HashMap<String, Object>();

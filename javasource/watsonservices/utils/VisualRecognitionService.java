@@ -45,11 +45,12 @@ public class VisualRecognitionService {
 	private static final String WATSON_DETECT_FACES_SUPPORTED_IMAGE_EXTENSION_PNG = "png";
 	private static final String WATSON_DETECT_FACES_SUPPORTED_IMAGE_EXTENSION_ZIP = "zip";
 	private static final String DETECT_FACES_FILENAME = "VisualRecognition_DetectFaces_image.jpg";
+	private static final VisualRecognition service = new VisualRecognition(VisualRecognition.VERSION_DATE_2016_05_20);
+
 
 	public static List<IMendixObject> classifyImage(IContext context, VisualRecognitionImage VisualRequestObject, List<Classifier> classifiers, String apikey) throws MendixException, CoreException {
 		LOGGER.debug("Executing RecognizeImage Connector...");
 
-		final VisualRecognition service = new VisualRecognition(VisualRecognition.VERSION_DATE_2016_05_20);
 		service.setApiKey(apikey);
 
 		final File imageToClassifyFile = new File(Core.getConfiguration().getTempPath() + VisualRequestObject.getName());	
@@ -110,8 +111,7 @@ public class VisualRecognitionService {
 	
 	public static String createClassifier(IContext context, Classifier classifier, String apikey) throws CoreException, MendixException {
 		LOGGER.debug("Executing CreateClassifier Connector...");
-		
-		final VisualRecognition service = new VisualRecognition(VisualRecognition.VERSION_DATE_2016_05_20);
+
 		service.setApiKey(apikey);
 
 		final TrainingImagesZipFile posTrainingImagesZipFile = classifier.getClassifier_positiveTrainingImagesZipFile();
@@ -152,7 +152,6 @@ public class VisualRecognitionService {
 	public static List<IMendixObject> detectFaces(IContext context, Image image, String apikey) throws MendixException {
 		LOGGER.debug("Executing DetectFaces Connector...");
 		
-		final VisualRecognition service = new VisualRecognition(VisualRecognition.VERSION_DATE_2016_05_20);
 		service.setApiKey(apikey);
 			
 		final File imageToDetectFaces = createImageFile(context, image);

@@ -21,12 +21,12 @@ import watsonservices.proxies.Translation;
 public class LanguageTranslationService {
 
 	private static final String WATSON_TRANSLATE_LOGNODE = "WatsonServices.IBM_WatsonConnector_Translate";
-	private static ILogNode LOGGER = Core.getLogger(Core.getConfiguration().getConstantValue(WATSON_TRANSLATE_LOGNODE).toString());
-	
+	private static final ILogNode LOGGER = Core.getLogger(Core.getConfiguration().getConstantValue(WATSON_TRANSLATE_LOGNODE).toString());
+	private static final LanguageTranslation service = new LanguageTranslation();
+
 	public static List<IMendixObject> getIdentifiableLanguages(IContext context, String username, String password) throws MendixException {
 		LOGGER.debug("Executing IdentifiableLanagues Connector...");
 
-		final LanguageTranslation service = new LanguageTranslation();
 		service.setUsernameAndPassword(username, password);
 
 	    List<IdentifiableLanguage> identifieableLanguages;
@@ -52,8 +52,7 @@ public class LanguageTranslationService {
 
 	public static IMendixObject translate(IContext context, Translation translation, String username, String password) throws MendixException, CoreException {
 		LOGGER.debug("Executing Translate Connector...");
-		
-		final LanguageTranslation service = new LanguageTranslation();
+
 		service.setUsernameAndPassword(username, password);
 
 		final Language source = getLanguage(translation.getTranslation_SourceLanguage().getCode());

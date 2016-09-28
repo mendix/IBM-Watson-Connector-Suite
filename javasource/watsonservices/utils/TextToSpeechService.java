@@ -19,12 +19,12 @@ import watsonservices.proxies.VoiceEnum;
 public class TextToSpeechService {
 
 	private static final String WATSON_TEXT_TO_SPEECH_LOGNODE = "WatsonServices.IBM_WatsonConnector_TextToSpeech";
-	private static ILogNode LOGGER = Core.getLogger(Core.getConfiguration().getConstantValue(WATSON_TEXT_TO_SPEECH_LOGNODE).toString());
+	private static final ILogNode LOGGER = Core.getLogger(Core.getConfiguration().getConstantValue(WATSON_TEXT_TO_SPEECH_LOGNODE).toString());
+	private static final TextToSpeech service = new TextToSpeech();
 
 	public static IMendixObject Synthesize(IContext context, String text, VoiceEnum voiceEnumParameter, String username, String password) throws MendixException {
 		LOGGER.debug("Executing Synthetize Connector...");
 
-		final TextToSpeech service = new TextToSpeech();
 		service.setUsernameAndPassword(username, password);
 
 		final Voice voice = getVoice(voiceEnumParameter);
