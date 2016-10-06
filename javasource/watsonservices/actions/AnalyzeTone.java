@@ -12,28 +12,27 @@ package watsonservices.actions;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 import com.mendix.webui.CustomJavaAction;
-import watsonservices.utils.VisualRecognitionService;
+import watsonservices.utils.ToneAnalyzerService;
 
-public class CreateClassifier extends CustomJavaAction<String>
+public class AnalyzeTone extends CustomJavaAction<IMendixObject>
 {
-	private String apikey;
-	private IMendixObject __classifier;
-	private watsonservices.proxies.Classifier classifier;
+	private String text;
+	private String username;
+	private String password;
 
-	public CreateClassifier(IContext context, String apikey, IMendixObject classifier)
+	public AnalyzeTone(IContext context, String text, String username, String password)
 	{
 		super(context);
-		this.apikey = apikey;
-		this.__classifier = classifier;
+		this.text = text;
+		this.username = username;
+		this.password = password;
 	}
 
 	@Override
-	public String executeAction() throws Exception
+	public IMendixObject executeAction() throws Exception
 	{
-		this.classifier = __classifier == null ? null : watsonservices.proxies.Classifier.initialize(getContext(), __classifier);
-
 		// BEGIN USER CODE
-		return VisualRecognitionService.createClassifier(getContext(), classifier, apikey);
+		return ToneAnalyzerService.analyzeTone(getContext(), text, username, password);
 		// END USER CODE
 	}
 
@@ -43,7 +42,7 @@ public class CreateClassifier extends CustomJavaAction<String>
 	@Override
 	public String toString()
 	{
-		return "CreateClassifier";
+		return "AnalyzeTone";
 	}
 
 	// BEGIN EXTRA CODE

@@ -16,13 +16,11 @@ Check out this project and you will ready to go using the [Mendix Modeler](https
 
 These are the Watson APIs which have a connector implemented:
 - Alchemy Language - [Keywords](https://www.ibm.com/watson/developercloud/alchemy-language/api/v1/#keywords)
-- Dialog - [Converse](http://www.ibm.com/watson/developercloud/dialog/api/v1/#converse)
-- Dialog - [Create Dialog](http://www.ibm.com/watson/developercloud/dialog/api/v1/#create-dialog)
-- Dialog - [Get Dialogs](http://www.ibm.com/watson/developercloud/dialog/api/v1/#get-dialogs)
-- Dialog - [Update Dialog](http://www.ibm.com/watson/developercloud/dialog/api/v1/#update-dialog)
+- Conversation - [Send Message](http://www.ibm.com/watson/developercloud/conversation/api/v1/#send_message)
 - Language Translation - [Translate](http://www.ibm.com/watson/developercloud/language-translation/api/v2/#translate)
 - Language Translation - [Get Identifiable Languages](http://www.ibm.com/watson/developercloud/language-translation/api/v2/#identifiable_languages)
 - Text to Speech - [Synthesize](http://www.ibm.com/watson/developercloud/text-to-speech/api/v1/#synthesize audio)
+- Tone Analyzer - [Analyze Tone ](https://www.ibm.com/watson/developercloud/tone-analyzer/api/v3/#post-tone)
 - Visual Recognition - [Classify Image](http://www.ibm.com/watson/developercloud/visual-recognition/api/v3/#classify_an_image)
 - Visual Recognition - [Create Classifier](http://www.ibm.com/watson/developercloud/visual-recognition/api/v3/#create_a_classifier)
 - Visual Recognition - [Detect Faces](http://www.ibm.com/watson/developercloud/visual-recognition/api/v3/#detect_faces)
@@ -70,7 +68,7 @@ Please following the instructions in the Example app to provide the service cred
 
 ## Test environments
 
-The Example app has been tested locally and in a sandbox. It has not been tested in IBM Bluemix yet, although the model provides the configuration files. 
+The Example app has been tested locally and in a sandbox. It has not been tested in IBM Bluemix yet, although the model provides the configuration files.
 
 ## Known issues
 

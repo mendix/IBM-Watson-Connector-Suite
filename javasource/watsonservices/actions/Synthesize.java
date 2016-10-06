@@ -9,59 +9,32 @@
 
 package watsonservices.actions;
 
-import java.io.InputStream;
-import org.apache.commons.lang3.StringUtils;
-import com.ibm.watson.developer_cloud.text_to_speech.v1.TextToSpeech;
-import com.ibm.watson.developer_cloud.text_to_speech.v1.model.AudioFormat;
-import com.ibm.watson.developer_cloud.text_to_speech.v1.model.Voice;
-import com.mendix.core.Core;
-import com.mendix.logging.ILogNode;
-import com.mendix.systemwideinterfaces.MendixException;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 import com.mendix.webui.CustomJavaAction;
-import watsonservices.proxies.Speech;
-import watsonservices.proxies.VoiceEnum;
+import watsonservices.utils.TextToSpeechService;
 
 public class Synthesize extends CustomJavaAction<IMendixObject>
 {
-	private String Username;
-	private String Password;
-	private String Text;
-	private watsonservices.proxies.VoiceEnum VoiceEnumParameter1;
+	private String username;
+	private String password;
+	private String text;
+	private watsonservices.proxies.VoiceEnum voice;
 
-	public Synthesize(IContext context, String Username, String Password, String Text, String VoiceEnumParameter1)
+	public Synthesize(IContext context, String username, String password, String text, String voice)
 	{
 		super(context);
-		this.Username = Username;
-		this.Password = Password;
-		this.Text = Text;
-		this.VoiceEnumParameter1 = VoiceEnumParameter1 == null ? null : watsonservices.proxies.VoiceEnum.valueOf(VoiceEnumParameter1);
+		this.username = username;
+		this.password = password;
+		this.text = text;
+		this.voice = voice == null ? null : watsonservices.proxies.VoiceEnum.valueOf(voice);
 	}
 
 	@Override
 	public IMendixObject executeAction() throws Exception
 	{
 		// BEGIN USER CODE
-		LOGGER.debug("Executing Synthetize Connector...");
-		
-		final TextToSpeech service = new TextToSpeech();
-		service.setUsernameAndPassword(Username, Password);
-		
-		final Voice voice = getVoice(VoiceEnumParameter1);
-		
-		InputStream stream;
-		try {
-			stream = service.synthesize(Text, voice, AudioFormat.OGG).execute();
-		} catch (Exception e) {
-			LOGGER.error("Watson Service Connection - Failed text to speech: " + StringUtils.abbreviate(Text, 20), e);
-			throw new MendixException(e);
-		}
-
-		final IMendixObject speechObject = Core.instantiate(getContext(), Speech.entityName);
-		Core.storeFileDocumentContent(getContext(), speechObject, stream);
-
-		return speechObject;
+		return TextToSpeechService.Synthesize(getContext(), text, voice, username, password);
 		// END USER CODE
 	}
 
@@ -75,48 +48,5 @@ public class Synthesize extends CustomJavaAction<IMendixObject>
 	}
 
 	// BEGIN EXTRA CODE
-	private static final String WATSON_TEXT_TO_SPEECH_LOGNODE = "WatsonServices.IBM_WatsonConnector_TextToSpeech";
-	private static ILogNode LOGGER = Core.getLogger(Core.getConfiguration().getConstantValue(WATSON_TEXT_TO_SPEECH_LOGNODE).toString());
-	
-	private Voice getVoice(VoiceEnum parameter) throws MendixException {
-		Voice voice = null;
-		
-		switch(parameter){
-			case DE_DIETER:
-				voice = Voice.DE_DIETER;
-				break;
-			case EN_ALLISON:
-				voice = Voice.EN_ALLISON;
-				break;
-			case EN_LISA:
-				voice = Voice.EN_LISA;
-				break;
-			case ES_ENRIQUE:
-				voice = Voice.ES_ENRIQUE;
-				break;
-			case ES_LAURA:
-				voice = Voice.ES_LAURA;
-				break;
-			case ES_SOFIA:
-				voice = Voice.ES_SOFIA;
-			case FR_RENEE:
-				voice = Voice.FR_RENEE;
-				break;
-			case GB_KATE:
-				voice = Voice.GB_KATE;
-				break;
-			case IT_FRANCESCA:
-				voice = Voice.IT_FRANCESCA;
-				break;
-		default:
-			break;
-		}
-		
-		if(voice == null){
-			throw new MendixException("The supplied parameter doesn't correspond to any voice: " + parameter);
-		}
-		
-		return voice;	
-	}
 	// END EXTRA CODE
 }
