@@ -33,7 +33,7 @@ The project includes two modules that represents the list of available connector
 
 To be able to use the Watson Connector Suite in your project, you will have to export the WatsonServices module and import it in the project you may want to it.
 
-![EXport module](documentation/images/documentation_image_export_module.png)
+![Export module](documentation/images/documentation_image_export_module.png)
 
 Once you have imported the module in your project, you will have at your disposal the collection of new IBM Watson connectors to use in any microflow.
 
