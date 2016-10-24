@@ -70,6 +70,16 @@ Please following the instructions in the Example app to provide the service cred
 
 The Example app has been tested locally and in a sandbox. It has not been tested in IBM Bluemix yet, although the model provides the configuration files.
 
+## Dependencies
+
+The Watson Connectors Suite will install the following dependencies in your project's *userlib* folder:
+
+* java-sdk-3.3.1-jar-with-dependencies.jar
+* org.apache.commons.io-2.3.0.jar
+* org.apache.commons.lang3.jar
+
+> Note: Please be aware if you upgrade The Watson Connector Suite in your project, you will have to remove manually the old version of these dependencies. 
+
 ## Known issues
 
 The ChatWidget doesn't show the username properly when the Example App is deployed in a sandbox
