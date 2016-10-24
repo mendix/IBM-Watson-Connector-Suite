@@ -30,7 +30,8 @@ public class ToneAnalyzerService {
 
 		// Call the service and get the tone
 		ToneAnalysis response;
-		try {
+		try
+		{
 			response = service.getTone(text, null).execute();
 		} catch (Exception e) {
 			LOGGER.error("Watson Service connection - Failed analyzing the tone of the text " + StringUtils.abbreviate(text, 20), e);
@@ -43,49 +44,62 @@ public class ToneAnalyzerService {
 	private static IMendixObject CreateDocumentTone(IContext context, ToneAnalysis response) {
 		final IMendixObject toneAnalyzerResponse = Core.instantiate(context, ToneAnalyzerResponse.entityName);
 
-		ElementTone documentTone = response.getDocumentTone();
-		for(ToneCategory toneCategory : documentTone.getTones()){
-			final IMendixObject toneCategoryObject = Core.instantiate(context, watsonservices.proxies.ToneCategory.entityName);
-			toneCategoryObject.setValue(context, watsonservices.proxies.ToneCategory.MemberNames.CategoryId.toString(), toneCategory.getId());
-			toneCategoryObject.setValue(context, watsonservices.proxies.ToneCategory.MemberNames.Name.toString(), toneCategory.getName());
+		response.getDocumentTone().getTones().forEach(toneCategory -> buildToneCategory(context, toneAnalyzerResponse, toneCategory));
 
-			for(ToneScore toneScore : toneCategory.getTones()){
-				final IMendixObject toneObject = Core.instantiate(context, Tone.entityName);
-				toneObject.setValue(context, Tone.MemberNames.ToneId.toString(), toneScore.getId());
-				toneObject.setValue(context, Tone.MemberNames.Name.toString(), toneScore.getName());
-				toneObject.setValue(context, Tone.MemberNames.Score.toString(), toneScore.getScore().toString());
-				toneObject.setValue(context, Tone.MemberNames.Tones.toString(), toneCategoryObject.getId());
-			}
-
-			toneCategoryObject.setValue(context, watsonservices.proxies.ToneCategory.MemberNames.Tone_Categories.toString(), toneAnalyzerResponse.getId());
-		}
-
-		for(SentenceTone sentenceTone : response.getSentencesTone()){
-			final IMendixObject sentenceToneObject = Core.instantiate(context, watsonservices.proxies.SentenceTone.entityName);
-			sentenceToneObject.setValue(context, watsonservices.proxies.SentenceTone.MemberNames.SentenceId.toString(), sentenceTone.getId());
-			sentenceToneObject.setValue(context, watsonservices.proxies.SentenceTone.MemberNames.InputFrom.toString(), sentenceTone.getInputFrom());
-			sentenceToneObject.setValue(context, watsonservices.proxies.SentenceTone.MemberNames.InputTo.toString(), sentenceTone.getInputTo());
-			sentenceToneObject.setValue(context, watsonservices.proxies.SentenceTone.MemberNames.Text.toString(), sentenceTone.getText());
-			
-			for(ToneCategory  toneCategory : sentenceTone.getTones()){
-				final IMendixObject toneCategoryObject = Core.instantiate(context, watsonservices.proxies.ToneCategory.entityName);
-				toneCategoryObject.setValue(context, watsonservices.proxies.ToneCategory.MemberNames.CategoryId.toString(), toneCategory.getId());
-				toneCategoryObject.setValue(context, watsonservices.proxies.ToneCategory.MemberNames.Name.toString(), toneCategory.getName());
-
-				for(ToneScore toneScore : toneCategory.getTones()){
-					final IMendixObject toneObject = Core.instantiate(context, Tone.entityName);
-					toneObject.setValue(context, Tone.MemberNames.ToneId.toString(), toneScore.getId());
-					toneObject.setValue(context, Tone.MemberNames.Name.toString(), toneScore.getName());
-					toneObject.setValue(context, Tone.MemberNames.Score.toString(), toneScore.getScore().toString());
-					toneObject.setValue(context, Tone.MemberNames.Tones.toString(), toneCategoryObject.getId());
-				}
-				
-				toneCategoryObject.setValue(context, watsonservices.proxies.ToneCategory.MemberNames.Sentence_Tone_Categories.toString(), sentenceToneObject.getId());
-			}
-			sentenceToneObject.setValue(context, watsonservices.proxies.SentenceTone.MemberNames.Sentence_Tones.toString(), toneAnalyzerResponse.getId());
-		}
+		if(response.getSentencesTone() != null && !response.getSentencesTone().isEmpty())
+		{
+			response.getSentencesTone().forEach(sentenceTone -> buildSentenceTone(context, toneAnalyzerResponse, sentenceTone));
+		} 
+		
 
 		return toneAnalyzerResponse;
+	}
+
+	private static void buildToneCategory(IContext context, final IMendixObject toneAnalyzerResponse,
+			ToneCategory toneCategory) 
+	{
+		final IMendixObject toneCategoryObject = Core.instantiate(context, watsonservices.proxies.ToneCategory.entityName);
+		toneCategoryObject.setValue(context, watsonservices.proxies.ToneCategory.MemberNames.CategoryId.toString(), toneCategory.getId());
+		toneCategoryObject.setValue(context, watsonservices.proxies.ToneCategory.MemberNames.Name.toString(), toneCategory.getName());
+
+		toneCategory.getTones().forEach(toneScore -> buildTone(context, toneCategoryObject, toneScore));
+		toneCategoryObject.setValue(context, watsonservices.proxies.ToneCategory.MemberNames.Tone_Categories.toString(), toneAnalyzerResponse.getId());
+	}
+
+	private static void buildTone(IContext context, final IMendixObject toneCategoryObject, ToneScore toneScore)
+	{
+		final IMendixObject toneObject = Core.instantiate(context, Tone.entityName);
+		toneObject.setValue(context, Tone.MemberNames.ToneId.toString(), toneScore.getId());
+		toneObject.setValue(context, Tone.MemberNames.Name.toString(), toneScore.getName());
+		toneObject.setValue(context, Tone.MemberNames.Score.toString(), toneScore.getScore().toString());
+		toneObject.setValue(context, Tone.MemberNames.Tones.toString(), toneCategoryObject.getId());
+	}
+
+	private static void buildSentenceTone(IContext context, final IMendixObject toneAnalyzerResponse,
+			SentenceTone sentenceTone)
+	{
+		final IMendixObject sentenceToneObject = Core.instantiate(context, watsonservices.proxies.SentenceTone.entityName);
+		sentenceToneObject.setValue(context, watsonservices.proxies.SentenceTone.MemberNames.SentenceId.toString(), sentenceTone.getId());
+		sentenceToneObject.setValue(context, watsonservices.proxies.SentenceTone.MemberNames.InputFrom.toString(), sentenceTone.getInputFrom());
+		sentenceToneObject.setValue(context, watsonservices.proxies.SentenceTone.MemberNames.InputTo.toString(), sentenceTone.getInputTo());
+		sentenceToneObject.setValue(context, watsonservices.proxies.SentenceTone.MemberNames.Text.toString(), sentenceTone.getText());
+
+		sentenceTone.getTones().forEach(toneCategory -> buildToneCategoryPerSentence(context, sentenceToneObject, toneCategory));
+
+		sentenceToneObject.setValue(context, watsonservices.proxies.SentenceTone.MemberNames.Sentence_Tones.toString(), toneAnalyzerResponse.getId());
+	}
+
+	private static void buildToneCategoryPerSentence(IContext context, final IMendixObject sentenceToneObject,
+			ToneCategory toneCategory) {
+		final IMendixObject toneCategoryObject = Core.instantiate(context, watsonservices.proxies.ToneCategory.entityName);
+		toneCategoryObject.setValue(context, watsonservices.proxies.ToneCategory.MemberNames.CategoryId.toString(), toneCategory.getId());
+		toneCategoryObject.setValue(context, watsonservices.proxies.ToneCategory.MemberNames.Name.toString(), toneCategory.getName());
+
+		for(ToneScore toneScore : toneCategory.getTones()){
+			buildTone(context, toneCategoryObject, toneScore);
+		}
+		
+		toneCategoryObject.setValue(context, watsonservices.proxies.ToneCategory.MemberNames.Sentence_Tone_Categories.toString(), sentenceToneObject.getId());
 	}
 
 }
