@@ -12,7 +12,7 @@ package cfcommons.actions;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.webui.CustomJavaAction;
 
-public class getEnvVariables extends CustomJavaAction<String>
+public class getEnvVariables extends CustomJavaAction<java.lang.String>
 {
 	public getEnvVariables(IContext context)
 	{
@@ -20,7 +20,7 @@ public class getEnvVariables extends CustomJavaAction<String>
 	}
 
 	@Override
-	public String executeAction() throws Exception
+	public java.lang.String executeAction() throws Exception
 	{
 		// BEGIN USER CODE
 		return System.getenv("VCAP_SERVICES");
@@ -31,7 +31,7 @@ public class getEnvVariables extends CustomJavaAction<String>
 	 * Returns a string representation of this action
 	 */
 	@Override
-	public String toString()
+	public java.lang.String toString()
 	{
 		return "getEnvVariables";
 	}

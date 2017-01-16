@@ -16,11 +16,11 @@ import watsonservices.utils.AlchemyLanguageService;
 
 public class GetKeywords extends CustomJavaAction<IMendixObject>
 {
-	private String apikey;
+	private java.lang.String apikey;
 	private IMendixObject __request;
 	private watsonservices.proxies.KeywordRequest request;
 
-	public GetKeywords(IContext context, String apikey, IMendixObject request)
+	public GetKeywords(IContext context, java.lang.String apikey, IMendixObject request)
 	{
 		super(context);
 		this.apikey = apikey;
@@ -41,7 +41,7 @@ public class GetKeywords extends CustomJavaAction<IMendixObject>
 	 * Returns a string representation of this action
 	 */
 	@Override
-	public String toString()
+	public java.lang.String toString()
 	{
 		return "GetKeywords";
 	}

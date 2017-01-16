@@ -22,10 +22,10 @@ public class Translate extends CustomJavaAction<IMendixObject>
 {
 	private IMendixObject __translation;
 	private watsonservices.proxies.Translation translation;
-	private String username;
-	private String password;
+	private java.lang.String username;
+	private java.lang.String password;
 
-	public Translate(IContext context, IMendixObject translation, String username, String password)
+	public Translate(IContext context, IMendixObject translation, java.lang.String username, java.lang.String password)
 	{
 		super(context);
 		this.__translation = translation;
@@ -47,7 +47,7 @@ public class Translate extends CustomJavaAction<IMendixObject>
 	 * Returns a string representation of this action
 	 */
 	@Override
-	public String toString()
+	public java.lang.String toString()
 	{
 		return "Translate";
 	}

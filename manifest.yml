@@ -1,0 +1,15 @@
+---
+declared-services:
+  mendix-db:
+    label: elephantsql
+    plan: turtle
+applications:
+- memory: 1G
+  name: Mendix IBM Watson example
+  host:  mendix-watson-${random-word}
+  buildpack: https://github.com/mendix/cf-mendix-buildpack
+  env:
+    ADMIN_PASSWORD: passw0rd
+    DEVELOPMENT_MODE: true
+  services:
+  - mendix-db
