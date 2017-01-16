@@ -14,13 +14,13 @@ import com.mendix.systemwideinterfaces.core.IMendixObject;
 import com.mendix.webui.CustomJavaAction;
 import watsonservices.utils.VisualRecognitionService;
 
-public class CreateClassifier extends CustomJavaAction<String>
+public class CreateClassifier extends CustomJavaAction<java.lang.String>
 {
-	private String apikey;
+	private java.lang.String apikey;
 	private IMendixObject __classifier;
 	private watsonservices.proxies.Classifier classifier;
 
-	public CreateClassifier(IContext context, String apikey, IMendixObject classifier)
+	public CreateClassifier(IContext context, java.lang.String apikey, IMendixObject classifier)
 	{
 		super(context);
 		this.apikey = apikey;
@@ -28,7 +28,7 @@ public class CreateClassifier extends CustomJavaAction<String>
 	}
 
 	@Override
-	public String executeAction() throws Exception
+	public java.lang.String executeAction() throws Exception
 	{
 		this.classifier = __classifier == null ? null : watsonservices.proxies.Classifier.initialize(getContext(), __classifier);
 
@@ -41,7 +41,7 @@ public class CreateClassifier extends CustomJavaAction<String>
 	 * Returns a string representation of this action
 	 */
 	@Override
-	public String toString()
+	public java.lang.String toString()
 	{
 		return "CreateClassifier";
 	}
