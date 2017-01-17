@@ -4,7 +4,7 @@ The IBM Watson Connector Suite is a collection of connectors that brings the [IB
 
 ## Try it out in Bluemix
 
-Deploy a example application using the Mendix's IBM Watson Connector Suite by clicking on the following button (or follow [![this documentation](documentation/deploy-bluemix-button.md))
+Deploy an example application using the Mendix's IBM Watson Connector Suite by clicking on the following button (or follow [![this documentation](documentation/deploy-bluemix-button.md))
 
 [![Deploy to Bluemix](https://bluemix.net/deploy/button.png)](https://bluemix.net/deploy?repository=https://github.com/mendix/IBM-Watson-Connector-Suite.git)
 
