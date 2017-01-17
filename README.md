@@ -2,11 +2,15 @@
 
 The IBM Watson Connector Suite is a collection of connectors that brings the [IBM Watson cognitive services](https://www.ibm.com/watson/developercloud/) to the Mendix platform.
 
+## Try it out in Bluemix
+
+Deploy a example application using the Mendix's IBM Watson Connector Suite by clicking on the following button (or follow [![this documentation](documentation/deploy-bluemix-button.md))
+
 [![Deploy to Bluemix](https://bluemix.net/deploy/button.png)](https://bluemix.net/deploy?repository=https://github.com/mendix/IBM-Watson-Connector-Suite.git)
 
 ## Getting Started
 
-Check out this project and you will be ready to go using the [Mendix Modeler](https://appstore.home.mendix.com/index3.html) to deploy locally or in the Mendix free tier (because this is an example app plus the connectors that point  to several IBM Watson services).
+Check out this project and you will be ready to go using the [Mendix Modeler](https://appstore.home.mendix.com/index3.html) to deploy locally or in the Mendix free tier (because this is an example app plus the connectors that point to several IBM Watson services).
 
 ### Prerequisities
 
