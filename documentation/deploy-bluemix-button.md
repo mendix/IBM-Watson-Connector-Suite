@@ -1,6 +1,6 @@
 # Deploy the example IBM Watson Connector suite application to Bluemix
 
-1. Click on the "Deploy to Bluemix" button
+1. Click on the "Deploy to Bluemix" button [![Deploy to Bluemix](https://bluemix.net/deploy/button.png)](https://bluemix.net/deploy?repository=https://github.com/mendix/IBM-Watson-Connector-Suite.git)
 ![step 1: deploy to bluemix](https://raw.githubusercontent.com/mendix/IBM-Watson-Connector-Suite/e26fec646656f8b82c0089902aeb3cfc6a3e9577/documentation/images/deploy-example-1.png)
 
 2. Deploying to Bluemix with use the IBM DevOps services, click on "Log In" (or "sign up" if you do not have an account)
