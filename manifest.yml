@@ -1,8 +1,23 @@
 ---
 declared-services:
-  mendix-db:
+  mendix-example-db:
     label: elephantsql
     plan: turtle
+  mendix-example-conv:
+    label: conversation
+    plan: free
+  mendix-example-alchemy:
+    label: alchemy_api
+    plan: free
+  mendix-example-translator:
+    label: language_translator
+    plan: standard
+  mendix-example-tts:
+    label: text_to_speech
+    plan: standard
+  mendix-example-vision:
+    label: watson_vision_combined
+    plan: free
 applications:
 - memory: 1G
   name: Mendix IBM Watson example
@@ -12,4 +27,9 @@ applications:
     ADMIN_PASSWORD: passw0rd
     DEVELOPMENT_MODE: true
   services:
-  - mendix-db
+  - mendix-example-db
+  - mendix-example-conv
+  - mendix-example-alchemy
+  - mendix-example-translator
+  - mendix-example-tts
+  - mendix-example-vision
