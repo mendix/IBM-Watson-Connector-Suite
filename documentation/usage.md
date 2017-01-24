@@ -9,3 +9,12 @@
 3. The IBM  Example Application should have a one configuration service per service in IBM Bluemix.
 (In the eventuality that an IBM service changes name, you should rename the service according to the Mendix supported naming listed in the mendix application)
 ![step 1: go to config](images/usage_ibm_3.png)
+
+4. Check that you have the following services:
+
+  * alchemy_api
+  * tone_analyzer
+  * language_translator
+  * conversation
+  * watson_vision_combined
+  * text_to_speech

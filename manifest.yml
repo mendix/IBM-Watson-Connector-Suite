@@ -18,6 +18,9 @@ declared-services:
   mendix-example-vision:
     label: watson_vision_combined
     plan: free
+  mendix-example-tone:
+    labe: tone_analyzer
+    plan: standard
 applications:
 - memory: 1G
   name: Mendix IBM Watson example
