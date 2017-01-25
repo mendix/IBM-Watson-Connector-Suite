@@ -7,3 +7,4 @@ deployment
 **/javasource/**/proxies/
 *.launch
 *.iml
+IBM Watson Connectors Example Project.mpr.lock

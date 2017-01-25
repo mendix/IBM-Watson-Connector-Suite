@@ -2,11 +2,15 @@
 
 The IBM Watson Connector Suite is a collection of connectors that brings the [IBM Watson cognitive services](https://www.ibm.com/watson/developercloud/) to the Mendix platform.
 
-[![Deploy to Bluemix](https://bluemix.net/deploy/button.png)](https://bluemix.net/deploy?repository=https://github.com/mendix/IBM-Watson-Connector-Suite.git)
+## Try it out an example in Bluemix
 
-## Getting Started
+1. Deploy an example application using the Mendix's IBM Watson Connector Suite by clicking on the following button (or follow [this documentation](documentation/deploy-bluemix-button.md)). [![Deploy to Bluemix](https://bluemix.net/deploy/button.png)](https://bluemix.net/deploy?repository=https://github.com/mendix/IBM-Watson-Connector-Suite.git)
 
-Check out this project and you will be ready to go using the [Mendix Modeler](https://appstore.home.mendix.com/index3.html) to deploy locally or in the Mendix free tier (because this is an example app plus the connectors that point  to several IBM Watson services).
+2. IBM watson service should be automatically configured. In case of doubt, verify that your application has the proper service configured as described [here](documentation/usage.md).
+
+## Getting Started with the connectors
+
+With this project and you will be ready to go using the [Mendix Modeler](https://appstore.home.mendix.com/index3.html) to deploy locally or in the Mendix free tier (because this is an example app plus the connectors that point to several IBM Watson services).
 
 ### Prerequisities
 
@@ -68,10 +72,6 @@ Alternatively, if the service does not require an API key, it will instead requi
 }
 ```
 Please follow the instructions in the example app to provide the service with the necessary credentials.
-
-## Test environments
-
-The example app has been tested locally and in a sandbox. It has not been tested in IBM Bluemix yet, although the model provides the configuration files.
 
 ## Dependencies
 
