@@ -1,0 +1,20 @@
+env:
+    secure: "yGOl1moho7L0x/ok9uAvxO7/8LkVMLqH+Kj80s7aEveBl8OX65iWqGnWk0eymB3ImDXXcoRSFaBxaAbTDdj6LiSB7J7M9el0Gi6QYDeaANms9LduXJHflGywUhH0eVvKlGzYnBFrm0xiwfHWJIbUyMov3VWB6jopl0IJCrahYdTWqsXM9iQtS8iLcPktjK6zMJAoXoaQiPUuhgAzHf+/RjLos4Y9Vo5snCVlxTZTp+0u5K4itYpeudC8azU4utzxAEgxD97KvwSC/325ZCTpRs1XWIOuAf6+7Ba4MfxrhIlbe92+EpaaOCrNlTyC/cfB80WqzRro7HCRTw1i2UlxH6PUQEb0/oGaIRBLVOtcrmf0+3qbrE/+cuEr0H3XED62sksUxd0F9WK50qUcJDHriULa5ejzngIQGVgr0FecEWBjaf5/fUw3BNSe2GixNwWEA7ircvFnSF35tCw4UitquHp5FwCR87fOEcG3bsn28kxPYapOPShLLbayInKNAs+JpezC6ATqSxWdZza1lUeWlj2R0/PsKkM1/whdj+/bJ1XGQYHXP4+KW6sdufYjY3jXSZfbwplJCkZRHRBvWsbYxk3EF2no7HM+mwAuHo/ANq9PqryicWCnxfMqEtHH+AoEEiOMiStMr/OuODxNP0Suzmd9wOy/lRxPgRtkQf3QmhY="
+
+language: sh
+
+before_script:
+  - env
+  - wget "https://cli.run.pivotal.io/stable?release=debian64&version=6.16.1&source=github-rel" -O cli.deb
+  - sudo dpkg -i cli.deb
+  - sudo apt-get install -y python-virtualenv
+  - cd tests && bash before_tests.sh
+
+after_script:
+  - cd tests && bash after_tests.sh
+
+script:
+  - cd tests && bash tests.sh
+
+notifications:
+  email: false
