@@ -36,3 +36,4 @@ applications:
   - mendix-example-translator
   - mendix-example-tts
   - mendix-example-vision
+  - mendix-example-tone
