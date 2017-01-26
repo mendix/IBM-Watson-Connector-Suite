@@ -11,10 +11,10 @@ before_script:
   - cd tests && bash before_tests.sh
 
 after_script:
-  - cd tests && bash after_tests.sh
+  - bash tests/after_tests.sh
 
 script:
-  - cd tests && bash tests.sh
+  - tests/tests.sh
 
 notifications:
   email: false
