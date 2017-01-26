@@ -28,6 +28,7 @@ public class LanguageTranslationService {
 		LOGGER.debug("Executing IdentifiableLanagues Connector...");
 
 		service.setUsernameAndPassword(username, password);
+		service.setEndPoint("https://gateway.watsonplatform.net/language-translator/api");
 
 	    List<IdentifiableLanguage> identifieableLanguages;
 		try{
