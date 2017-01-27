@@ -18,7 +18,7 @@ declared-services:
     label: watson_vision_combined
     plan: free
   mendix-example-tone:
-    labe: tone_analyzer
+    label: tone_analyzer
     plan: standard
 applications:
 - memory: 1G
