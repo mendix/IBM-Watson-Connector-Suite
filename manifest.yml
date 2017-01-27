@@ -1,3 +1,4 @@
+---
 declared-services:
   mendix-example-db:
     label: elephantsql
