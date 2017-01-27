@@ -7,7 +7,7 @@ declared-services:
     plan: free
   mendix-example-alchemy:
     label: alchemy_api
-    plan: standard
+    plan: free
   mendix-example-translator:
     label: language_translator
     plan: standard
