@@ -8,7 +8,7 @@ declared-services:
     plan: free
   mendix-example-alchemy:
     label: alchemy_api
-    plan: standard
+    plan: free
   mendix-example-translator:
     label: language_translator
     plan: standard
@@ -19,7 +19,7 @@ declared-services:
     label: watson_vision_combined
     plan: free
   mendix-example-tone:
-    labe: tone_analyzer
+    label: tone_analyzer
     plan: standard
 applications:
 - memory: 1G
