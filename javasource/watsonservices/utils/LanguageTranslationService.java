@@ -5,10 +5,10 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.ibm.watson.developer_cloud.language_translation.v2.LanguageTranslation;
-import com.ibm.watson.developer_cloud.language_translation.v2.model.IdentifiableLanguage;
-import com.ibm.watson.developer_cloud.language_translation.v2.model.Language;
-import com.ibm.watson.developer_cloud.language_translation.v2.model.TranslationResult;
+import com.ibm.watson.developer_cloud.language_translator.v2.model.IdentifiableLanguage;
+import com.ibm.watson.developer_cloud.language_translator.v2.model.Language;
+import com.ibm.watson.developer_cloud.language_translator.v2.model.TranslationResult;
+import com.ibm.watson.developer_cloud.language_translator.v2.LanguageTranslator;
 import com.mendix.core.Core;
 import com.mendix.core.CoreException;
 import com.mendix.logging.ILogNode;
@@ -22,14 +22,14 @@ public class LanguageTranslationService {
 
 	private static final String WATSON_TRANSLATE_LOGNODE = "WatsonServices.IBM_WatsonConnector_Translate";
 	private static final ILogNode LOGGER = Core.getLogger(Core.getConfiguration().getConstantValue(WATSON_TRANSLATE_LOGNODE).toString());
-	private static final LanguageTranslation service = new LanguageTranslation();
-
+	private static final LanguageTranslator service = new LanguageTranslator(); 
 	public static List<IMendixObject> getIdentifiableLanguages(IContext context, String username, String password) throws MendixException {
 		LOGGER.debug("Executing IdentifiableLanagues Connector...");
 
 		service.setUsernameAndPassword(username, password);
 
 	    List<IdentifiableLanguage> identifieableLanguages;
+
 		try{
 			identifieableLanguages = service.getIdentifiableLanguages().execute();
 		} catch (Exception e) {
