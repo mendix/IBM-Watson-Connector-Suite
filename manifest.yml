@@ -6,9 +6,6 @@ declared-services:
   mendix-example-conv:
     label: conversation
     plan: free
-  mendix-example-alchemy:
-    label: alchemy_api
-    plan: free
   mendix-example-translator:
     label: language_translator
     plan: standard
@@ -32,7 +29,6 @@ applications:
   services:
   - mendix-example-db
   - mendix-example-conv
-  - mendix-example-alchemy
   - mendix-example-translator
   - mendix-example-tts
   - mendix-example-vision
