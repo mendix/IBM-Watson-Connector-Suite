@@ -16,11 +16,11 @@ import watsonservices.utils.ToneAnalyzerService;
 
 public class AnalyzeTone extends CustomJavaAction<IMendixObject>
 {
-	private String text;
-	private String username;
-	private String password;
+	private java.lang.String text;
+	private java.lang.String username;
+	private java.lang.String password;
 
-	public AnalyzeTone(IContext context, String text, String username, String password)
+	public AnalyzeTone(IContext context, java.lang.String text, java.lang.String username, java.lang.String password)
 	{
 		super(context);
 		this.text = text;
@@ -40,7 +40,7 @@ public class AnalyzeTone extends CustomJavaAction<IMendixObject>
 	 * Returns a string representation of this action
 	 */
 	@Override
-	public String toString()
+	public java.lang.String toString()
 	{
 		return "AnalyzeTone";
 	}
