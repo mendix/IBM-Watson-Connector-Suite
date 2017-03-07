@@ -9,9 +9,15 @@
 
 package watsonservices.actions;
 
+import java.io.File;
+import java.nio.file.Path;
+import com.ibm.watson.developer_cloud.service.WatsonService;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
+import com.mendix.systemwideinterfaces.core.IMendixObjectMember;
 import com.mendix.webui.CustomJavaAction;
+import system.proxies.FileDocument;
+import watsonservices.proxies.Speech;
 import watsonservices.utils.TextToSpeechService;
 
 public class Synthesize extends CustomJavaAction<IMendixObject>
@@ -34,7 +40,13 @@ public class Synthesize extends CustomJavaAction<IMendixObject>
 	public IMendixObject executeAction() throws Exception
 	{
 		// BEGIN USER CODE
-		return TextToSpeechService.Synthesize(getContext(), text, voice, username, password);
+		IMendixObject mxObject = TextToSpeechService.Synthesize(getContext(), text, voice, username, password);
+		Speech speechObject = Speech.initialize(getContext(), mxObject);
+		String temp = speechObject.getName();
+		Path url = watsonservices.utils.WatsonClientUtils.getFilePath(getContext(), speechObject);
+		String myUrl = url.toUri().toURL().toString();
+		mxObject.setValue(getContext(), "Url", myUrl);		
+		return mxObject;
 		// END USER CODE
 	}
 
