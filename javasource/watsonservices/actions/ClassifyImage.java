@@ -21,11 +21,11 @@ public class ClassifyImage extends CustomJavaAction<java.util.List<IMendixObject
 {
 	private IMendixObject __VisualRequestObject;
 	private watsonservices.proxies.VisualRecognitionImage VisualRequestObject;
-	private String apikey;
+	private java.lang.String apikey;
 	private java.util.List<IMendixObject> __classifiers;
 	private java.util.List<watsonservices.proxies.Classifier> classifiers;
 
-	public ClassifyImage(IContext context, IMendixObject VisualRequestObject, String apikey, java.util.List<IMendixObject> classifiers)
+	public ClassifyImage(IContext context, IMendixObject VisualRequestObject, java.lang.String apikey, java.util.List<IMendixObject> classifiers)
 	{
 		super(context);
 		this.__VisualRequestObject = VisualRequestObject;
@@ -52,7 +52,7 @@ public class ClassifyImage extends CustomJavaAction<java.util.List<IMendixObject
 	 * Returns a string representation of this action
 	 */
 	@Override
-	public String toString()
+	public java.lang.String toString()
 	{
 		return "ClassifyImage";
 	}

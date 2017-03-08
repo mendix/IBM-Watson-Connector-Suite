@@ -8,10 +8,8 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.ibm.watson.developer_cloud.conversation.v1_experimental.model.MessageRequest;
-import com.ibm.watson.developer_cloud.conversation.v1_experimental.model.MessageResponse;
-import com.ibm.watson.developer_cloud.conversation.v1_experimental.model.MessageResponse.Entity;
-import com.ibm.watson.developer_cloud.conversation.v1_experimental.model.MessageResponse.Intent;
+import com.ibm.watson.developer_cloud.conversation.v1.*;
+import com.ibm.watson.developer_cloud.conversation.v1.model.*;
 import com.mendix.core.Core;
 import com.mendix.core.CoreException;
 import com.mendix.logging.ILogNode;
@@ -31,7 +29,7 @@ public class ConversationService {
 
 	private static final String WATSON_CONVERSATION_LOGNODE = "WatsonServices.IBM_WatsonConnector_Conversation";
 	private static final ILogNode LOGGER = Core.getLogger((Core.getConfiguration().getConstantValue(WATSON_CONVERSATION_LOGNODE).toString()));
-	private static final  com.ibm.watson.developer_cloud.conversation.v1_experimental.ConversationService service = new com.ibm.watson.developer_cloud.conversation.v1_experimental.ConversationService("2016-07-11");
+	private static final com.ibm.watson.developer_cloud.conversation.v1.ConversationService service = new com.ibm.watson.developer_cloud.conversation.v1.ConversationService("2016-07-11");
 
 	public static IMendixObject sendMessage(IContext context, ConversationContext conversationContext, String input, String username, String password) throws CoreException, MendixException {
 		LOGGER.debug("Executing Watson Send Message Connector...");
