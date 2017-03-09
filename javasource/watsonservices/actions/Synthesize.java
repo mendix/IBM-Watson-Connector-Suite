@@ -16,12 +16,12 @@ import watsonservices.utils.TextToSpeechService;
 
 public class Synthesize extends CustomJavaAction<IMendixObject>
 {
-	private String username;
-	private String password;
-	private String text;
+	private java.lang.String username;
+	private java.lang.String password;
+	private java.lang.String text;
 	private watsonservices.proxies.VoiceEnum voice;
 
-	public Synthesize(IContext context, String username, String password, String text, String voice)
+	public Synthesize(IContext context, java.lang.String username, java.lang.String password, java.lang.String text, java.lang.String voice)
 	{
 		super(context);
 		this.username = username;
@@ -42,7 +42,7 @@ public class Synthesize extends CustomJavaAction<IMendixObject>
 	 * Returns a string representation of this action
 	 */
 	@Override
-	public String toString()
+	public java.lang.String toString()
 	{
 		return "Synthesize";
 	}

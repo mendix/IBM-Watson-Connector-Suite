@@ -16,10 +16,10 @@ import watsonservices.utils.LanguageTranslationService;
 
 public class GetIdentifiableLanguages extends CustomJavaAction<java.util.List<IMendixObject>>
 {
-	private String username;
-	private String password;
+	private java.lang.String username;
+	private java.lang.String password;
 
-	public GetIdentifiableLanguages(IContext context, String username, String password)
+	public GetIdentifiableLanguages(IContext context, java.lang.String username, java.lang.String password)
 	{
 		super(context);
 		this.username = username;
@@ -38,7 +38,7 @@ public class GetIdentifiableLanguages extends CustomJavaAction<java.util.List<IM
 	 * Returns a string representation of this action
 	 */
 	@Override
-	public String toString()
+	public java.lang.String toString()
 	{
 		return "GetIdentifiableLanguages";
 	}
