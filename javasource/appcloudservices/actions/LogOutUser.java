@@ -7,23 +7,35 @@
 // Other code you write will be lost the next time you deploy the project.
 // Special characters, e.g., é, ö, à, etc. are supported in comments.
 
-package cfcommons.actions;
+package appcloudservices.actions;
 
+import com.mendix.core.Core;
 import com.mendix.systemwideinterfaces.core.IContext;
+import com.mendix.systemwideinterfaces.core.ISession;
 import com.mendix.webui.CustomJavaAction;
+import java.util.Collection;
 
-public class getEnvVariables extends CustomJavaAction<java.lang.String>
+public class LogOutUser extends CustomJavaAction<java.lang.Boolean>
 {
-	public getEnvVariables(IContext context)
+	private java.lang.String openId;
+
+	public LogOutUser(IContext context, java.lang.String openId)
 	{
 		super(context);
+		this.openId = openId;
 	}
 
 	@Override
-	public java.lang.String executeAction() throws Exception
+	public java.lang.Boolean executeAction() throws Exception
 	{
 		// BEGIN USER CODE
-		return System.getenv("VCAP_SERVICES");
+        Collection<? extends ISession> activeSessions = Core.getActiveSessions();
+        for (ISession session : activeSessions) {
+            if(session.getUser() != null && session.getUser().getName().equals(openId)) {
+                Core.logout(session);
+            }
+        }
+        return true;
 		// END USER CODE
 	}
 
@@ -33,7 +45,7 @@ public class getEnvVariables extends CustomJavaAction<java.lang.String>
 	@Override
 	public java.lang.String toString()
 	{
-		return "getEnvVariables";
+		return "LogOutUser";
 	}
 
 	// BEGIN EXTRA CODE

@@ -1,57 +1,30 @@
 package system;
 
-import org.osgi.service.event.Event;
-import org.osgi.service.event.EventHandler;
-
 import aQute.bnd.annotation.component.Component;
 import aQute.bnd.annotation.component.Reference;
 
-import com.mendix.core.Core;
-import com.mendix.core.component.LocalComponent;
-import com.mendix.core.component.MxRuntime;
-import com.mendix.integration.Integration;
+import com.mendix.core.actionmanagement.IActionRegistrator;
 
-@Component(immediate = true, properties = {"event.topics:String=com/mendix/events/model/loaded"})
-public class UserActionsRegistrar implements EventHandler
+@Component(immediate = true)
+public class UserActionsRegistrar
 {
-	private MxRuntime mxRuntime;
-	private LocalComponent component;
-	private Integration integration;
-	
-	@Reference
-	public void setMxRuntime(MxRuntime runtime)
-	{
-		mxRuntime = runtime;
-		mxRuntime.bundleComponentLoaded();
-	}
-	
-	@Reference
-	public void setIntegration(Integration integration)
-	{
-		this.integration = integration;
-	}
-	
-	@Override
-	public void handleEvent(Event event)
-	{
-		if (event.getTopic().equals(com.mendix.core.event.EventConstants.ModelLoadedTopic()))        
-		{
-			component = mxRuntime.getMainComponent();
-			Core.initialize(component, integration);   
-			component.actionRegistry().registerUserAction(cfcommons.actions.getEnvVariables.class);
-			component.actionRegistry().registerUserAction(system.actions.VerifyPassword.class);
-			component.actionRegistry().registerUserAction(watsonservices.actions.CallAlchemyVision.class);
-			component.actionRegistry().registerUserAction(watsonservices.actions.CallAlchemyVisionTags.class);
-			component.actionRegistry().registerUserAction(watsonservices.actions.Converse.class);
-			component.actionRegistry().registerUserAction(watsonservices.actions.CreateDialog.class);
-			component.actionRegistry().registerUserAction(watsonservices.actions.GetDialogs.class);
-			component.actionRegistry().registerUserAction(watsonservices.actions.GetSupportLanguages.class);
-			component.actionRegistry().registerUserAction(watsonservices.actions.RecognizeImage.class);
-			component.actionRegistry().registerUserAction(watsonservices.actions.TextToSpeech.class);
-			component.actionRegistry().registerUserAction(watsonservices.actions.TrainNewClassifier.class);
-			component.actionRegistry().registerUserAction(watsonservices.actions.Translate.class);
-			component.actionRegistry().registerUserAction(watsonservices.actions.UpdateDialog.class);
-			component.actionRegistry().registerUserAction(watsonservices.actions.UrlKeywordExtractionCore.class);
-		}
-	}
+  @Reference
+  public void registerActions(IActionRegistrator registrator)
+  {
+    registrator.bundleComponentLoaded();
+    registrator.registerUserAction(appcloudservices.actions.GenerateRandomPassword.class);
+    registrator.registerUserAction(appcloudservices.actions.LogOutUser.class);
+    registrator.registerUserAction(appcloudservices.actions.StartSignOnServlet.class);
+    registrator.registerUserAction(cfcommons.actions.getEnvVariables.class);
+    registrator.registerUserAction(system.actions.VerifyPassword.class);
+    registrator.registerUserAction(watsonservices.actions.AnalyzeTone.class);
+    registrator.registerUserAction(watsonservices.actions.ClassifyImage.class);
+    registrator.registerUserAction(watsonservices.actions.CreateClassifier.class);
+    registrator.registerUserAction(watsonservices.actions.DetectFaces.class);
+    registrator.registerUserAction(watsonservices.actions.GetIdentifiableLanguages.class);
+    registrator.registerUserAction(watsonservices.actions.GetKeywords.class);
+    registrator.registerUserAction(watsonservices.actions.SendMessage.class);
+    registrator.registerUserAction(watsonservices.actions.Synthesize.class);
+    registrator.registerUserAction(watsonservices.actions.Translate.class);
+  }
 }

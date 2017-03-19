@@ -12,34 +12,35 @@ package watsonservices.actions;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 import com.mendix.webui.CustomJavaAction;
-import watsonservices.utils.LanguageTranslationService;
+import watsonservices.utils.ConversationService;
 
 /**
- * FromLang could be empty. Language will be detected if possible. If not possible an exception will be thrown
- * 
+ * Add a natural language interface to your application to automate interactions with your end users. Common applications include virtual agents and chat bots that can integrate and communicate on any channel or device.
  */
-public class Translate extends CustomJavaAction<IMendixObject>
+public class SendMessage extends CustomJavaAction<IMendixObject>
 {
-	private IMendixObject __translation;
-	private watsonservices.proxies.Translation translation;
 	private java.lang.String username;
 	private java.lang.String password;
+	private java.lang.String input;
+	private IMendixObject __conversationContext;
+	private watsonservices.proxies.ConversationContext conversationContext;
 
-	public Translate(IContext context, IMendixObject translation, java.lang.String username, java.lang.String password)
+	public SendMessage(IContext context, java.lang.String username, java.lang.String password, java.lang.String input, IMendixObject conversationContext)
 	{
 		super(context);
-		this.__translation = translation;
 		this.username = username;
 		this.password = password;
+		this.input = input;
+		this.__conversationContext = conversationContext;
 	}
 
 	@Override
 	public IMendixObject executeAction() throws Exception
 	{
-		this.translation = __translation == null ? null : watsonservices.proxies.Translation.initialize(getContext(), __translation);
+		this.conversationContext = __conversationContext == null ? null : watsonservices.proxies.ConversationContext.initialize(getContext(), __conversationContext);
 
 		// BEGIN USER CODE
-		return LanguageTranslationService.translate(getContext(), translation, username, password);
+		return ConversationService.sendMessage(getContext(), conversationContext, input, username, password);
 		// END USER CODE
 	}
 
@@ -49,7 +50,7 @@ public class Translate extends CustomJavaAction<IMendixObject>
 	@Override
 	public java.lang.String toString()
 	{
-		return "Translate";
+		return "SendMessage";
 	}
 
 	// BEGIN EXTRA CODE

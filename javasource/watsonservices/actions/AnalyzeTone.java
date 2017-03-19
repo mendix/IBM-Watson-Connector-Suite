@@ -7,23 +7,32 @@
 // Other code you write will be lost the next time you deploy the project.
 // Special characters, e.g., é, ö, à, etc. are supported in comments.
 
-package cfcommons.actions;
+package watsonservices.actions;
 
 import com.mendix.systemwideinterfaces.core.IContext;
+import com.mendix.systemwideinterfaces.core.IMendixObject;
 import com.mendix.webui.CustomJavaAction;
+import watsonservices.utils.ToneAnalyzerService;
 
-public class getEnvVariables extends CustomJavaAction<java.lang.String>
+public class AnalyzeTone extends CustomJavaAction<IMendixObject>
 {
-	public getEnvVariables(IContext context)
+	private java.lang.String text;
+	private java.lang.String username;
+	private java.lang.String password;
+
+	public AnalyzeTone(IContext context, java.lang.String text, java.lang.String username, java.lang.String password)
 	{
 		super(context);
+		this.text = text;
+		this.username = username;
+		this.password = password;
 	}
 
 	@Override
-	public java.lang.String executeAction() throws Exception
+	public IMendixObject executeAction() throws Exception
 	{
 		// BEGIN USER CODE
-		return System.getenv("VCAP_SERVICES");
+		return ToneAnalyzerService.analyzeTone(getContext(), text, username, password);
 		// END USER CODE
 	}
 
@@ -33,7 +42,7 @@ public class getEnvVariables extends CustomJavaAction<java.lang.String>
 	@Override
 	public java.lang.String toString()
 	{
-		return "getEnvVariables";
+		return "AnalyzeTone";
 	}
 
 	// BEGIN EXTRA CODE

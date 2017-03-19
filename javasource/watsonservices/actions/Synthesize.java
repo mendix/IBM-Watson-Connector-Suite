@@ -12,34 +12,29 @@ package watsonservices.actions;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 import com.mendix.webui.CustomJavaAction;
-import watsonservices.utils.LanguageTranslationService;
+import watsonservices.utils.TextToSpeechService;
 
-/**
- * FromLang could be empty. Language will be detected if possible. If not possible an exception will be thrown
- * 
- */
-public class Translate extends CustomJavaAction<IMendixObject>
+public class Synthesize extends CustomJavaAction<IMendixObject>
 {
-	private IMendixObject __translation;
-	private watsonservices.proxies.Translation translation;
 	private java.lang.String username;
 	private java.lang.String password;
+	private java.lang.String text;
+	private watsonservices.proxies.VoiceEnum voice;
 
-	public Translate(IContext context, IMendixObject translation, java.lang.String username, java.lang.String password)
+	public Synthesize(IContext context, java.lang.String username, java.lang.String password, java.lang.String text, java.lang.String voice)
 	{
 		super(context);
-		this.__translation = translation;
 		this.username = username;
 		this.password = password;
+		this.text = text;
+		this.voice = voice == null ? null : watsonservices.proxies.VoiceEnum.valueOf(voice);
 	}
 
 	@Override
 	public IMendixObject executeAction() throws Exception
 	{
-		this.translation = __translation == null ? null : watsonservices.proxies.Translation.initialize(getContext(), __translation);
-
 		// BEGIN USER CODE
-		return LanguageTranslationService.translate(getContext(), translation, username, password);
+		return TextToSpeechService.Synthesize(getContext(), text, voice, username, password);
 		// END USER CODE
 	}
 
@@ -49,7 +44,7 @@ public class Translate extends CustomJavaAction<IMendixObject>
 	@Override
 	public java.lang.String toString()
 	{
-		return "Translate";
+		return "Synthesize";
 	}
 
 	// BEGIN EXTRA CODE

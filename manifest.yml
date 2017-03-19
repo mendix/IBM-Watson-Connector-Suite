@@ -1,0 +1,35 @@
+---
+declared-services:
+  mendix-example-db:
+    label: elephantsql
+    plan: turtle
+  mendix-example-conv:
+    label: conversation
+    plan: free
+  mendix-example-translator:
+    label: language_translator
+    plan: standard
+  mendix-example-tts:
+    label: text_to_speech
+    plan: standard
+  mendix-example-vision:
+    label: watson_vision_combined
+    plan: free
+  mendix-example-tone:
+    label: tone_analyzer
+    plan: standard
+applications:
+- memory: 1G
+  name: Mendix IBM Watson example
+  host:  mendix-watson-${random-word}
+  buildpack: https://github.com/mendix/cf-mendix-buildpack
+  env:
+    ADMIN_PASSWORD: passw0rd
+    DEVELOPMENT_MODE: true
+  services:
+  - mendix-example-db
+  - mendix-example-conv
+  - mendix-example-translator
+  - mendix-example-tts
+  - mendix-example-vision
+  - mendix-example-tone

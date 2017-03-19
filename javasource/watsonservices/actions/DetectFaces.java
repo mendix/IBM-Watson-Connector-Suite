@@ -7,23 +7,33 @@
 // Other code you write will be lost the next time you deploy the project.
 // Special characters, e.g., é, ö, à, etc. are supported in comments.
 
-package cfcommons.actions;
+package watsonservices.actions;
 
 import com.mendix.systemwideinterfaces.core.IContext;
+import com.mendix.systemwideinterfaces.core.IMendixObject;
 import com.mendix.webui.CustomJavaAction;
+import watsonservices.utils.VisualRecognitionService;
 
-public class getEnvVariables extends CustomJavaAction<java.lang.String>
+public class DetectFaces extends CustomJavaAction<java.util.List<IMendixObject>>
 {
-	public getEnvVariables(IContext context)
+	private java.lang.String apiKey;
+	private IMendixObject __image;
+	private system.proxies.Image image;
+
+	public DetectFaces(IContext context, java.lang.String apiKey, IMendixObject image)
 	{
 		super(context);
+		this.apiKey = apiKey;
+		this.__image = image;
 	}
 
 	@Override
-	public java.lang.String executeAction() throws Exception
+	public java.util.List<IMendixObject> executeAction() throws Exception
 	{
+		this.image = __image == null ? null : system.proxies.Image.initialize(getContext(), __image);
+
 		// BEGIN USER CODE
-		return System.getenv("VCAP_SERVICES");
+		return VisualRecognitionService.detectFaces(getContext(), image, apiKey);
 		// END USER CODE
 	}
 
@@ -33,7 +43,7 @@ public class getEnvVariables extends CustomJavaAction<java.lang.String>
 	@Override
 	public java.lang.String toString()
 	{
-		return "getEnvVariables";
+		return "DetectFaces";
 	}
 
 	// BEGIN EXTRA CODE

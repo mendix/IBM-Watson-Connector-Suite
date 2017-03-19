@@ -7,23 +7,26 @@
 // Other code you write will be lost the next time you deploy the project.
 // Special characters, e.g., é, ö, à, etc. are supported in comments.
 
-package cfcommons.actions;
+package appcloudservices.actions;
 
+import appcloudservices.OpenIDHandler;
+import com.mendix.core.Core;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.webui.CustomJavaAction;
 
-public class getEnvVariables extends CustomJavaAction<java.lang.String>
+public class StartSignOnServlet extends CustomJavaAction<java.lang.Boolean>
 {
-	public getEnvVariables(IContext context)
+	public StartSignOnServlet(IContext context)
 	{
 		super(context);
 	}
 
 	@Override
-	public java.lang.String executeAction() throws Exception
+	public java.lang.Boolean executeAction() throws Exception
 	{
 		// BEGIN USER CODE
-		return System.getenv("VCAP_SERVICES");
+		Core.addRequestHandler(OpenIDHandler.OPENID_CLIENTSERVLET_LOCATION, new OpenIDHandler());
+		return true;
 		// END USER CODE
 	}
 
@@ -33,7 +36,7 @@ public class getEnvVariables extends CustomJavaAction<java.lang.String>
 	@Override
 	public java.lang.String toString()
 	{
-		return "getEnvVariables";
+		return "StartSignOnServlet";
 	}
 
 	// BEGIN EXTRA CODE

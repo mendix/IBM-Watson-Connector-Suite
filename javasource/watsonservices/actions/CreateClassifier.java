@@ -7,23 +7,33 @@
 // Other code you write will be lost the next time you deploy the project.
 // Special characters, e.g., é, ö, à, etc. are supported in comments.
 
-package cfcommons.actions;
+package watsonservices.actions;
 
 import com.mendix.systemwideinterfaces.core.IContext;
+import com.mendix.systemwideinterfaces.core.IMendixObject;
 import com.mendix.webui.CustomJavaAction;
+import watsonservices.utils.VisualRecognitionService;
 
-public class getEnvVariables extends CustomJavaAction<java.lang.String>
+public class CreateClassifier extends CustomJavaAction<java.lang.String>
 {
-	public getEnvVariables(IContext context)
+	private java.lang.String apikey;
+	private IMendixObject __classifier;
+	private watsonservices.proxies.Classifier classifier;
+
+	public CreateClassifier(IContext context, java.lang.String apikey, IMendixObject classifier)
 	{
 		super(context);
+		this.apikey = apikey;
+		this.__classifier = classifier;
 	}
 
 	@Override
 	public java.lang.String executeAction() throws Exception
 	{
+		this.classifier = __classifier == null ? null : watsonservices.proxies.Classifier.initialize(getContext(), __classifier);
+
 		// BEGIN USER CODE
-		return System.getenv("VCAP_SERVICES");
+		return VisualRecognitionService.createClassifier(getContext(), classifier, apikey);
 		// END USER CODE
 	}
 
@@ -33,7 +43,7 @@ public class getEnvVariables extends CustomJavaAction<java.lang.String>
 	@Override
 	public java.lang.String toString()
 	{
-		return "getEnvVariables";
+		return "CreateClassifier";
 	}
 
 	// BEGIN EXTRA CODE

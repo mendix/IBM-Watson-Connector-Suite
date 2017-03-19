@@ -7,23 +7,33 @@
 // Other code you write will be lost the next time you deploy the project.
 // Special characters, e.g., é, ö, à, etc. are supported in comments.
 
-package cfcommons.actions;
+package watsonservices.actions;
 
 import com.mendix.systemwideinterfaces.core.IContext;
+import com.mendix.systemwideinterfaces.core.IMendixObject;
 import com.mendix.webui.CustomJavaAction;
+import watsonservices.utils.AlchemyLanguageService;
 
-public class getEnvVariables extends CustomJavaAction<java.lang.String>
+public class GetKeywords extends CustomJavaAction<IMendixObject>
 {
-	public getEnvVariables(IContext context)
+	private java.lang.String apikey;
+	private IMendixObject __request;
+	private watsonservices.proxies.KeywordRequest request;
+
+	public GetKeywords(IContext context, java.lang.String apikey, IMendixObject request)
 	{
 		super(context);
+		this.apikey = apikey;
+		this.__request = request;
 	}
 
 	@Override
-	public java.lang.String executeAction() throws Exception
+	public IMendixObject executeAction() throws Exception
 	{
+		this.request = __request == null ? null : watsonservices.proxies.KeywordRequest.initialize(getContext(), __request);
+
 		// BEGIN USER CODE
-		return System.getenv("VCAP_SERVICES");
+		return AlchemyLanguageService.getKeywords(getContext(), request, apikey);
 		// END USER CODE
 	}
 
@@ -33,7 +43,7 @@ public class getEnvVariables extends CustomJavaAction<java.lang.String>
 	@Override
 	public java.lang.String toString()
 	{
-		return "getEnvVariables";
+		return "GetKeywords";
 	}
 
 	// BEGIN EXTRA CODE
