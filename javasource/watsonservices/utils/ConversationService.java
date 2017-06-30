@@ -1,6 +1,7 @@
 package watsonservices.utils;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,6 +19,7 @@ import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.systemwideinterfaces.core.IMendixIdentifier;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 
+import watsonservices.proxies.ContextValue;
 import watsonservices.proxies.Conversation;
 import watsonservices.proxies.ConversationContext;
 import watsonservices.proxies.ConversationEntity;
@@ -37,7 +39,7 @@ public class ConversationService {
 		service.setUsernameAndPassword(username, password);
 		service.setEndPoint("https://gateway.watsonplatform.net/conversation/api");
 
-		MessageRequest messageRequest = createMessageRequest(conversationContext, input);
+		MessageRequest messageRequest = createMessageRequest(conversationContext, input,context);
 
 		Conversation conversation = conversationContext.getConversationContext_Conversation();
 		if(conversation == null){
@@ -64,7 +66,7 @@ public class ConversationService {
 		return createMessageResponse(context, conversationContext, response);
 	}
 
-	private static MessageRequest createMessageRequest(ConversationContext conversationContext, String input) throws CoreException {
+	private static MessageRequest createMessageRequest(ConversationContext conversationContext, String input, IContext context) throws CoreException {
 		MessageRequest messageRequest = null;
 		if(StringUtils.isNotEmpty(conversationContext.getConversationId())){
 			final Map<String, Object> conversationContextInput = new HashMap<String, Object>();
@@ -80,7 +82,18 @@ public class ConversationService {
 			conversationContextInput.put("conversation_id", conversationContext.getConversationId());
 			conversationContextInput.put("dialog_turn_counter", conversationContext.getDialogTurnCounter());
 			conversationContextInput.put("dialog_request_counter", conversationContext.getDialogRequestCounter());
-
+			
+			
+			final String query = String.format("//%s[%s = '%s']", ContextValue.entityName, ContextValue.MemberNames.ContextValue_ConversationContext, conversationContext.getMendixObject().getId().toLong());
+			final List<IMendixObject> mxObjects = Core.retrieveXPathQuery(context, query);
+			
+			for(IMendixObject mxObject: mxObjects){
+				String key = mxObject.getValue(context, ContextValue.MemberNames.Key.name()).toString();
+				String value = mxObject.getValue(context,ContextValue.MemberNames.Value.name()).toString();
+				conversationContextInput.put(key, value);
+			}
+			
+			
 			messageRequest = new MessageRequest.Builder()
 					  .inputText(input)
 					  .context(conversationContextInput)
@@ -133,6 +146,47 @@ public class ConversationService {
 
 		conversationContext.setConversationId(context, response.getContext().get("conversation_id").toString());
 		Map<String, Object> responseContext = response.getContext();
+		
+		
+		
+		for(String key: responseContext.keySet()){
+			if(!key.equals("system") && !key.equals("dialog_stack") && !key.equals("conversation_id") && !key.equals("dialog_turn_counter")&& !key.equals("dialog_request_counter")){
+				
+				final String query = String.format("//%s[%s = '%s' and %s = '%s']", ContextValue.entityName, ContextValue.MemberNames.ContextValue_ConversationContext, conversationContext.getMendixObject().getId().toLong(),ContextValue.MemberNames.Key,key);
+				//retrieves the context value from Mendix with the same key and same conversation.
+				final List<IMendixObject> mxObjects = Core.retrieveXPathQuery(context, query);
+				String value =responseContext.get(key).toString();
+				if(value.endsWith(".0")){
+					double amount = Double.parseDouble(value);
+					DecimalFormat formatter = new DecimalFormat("###,###,##0");
+					value = formatter.format(amount);
+				}
+
+				
+				if(mxObjects.isEmpty()){
+					ContextValue contextValue = new ContextValue(context);
+					contextValue.setKey(key);
+					contextValue.setValue(value);
+					contextValue.setContextValue_ConversationContext(conversationContext);
+					contextValue.commit();
+				}else{
+					//returned a list of objects so context exists. Return the first one in the list and update the values.
+					IMendixObject object = mxObjects.get(0);
+					object.setValue(context, ContextValue.MemberNames.Key.name(), key);
+					object.setValue(context, ContextValue.MemberNames.Value.name(), value);
+					Core.commit(context, object);
+				}
+			}
+
+		}
+		
+		
+		
+		
+		
+		
+		
+		
 		Map<String, Object> resposeSystemContext = (Map<String, Object>) responseContext.get("system");
 		conversationContext.setDialogTurnCounter(new BigDecimal(resposeSystemContext.get("dialog_turn_counter").toString()));
 		conversationContext.setDialogRequestCounter(new BigDecimal(resposeSystemContext.get("dialog_request_counter").toString()));
