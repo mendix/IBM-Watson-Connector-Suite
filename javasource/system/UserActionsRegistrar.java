@@ -24,6 +24,7 @@ public class UserActionsRegistrar
     registrator.registerUserAction(watsonservices.actions.GetIdentifiableLanguages.class);
     registrator.registerUserAction(watsonservices.actions.GetKeywords.class);
     registrator.registerUserAction(watsonservices.actions.SendMessage.class);
+    registrator.registerUserAction(watsonservices.actions.SpeechToText.class);
     registrator.registerUserAction(watsonservices.actions.Synthesize.class);
     registrator.registerUserAction(watsonservices.actions.Translate.class);
   }
