@@ -73,6 +73,9 @@ public class TextToSpeechService {
 			case IT_FRANCESCA:
 				voice = Voice.IT_FRANCESCA;
 				break;
+			case JA_EMI:
+				voice = Voice.JA_EMI;
+				break;
 		default:
 			break;
 		}
