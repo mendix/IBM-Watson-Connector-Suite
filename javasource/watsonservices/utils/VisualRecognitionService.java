@@ -250,7 +250,7 @@ public class VisualRecognitionService {
 
 	private static File createImageFile(IContext context, Image image) throws MendixException {
 		
-		final String imageFileExtension = FilenameUtils.getExtension(image.getName());
+		final String imageFileExtension = FilenameUtils.getExtension(image.getName(context));
 		
 		if(!WATSON_DETECT_FACES_SUPPORTED_IMAGE_EXTENSION_JPG.equals(imageFileExtension.toLowerCase()) && 
 				!WATSON_DETECT_FACES_SUPPORTED_IMAGE_EXTENSION_PNG.equals(imageFileExtension.toLowerCase()) &&

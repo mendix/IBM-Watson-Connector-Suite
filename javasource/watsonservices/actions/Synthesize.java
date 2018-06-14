@@ -20,21 +20,23 @@ public class Synthesize extends CustomJavaAction<IMendixObject>
 	private java.lang.String password;
 	private java.lang.String text;
 	private watsonservices.proxies.VoiceEnum voice;
+	private watsonservices.proxies.AudioFormats_TextToSpeech audioFormat;
 
-	public Synthesize(IContext context, java.lang.String username, java.lang.String password, java.lang.String text, java.lang.String voice)
+	public Synthesize(IContext context, java.lang.String username, java.lang.String password, java.lang.String text, java.lang.String voice, java.lang.String audioFormat)
 	{
 		super(context);
 		this.username = username;
 		this.password = password;
 		this.text = text;
 		this.voice = voice == null ? null : watsonservices.proxies.VoiceEnum.valueOf(voice);
+		this.audioFormat = audioFormat == null ? null : watsonservices.proxies.AudioFormats_TextToSpeech.valueOf(audioFormat);
 	}
 
 	@Override
 	public IMendixObject executeAction() throws Exception
 	{
 		// BEGIN USER CODE
-		return TextToSpeechService.Synthesize(getContext(), text, voice, username, password);
+		return TextToSpeechService.Synthesize(getContext(), text, voice, audioFormat, username, password);
 		// END USER CODE
 	}
 

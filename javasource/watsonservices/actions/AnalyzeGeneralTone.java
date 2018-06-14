@@ -14,13 +14,13 @@ import com.mendix.systemwideinterfaces.core.IMendixObject;
 import com.mendix.webui.CustomJavaAction;
 import watsonservices.utils.ToneAnalyzerService;
 
-public class AnalyzeTone extends CustomJavaAction<IMendixObject>
+public class AnalyzeGeneralTone extends CustomJavaAction<IMendixObject>
 {
 	private java.lang.String text;
 	private java.lang.String username;
 	private java.lang.String password;
 
-	public AnalyzeTone(IContext context, java.lang.String text, java.lang.String username, java.lang.String password)
+	public AnalyzeGeneralTone(IContext context, java.lang.String text, java.lang.String username, java.lang.String password)
 	{
 		super(context);
 		this.text = text;
@@ -42,7 +42,7 @@ public class AnalyzeTone extends CustomJavaAction<IMendixObject>
 	@Override
 	public java.lang.String toString()
 	{
-		return "AnalyzeTone";
+		return "AnalyzeGeneralTone";
 	}
 
 	// BEGIN EXTRA CODE
