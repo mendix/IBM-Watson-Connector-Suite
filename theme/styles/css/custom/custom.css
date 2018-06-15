@@ -1,100 +1,95 @@
-/* ==========================================================================
-   Special styles for Watsonm Text to Speech
-========================================================================== */
-.page-watson-speak {
-  width: 100% !important;
-  height: 100% !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  top: 0 !important;
-}
-.page-watson-speak .mx-window-body {
-  top: 50%;
-  transform: translateY(-50%);
-  max-width: 700px;
+.responsive-header {
+  background-color: #FFF;
+  padding: 16px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.1);
+  position: fixed;
+  top: 0;
+  z-index: 100;
   width: 100%;
-  margin: auto;
-  height: auto !important;
 }
-.page-watson-speak .mx-window-content {
-  background: transparent;
-  border: 0;
-  box-shadow: none;
-}
-.page-watson-speak .mx-window-content .mx-window-header {
-  display: none;
-}
-.page-watson-speak .btn {
-  width: 100%;
-  margin-top: 30px;
-}
-.page-watson-speak .bars {
-  height: 150px;
-  width: 350px;
-  margin: auto auto;
-  position: relative;
-  display: block;
-}
-.page-watson-speak .bar {
-  background: #FFF;
-  bottom: 1px;
-  height: 35px;
-  position: absolute;
-  width: 35px;
-  animation: sound 0ms -800ms linear infinite alternate;
-}
-@keyframes sound {
-  0% {
-    opacity: .35;
-    height: 3px;
-  }
-  100% {
-    opacity: 1;
-    height: 100%;
-  }
-}
-.page-watson-speak .bar:nth-child(1) {
-  left: 0;
-  animation-duration: 474ms;
-}
-.page-watson-speak .bar:nth-child(2) {
-  left: 37px;
-  animation-duration: 433ms;
-}
-.page-watson-speak .bar:nth-child(3) {
-  left: 72px;
-  animation-duration: 407ms;
-}
-.page-watson-speak .bar:nth-child(4) {
-  left: 109px;
-  animation-duration: 458ms;
-}
-.page-watson-speak .bar:nth-child(5) {
-  left: 146px;
-  animation-duration: 400ms;
-}
-.page-watson-speak .bar:nth-child(6) {
-  left: 183px;
-  animation-duration: 427ms;
-}
-.page-watson-speak .bar:nth-child(7) {
-  left: 220px;
-  animation-duration: 441ms;
-}
-.page-watson-speak .bar:nth-child(8) {
-  left: 257px;
-  animation-duration: 419ms;
-}
-.page-watson-speak .bar:nth-child(9) {
-  left: 294px;
-  animation-duration: 487ms;
-}
-.page-watson-speak .bar:nth-child(10) {
-  left: 331px;
-  animation-duration: 442ms;
+.responsive-header .mx-title {
+  font-size: 17px;
+  margin: 0;
 }
 
-.mx-underlay {
-  opacity: 0.9 !important;
+.responsive-middle {
+  margin-top: 70px;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+.responsive-footer .navbar-inner > ul {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-basis: 70px;
+  -ms-flex-preferred-size: 70px;
+  flex-basis: 70px;
+  min-height: 70px;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  background-color: #f9f9f9;
+  position: fixed;
+  bottom: 0;
+  z-index: 100;
+  width: 100%;
+}
+.responsive-footer .navbar-inner > ul > li {
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
+  text-align: center;
+}
+.responsive-footer .navbar-inner > ul > li > a {
+  height: 70px;
+  display: inline-block;
+  text-align: center;
+  padding: 16px;
+  font-size: 12px;
+  height: auto;
+  border-left: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: none;
+  color: #4178be;
+  background-color: transparent;
+}
+.responsive-footer .navbar-inner > ul > li > a:hover, .responsive-footer .navbar-inner > ul > li > a:focus, .responsive-footer .navbar-inner > ul > li > a.active {
+  color: #4178be;
+  background-color: #f9f9f9;
+}
+.responsive-footer .navbar-inner > ul > li > a.active {
+  color: #4178be;
+  background-color: #f9f9f9;
+}
+.responsive-footer .navbar-inner > ul > li > a .glyphicon {
+  display: block;
+  margin-bottom: 4px;
+  margin-right: 0;
+  font-size: 16px;
+}
+.responsive-footer .navbar-inner > ul > li > a:first-child {
+  border-left: 0;
 }
