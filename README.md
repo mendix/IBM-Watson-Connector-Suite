@@ -1,6 +1,7 @@
 # IBM Watson Connector Suite
 
 The IBM Watson Connector Suite is a collection of connectors that brings the [IBM Watson cognitive services](https://www.ibm.com/watson/developercloud/) to the Mendix platform.
+For the latest documentation, please refer to our [Mendix Docs](https://docs.mendix.com/refguide/ibm/ibm-watson-connector).
 
 ## Try it out an example in Bluemix
 
