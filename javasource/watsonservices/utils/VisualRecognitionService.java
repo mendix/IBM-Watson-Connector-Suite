@@ -1,6 +1,7 @@
 package watsonservices.utils;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.nio.file.Files;
@@ -11,16 +12,16 @@ import java.util.List;
 import org.apache.commons.io.FilenameUtils;
 
 import com.ibm.watson.developer_cloud.visual_recognition.v3.VisualRecognition;
-import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ClassifierOptions;
-import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ClassifyImagesOptions;
+import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ClassResult;
+import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ClassifiedImage;
+import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ClassifiedImages;
+import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ClassifierResult;
+import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ClassifyOptions;
+import com.ibm.watson.developer_cloud.visual_recognition.v3.model.CreateClassifierOptions;
+import com.ibm.watson.developer_cloud.visual_recognition.v3.model.DetectFacesOptions;
 import com.ibm.watson.developer_cloud.visual_recognition.v3.model.DetectedFaces;
 import com.ibm.watson.developer_cloud.visual_recognition.v3.model.Face;
-import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ImageClassification;
-import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ImageFace;
-import com.ibm.watson.developer_cloud.visual_recognition.v3.model.VisualClassification;
-import com.ibm.watson.developer_cloud.visual_recognition.v3.model.VisualClassifier;
-import com.ibm.watson.developer_cloud.visual_recognition.v3.model.VisualRecognitionOptions;
-import com.ibm.watson.developer_cloud.visual_recognition.v3.model.VisualClassifier.VisualClass;
+import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ImageWithFaces;
 import com.mendix.core.Core;
 import com.mendix.core.CoreException;
 import com.mendix.logging.ILogNode;
@@ -42,10 +43,12 @@ public class VisualRecognitionService {
 	private static final String CLASSIFIER_ENTITY_NAME = Classifier.entityName;
 	private static final String CLASSIFIER_ENTITY_PROPERTY = Classifier.MemberNames.Name.name();
 	private static final String WATSON_DETECT_FACES_SUPPORTED_IMAGE_EXTENSION_JPG = "jpg";
+	private static final String WATSON_DETECT_FACES_SUPPORTED_IMAGE_EXTENSION_JPEG = "jpeg";
 	private static final String WATSON_DETECT_FACES_SUPPORTED_IMAGE_EXTENSION_PNG = "png";
 	private static final String WATSON_DETECT_FACES_SUPPORTED_IMAGE_EXTENSION_ZIP = "zip";
 	private static final String DETECT_FACES_FILENAME = "VisualRecognition_DetectFaces_image.jpg";
-	private static final VisualRecognition service = new VisualRecognition(VisualRecognition.VERSION_DATE_2016_05_20);
+	private static final String WATSON_VISUAL_RECOGNITION_VERSION_DATE = "2016-05-20";
+	private static final VisualRecognition service = new VisualRecognition(WATSON_VISUAL_RECOGNITION_VERSION_DATE);
 
 
 	public static List<IMendixObject> classifyImage(IContext context, VisualRecognitionImage VisualRequestObject, List<Classifier> classifiers, String apikey) throws MendixException, CoreException {
@@ -62,8 +65,8 @@ public class VisualRecognitionService {
 			throw new MendixException(e);
 		}
 
-		final ClassifyImagesOptions options = buildClassifyImagesOptions(classifiers, imageToClassifyFile);
-		VisualClassification response = null;
+		final ClassifyOptions options = buildClassifyImagesOptions(classifiers, imageToClassifyFile);
+		ClassifiedImages response;
 		try{
 
 			response = service.classify(options).execute();
@@ -75,9 +78,9 @@ public class VisualRecognitionService {
 		}
 
 		final List<IMendixObject> responseResults = new ArrayList<IMendixObject>();
-		for(ImageClassification image : response.getImages()){
+		for(ClassifiedImage image : response.getImages()){
 
-			for(VisualClassifier classifier : image.getClassifiers()){
+			for(ClassifierResult classifier : image.getClassifiers()){
 
 				IMendixObject classifierObject;
 				try {
@@ -92,10 +95,10 @@ public class VisualRecognitionService {
 					throw new MendixException(e);
 				}
 
-				for(VisualClass visualClass : classifier.getClasses()){
+				for(ClassResult visualClass : classifier.getClasses()){
 					IMendixObject classifierClassObject = Core.instantiate(context, ClassifierClass.entityName);
 
-					classifierClassObject.setValue(context, ClassifierClass.MemberNames.Name.toString(), visualClass.getName());
+					classifierClassObject.setValue(context, ClassifierClass.MemberNames.Name.toString(), visualClass.getClassName());
 					classifierClassObject.setValue(context, ClassifierClass.MemberNames.Score.toString(), new BigDecimal(visualClass.getScore()));
 					classifierClassObject.setValue(context, ClassifierClass.MemberNames.ClassifierClass_Classifier.toString(), classifierObject.getId());
 					classifierClassObject.setValue(context, ClassifierClass.MemberNames.ClassifierClass_VisualRecognitionImage.toString(), VisualRequestObject.getMendixObject().getId());
@@ -132,13 +135,19 @@ public class VisualRecognitionService {
 			LOGGER.error("There was a problem with the ZIP files: " + posTempFile.getPath() + " and " + negTempFile.getPath(), e);
 		}		
 
-	    final ClassifierOptions options = new ClassifierOptions.Builder().
-	    		classifierName(classifier.getName())
-	    		.addClass(posTrainingImagesZipFile.getName(), posTempFile)
-	    		.negativeExamples(negTempFile)
-	    		.build();
+	    final CreateClassifierOptions options;
+	    try {
+			options = new CreateClassifierOptions.Builder().
+					name(classifier.getName())
+					.addClass(posTrainingImagesZipFile.getName(), posTempFile)
+					.negativeExamples(negTempFile)
+					.build();
+		} catch (FileNotFoundException e) {
+			LOGGER.error("Could not find find temporary file", e);
+			throw new MendixException(e);
+		}
 	    
-		VisualClassifier visualClassifier;
+	    com.ibm.watson.developer_cloud.visual_recognition.v3.model.Classifier visualClassifier;
 		try {
 			visualClassifier = service.createClassifier(options).execute();
 		} catch (Exception e) {
@@ -146,7 +155,7 @@ public class VisualRecognitionService {
 			throw new MendixException(e);
 		}
 
-		return visualClassifier.getId();
+		return visualClassifier.getClassifierId();
 	}
 
 	public static List<IMendixObject> detectFaces(IContext context, Image image, String apikey) throws MendixException {
@@ -156,9 +165,15 @@ public class VisualRecognitionService {
 			
 		final File imageToDetectFaces = createImageFile(context, image);
 
-		final VisualRecognitionOptions options = new VisualRecognitionOptions.Builder().
-				images(imageToDetectFaces).
-				build();
+		final DetectFacesOptions options;
+		try {
+			options = new DetectFacesOptions.Builder().
+					imagesFile(imageToDetectFaces).
+					build();
+		} catch (FileNotFoundException e) {
+			LOGGER.error("Could not find image file: " + imageToDetectFaces, e);
+			throw new MendixException(e);
+		}
 				
 		DetectedFaces response;
 		try {
@@ -173,7 +188,7 @@ public class VisualRecognitionService {
 		}
 
 		final List<IMendixObject> results = new ArrayList<IMendixObject>();
-		for (ImageFace imageFace : response.getImages()) {
+		for (ImageWithFaces imageFace : response.getImages()) {
 
 			if(imageFace.getError() != null){
 				LOGGER.warn("Error processing the image "+ imageFace.getImage() + ": " + imageFace.getError().getDescription());
@@ -195,27 +210,20 @@ public class VisualRecognitionService {
 					faceObject.setValue(context, watsonservices.proxies.Face.MemberNames.GenderScore.toString(), face.getGender().getScore().toString());
 				}
 
-				if(face.getLocation() != null){
-					faceObject.setValue(context, watsonservices.proxies.Face.MemberNames.LocationHeight.toString(), face.getLocation().getHeight());
-					faceObject.setValue(context, watsonservices.proxies.Face.MemberNames.LocationLeft.toString(), face.getLocation().getLeft());
-					faceObject.setValue(context, watsonservices.proxies.Face.MemberNames.LocationTop.toString(), face.getLocation().getTop());
-					faceObject.setValue(context, watsonservices.proxies.Face.MemberNames.LocationWidth.toString(), face.getLocation().getWidth());
+				if(face.getFaceLocation() != null){
+					faceObject.setValue(context, watsonservices.proxies.Face.MemberNames.LocationHeight.toString(), face.getFaceLocation().getHeight());
+					faceObject.setValue(context, watsonservices.proxies.Face.MemberNames.LocationLeft.toString(), face.getFaceLocation().getLeft());
+					faceObject.setValue(context, watsonservices.proxies.Face.MemberNames.LocationTop.toString(), face.getFaceLocation().getTop());
+					faceObject.setValue(context, watsonservices.proxies.Face.MemberNames.LocationWidth.toString(), face.getFaceLocation().getWidth());
 				}
-
-				if(face.getIdentity() != null){
-					faceObject.setValue(context, watsonservices.proxies.Face.MemberNames.IdentityName.toString(), face.getIdentity().getName());
-					faceObject.setValue(context, watsonservices.proxies.Face.MemberNames.IdentityScore.toString(), face.getIdentity().getScore().toString());
-					faceObject.setValue(context, watsonservices.proxies.Face.MemberNames.TypeHierarchy.toString(), face.getIdentity().getTypeHierarchy());
-				} 
 
 				results.add(faceObject);
 			}			
 		}
 		return results;
 	}
-	private static ClassifyImagesOptions buildClassifyImagesOptions(List<Classifier> classifiers, File imageToRecognizeFile){
-		ClassifyImagesOptions options = null;
-
+	private static ClassifyOptions buildClassifyImagesOptions(List<Classifier> classifiers, File imageToRecognizeFile) throws MendixException {
+		ClassifyOptions.Builder builder = new ClassifyOptions.Builder();
 		if(!classifiers.isEmpty()) {
 			List<String> classifierIds = new ArrayList<String>();
 
@@ -223,18 +231,17 @@ public class VisualRecognitionService {
 				classifierIds.add(classifier.getName());
 			}
 
-			options = new ClassifyImagesOptions.Builder()
-					.classifierIds(classifierIds)
-					.images(imageToRecognizeFile)
-					.build();
-		}
-		else {
-			options = new ClassifyImagesOptions.Builder()
-					.images(imageToRecognizeFile)
-					.build();	
+			builder = builder.classifierIds(classifierIds);
 		}
 
-		return options;
+		try {
+			builder = builder.imagesFile(imageToRecognizeFile);
+		} catch (FileNotFoundException e) {
+			LOGGER.error("Could not find image file: " + imageToRecognizeFile, e);
+			throw new MendixException(e);
+		}
+
+		return builder.build();
 	}
 
 	private static IMendixObject getClassifierEntity(IContext context,  String classifierName) throws MendixException{
@@ -253,6 +260,7 @@ public class VisualRecognitionService {
 		final String imageFileExtension = FilenameUtils.getExtension(image.getName(context));
 		
 		if(!WATSON_DETECT_FACES_SUPPORTED_IMAGE_EXTENSION_JPG.equals(imageFileExtension.toLowerCase()) && 
+				!WATSON_DETECT_FACES_SUPPORTED_IMAGE_EXTENSION_JPEG.equals(imageFileExtension.toLowerCase()) && 
 				!WATSON_DETECT_FACES_SUPPORTED_IMAGE_EXTENSION_PNG.equals(imageFileExtension.toLowerCase()) &&
 				!WATSON_DETECT_FACES_SUPPORTED_IMAGE_EXTENSION_ZIP.equals(imageFileExtension.toLowerCase())){
 			
