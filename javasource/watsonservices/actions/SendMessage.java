@@ -19,19 +19,19 @@ import watsonservices.utils.ConversationService;
  */
 public class SendMessage extends CustomJavaAction<IMendixObject>
 {
-	private java.lang.String username;
-	private java.lang.String password;
 	private java.lang.String input;
 	private IMendixObject __conversationContext;
 	private watsonservices.proxies.ConversationContext conversationContext;
+	private java.lang.String apikey;
+	private java.lang.String url;
 
-	public SendMessage(IContext context, java.lang.String username, java.lang.String password, java.lang.String input, IMendixObject conversationContext)
+	public SendMessage(IContext context, java.lang.String input, IMendixObject conversationContext, java.lang.String apikey, java.lang.String url)
 	{
 		super(context);
-		this.username = username;
-		this.password = password;
 		this.input = input;
 		this.__conversationContext = conversationContext;
+		this.apikey = apikey;
+		this.url = url;
 	}
 
 	@Override
@@ -40,7 +40,7 @@ public class SendMessage extends CustomJavaAction<IMendixObject>
 		this.conversationContext = __conversationContext == null ? null : watsonservices.proxies.ConversationContext.initialize(getContext(), __conversationContext);
 
 		// BEGIN USER CODE
-		return ConversationService.sendMessage(getContext(), conversationContext, input, username, password);
+		return ConversationService.sendMessage(getContext(), conversationContext, input, apikey, url);
 		// END USER CODE
 	}
 

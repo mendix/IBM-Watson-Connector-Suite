@@ -11,6 +11,8 @@ import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
 
+import com.ibm.watson.developer_cloud.service.security.IamOptions;
+import com.ibm.watson.developer_cloud.util.HttpLogging;
 import com.ibm.watson.developer_cloud.visual_recognition.v3.VisualRecognition;
 import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ClassResult;
 import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ClassifiedImage;
@@ -47,14 +49,22 @@ public class VisualRecognitionService {
 	private static final String WATSON_DETECT_FACES_SUPPORTED_IMAGE_EXTENSION_PNG = "png";
 	private static final String WATSON_DETECT_FACES_SUPPORTED_IMAGE_EXTENSION_ZIP = "zip";
 	private static final String DETECT_FACES_FILENAME = "VisualRecognition_DetectFaces_image.jpg";
-	private static final String WATSON_VISUAL_RECOGNITION_VERSION_DATE = "2016-05-20";
-	private static final VisualRecognition service = new VisualRecognition(WATSON_VISUAL_RECOGNITION_VERSION_DATE);
+	private static final String WATSON_VISUAL_RECOGNITION_VERSION_DATE = "2018-03-19";
 
+	static {
+		//FIXME: Figure out why the default level results in an exception when uploading files
+        HttpLogging.getLoggingInterceptor().setLevel(okhttp3.logging.HttpLoggingInterceptor.Level.NONE);
+	}
 
-	public static List<IMendixObject> classifyImage(IContext context, VisualRecognitionImage VisualRequestObject, List<Classifier> classifiers, String apikey) throws MendixException, CoreException {
+	public static List<IMendixObject> classifyImage(IContext context, VisualRecognitionImage VisualRequestObject, List<Classifier> classifiers, String apikey, String url) throws MendixException, CoreException {
 		LOGGER.debug("Executing RecognizeImage Connector...");
 
+		final IamOptions iamOptions = new IamOptions.Builder()
+				.apiKey(apikey)
+				.build();
+		final VisualRecognition service = new VisualRecognition(WATSON_VISUAL_RECOGNITION_VERSION_DATE, iamOptions);
 		service.setApiKey(apikey);
+		service.setEndPoint(url);
 
 		final File imageToClassifyFile = new File(Core.getConfiguration().getTempPath() + VisualRequestObject.getName());	
 		try(InputStream stream = Core.getFileDocumentContent(context, VisualRequestObject.getMendixObject())){
@@ -112,10 +122,15 @@ public class VisualRecognitionService {
 		return responseResults;
 	}
 	
-	public static String createClassifier(IContext context, Classifier classifier, String apikey) throws CoreException, MendixException {
+	public static String createClassifier(IContext context, Classifier classifier, String apikey, String url) throws CoreException, MendixException {
 		LOGGER.debug("Executing CreateClassifier Connector...");
 
+		final IamOptions iamOptions = new IamOptions.Builder()
+				.apiKey(apikey)
+				.build();
+		final VisualRecognition service = new VisualRecognition(WATSON_VISUAL_RECOGNITION_VERSION_DATE, iamOptions);
 		service.setApiKey(apikey);
+		service.setEndPoint(url);
 
 		final TrainingImagesZipFile posTrainingImagesZipFile = classifier.getClassifier_positiveTrainingImagesZipFile();
 		final FileDocument posZipFileDocument = posTrainingImagesZipFile;
@@ -158,10 +173,16 @@ public class VisualRecognitionService {
 		return visualClassifier.getClassifierId();
 	}
 
-	public static List<IMendixObject> detectFaces(IContext context, Image image, String apikey) throws MendixException {
+	public static List<IMendixObject> detectFaces(IContext context, Image image, String apikey, String url) throws MendixException {
 		LOGGER.debug("Executing DetectFaces Connector...");
 		
+
+		final IamOptions iamOptions = new IamOptions.Builder()
+				.apiKey(apikey)
+				.build();
+		final VisualRecognition service = new VisualRecognition(WATSON_VISUAL_RECOGNITION_VERSION_DATE, iamOptions);
 		service.setApiKey(apikey);
+		service.setEndPoint(url);
 			
 		final File imageToDetectFaces = createImageFile(context, image);
 
@@ -264,12 +285,12 @@ public class VisualRecognitionService {
 				!WATSON_DETECT_FACES_SUPPORTED_IMAGE_EXTENSION_PNG.equals(imageFileExtension.toLowerCase()) &&
 				!WATSON_DETECT_FACES_SUPPORTED_IMAGE_EXTENSION_ZIP.equals(imageFileExtension.toLowerCase())){
 			
-			final String errorMessage = "The input file doesn't have a valid extension (jpg, png or zip) :" + image.getName();
+			final String errorMessage = "The input file doesn't have a valid extension (jpg, jpeg, png or zip) :" + image.getName();
 			LOGGER.error(errorMessage);
 			throw new MendixException(errorMessage);	
 		}
 
-		final File imageToDetectFaces = new File(Core.getConfiguration().getTempPath() + DETECT_FACES_FILENAME);
+		final File imageToDetectFaces = new File(Core.getConfiguration().getTempPath(), DETECT_FACES_FILENAME);
 		
 		try(final InputStream stream = Core.getFileDocumentContent(context, image.getMendixObject());) {
 

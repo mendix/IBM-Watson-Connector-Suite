@@ -29,6 +29,10 @@ import watsonservices.proxies.DialogNode;
 
 public class ConversationService {
 
+	public static IMendixObject sendMessage(IContext context, ConversationContext conversationContext, String input, String apikey, String url) throws CoreException, MendixException {
+		return null;
+	}
+	/*
 	private static final String WATSON_CONVERSATION_LOGNODE = "WatsonServices.IBM_WatsonConnector_Conversation";
 	private static final ILogNode LOGGER = Core.getLogger((Core.getConfiguration().getConstantValue(WATSON_CONVERSATION_LOGNODE).toString()));
 	private static final com.ibm.watson.developer_cloud.conversation.v1.ConversationService service = new com.ibm.watson.developer_cloud.conversation.v1.ConversationService("2016-07-11");
@@ -211,4 +215,5 @@ public class ConversationService {
 			dialogNode.delete();
 		}
 	}
+	*/
 }

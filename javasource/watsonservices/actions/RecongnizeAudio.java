@@ -16,21 +16,21 @@ import com.mendix.systemwideinterfaces.core.IMendixObject;
 
 public class RecongnizeAudio extends CustomJavaAction<IMendixObject>
 {
-	private java.lang.String username;
-	private java.lang.String password;
 	private IMendixObject __audioFile;
 	private system.proxies.FileDocument audioFile;
 	private watsonservices.proxies.AudioFormats_SpeechToText audioFormat;
 	private watsonservices.proxies.AudioLanguage audioLanguage;
+	private java.lang.String apikey;
+	private java.lang.String url;
 
-	public RecongnizeAudio(IContext context, java.lang.String username, java.lang.String password, IMendixObject audioFile, java.lang.String audioFormat, java.lang.String audioLanguage)
+	public RecongnizeAudio(IContext context, IMendixObject audioFile, java.lang.String audioFormat, java.lang.String audioLanguage, java.lang.String apikey, java.lang.String url)
 	{
 		super(context);
-		this.username = username;
-		this.password = password;
 		this.__audioFile = audioFile;
 		this.audioFormat = audioFormat == null ? null : watsonservices.proxies.AudioFormats_SpeechToText.valueOf(audioFormat);
 		this.audioLanguage = audioLanguage == null ? null : watsonservices.proxies.AudioLanguage.valueOf(audioLanguage);
+		this.apikey = apikey;
+		this.url = url;
 	}
 
 	@Override
@@ -39,7 +39,7 @@ public class RecongnizeAudio extends CustomJavaAction<IMendixObject>
 		this.audioFile = __audioFile == null ? null : system.proxies.FileDocument.initialize(getContext(), __audioFile);
 
 		// BEGIN USER CODE
-		return SpeechToTextService.Transcribe(getContext(), this.audioFile, username, password, audioFormat, audioLanguage);
+		return SpeechToTextService.Transcribe(getContext(), this.audioFile, audioFormat, audioLanguage, apikey, url);
 //		throw new com.mendix.systemwideinterfaces.MendixRuntimeException("Java action was not implemented");
 		// END USER CODE
 	}

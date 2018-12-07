@@ -11,9 +11,11 @@ import org.apache.commons.io.IOUtils;
 import com.ibm.watson.developer_cloud.http.HttpMediaType;
 import com.ibm.watson.developer_cloud.speech_to_text.v1.SpeechToText;
 import com.ibm.watson.developer_cloud.speech_to_text.v1.model.RecognizeOptions;
+/*
 import com.ibm.watson.developer_cloud.speech_to_text.v1.model.SpeechAlternative;
 import com.ibm.watson.developer_cloud.speech_to_text.v1.model.SpeechResults;
 import com.ibm.watson.developer_cloud.speech_to_text.v1.model.Transcript;
+*/
 import com.mendix.core.Core;
 import com.mendix.logging.ILogNode;
 import com.mendix.systemwideinterfaces.core.IContext;
@@ -28,6 +30,11 @@ import watsonservices.proxies.AudioLanguage;
 
 
 public class SpeechToTextService {
+	public static IMendixObject Transcribe(IContext context, FileDocument audioFileParameter1, AudioFormats_SpeechToText audioFormat, AudioLanguage audioLanguage, 
+			String apikey, String url) throws Exception {
+		return null;
+	}
+	/*
 	private static final SpeechToText service = new SpeechToText();
 	private static final ILogNode LOGGER = Core.getLogger("SpeechToTextService");
 	public static IMendixObject Transcribe(IContext context, FileDocument audioFileParameter1, String username,
@@ -150,4 +157,5 @@ public class SpeechToTextService {
         }
         return model;
 	}
+	*/
 }

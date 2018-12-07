@@ -16,21 +16,21 @@ import watsonservices.utils.LanguageTranslationService;
 
 public class GetIdentifiableLanguages extends CustomJavaAction<java.util.List<IMendixObject>>
 {
-	private java.lang.String username;
-	private java.lang.String password;
+	private java.lang.String apikey;
+	private java.lang.String url;
 
-	public GetIdentifiableLanguages(IContext context, java.lang.String username, java.lang.String password)
+	public GetIdentifiableLanguages(IContext context, java.lang.String apikey, java.lang.String url)
 	{
 		super(context);
-		this.username = username;
-		this.password = password;
+		this.apikey = apikey;
+		this.url = url;
 	}
 
 	@Override
 	public java.util.List<IMendixObject> executeAction() throws Exception
 	{
 		// BEGIN USER CODE
-		return LanguageTranslationService.getIdentifiableLanguages(getContext(), username, password);
+		return LanguageTranslationService.getIdentifiableLanguages(getContext(), apikey, url);
 		// END USER CODE
 	}
 

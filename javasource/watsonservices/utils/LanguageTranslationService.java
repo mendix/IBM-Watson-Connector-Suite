@@ -6,7 +6,9 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 import com.ibm.watson.developer_cloud.language_translator.v2.model.IdentifiableLanguage;
+/*
 import com.ibm.watson.developer_cloud.language_translator.v2.model.Language;
+*/
 import com.ibm.watson.developer_cloud.language_translator.v2.model.TranslationResult;
 import com.ibm.watson.developer_cloud.language_translator.v2.LanguageTranslator;
 import com.mendix.core.Core;
@@ -19,7 +21,14 @@ import com.mendix.systemwideinterfaces.core.IMendixObject;
 import watsonservices.proxies.Translation;
 
 public class LanguageTranslationService {
+	public static List<IMendixObject> getIdentifiableLanguages(IContext context, String apikey, String url) throws MendixException {
+		return null;
+	}
 
+	public static IMendixObject translate(IContext context, Translation translation, String apikey, String url) throws MendixException, CoreException {
+		return null;
+	}
+	/*
 	private static final String WATSON_TRANSLATE_LOGNODE = "WatsonServices.IBM_WatsonConnector_Translate";
 	private static final ILogNode LOGGER = Core.getLogger(Core.getConfiguration().getConstantValue(WATSON_TRANSLATE_LOGNODE).toString());
 	private static final LanguageTranslator service = new LanguageTranslator(); 
@@ -97,4 +106,5 @@ public class LanguageTranslationService {
 		
 		throw new MendixException("The language is not supported: " + lang);
 	}
+	*/
 }
