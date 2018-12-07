@@ -9,13 +9,13 @@ import java.util.ArrayList;
 
 import org.apache.commons.io.IOUtils;
 import com.ibm.watson.developer_cloud.http.HttpMediaType;
+import com.ibm.watson.developer_cloud.service.security.IamOptions;
 import com.ibm.watson.developer_cloud.speech_to_text.v1.SpeechToText;
 import com.ibm.watson.developer_cloud.speech_to_text.v1.model.RecognizeOptions;
-/*
-import com.ibm.watson.developer_cloud.speech_to_text.v1.model.SpeechAlternative;
-import com.ibm.watson.developer_cloud.speech_to_text.v1.model.SpeechResults;
-import com.ibm.watson.developer_cloud.speech_to_text.v1.model.Transcript;
-*/
+import com.ibm.watson.developer_cloud.speech_to_text.v1.model.SpeechRecognitionAlternative;
+import com.ibm.watson.developer_cloud.speech_to_text.v1.model.SpeechRecognitionResult;
+import com.ibm.watson.developer_cloud.speech_to_text.v1.model.SpeechRecognitionResults;
+import com.ibm.watson.developer_cloud.util.HttpLogging;
 import com.mendix.core.Core;
 import com.mendix.logging.ILogNode;
 import com.mendix.systemwideinterfaces.core.IContext;
@@ -30,17 +30,23 @@ import watsonservices.proxies.AudioLanguage;
 
 
 public class SpeechToTextService {
-	public static IMendixObject Transcribe(IContext context, FileDocument audioFileParameter1, AudioFormats_SpeechToText audioFormat, AudioLanguage audioLanguage, 
-			String apikey, String url) throws Exception {
-		return null;
-	}
-	/*
-	private static final SpeechToText service = new SpeechToText();
+
 	private static final ILogNode LOGGER = Core.getLogger("SpeechToTextService");
-	public static IMendixObject Transcribe(IContext context, FileDocument audioFileParameter1, String username,
-			String password, AudioFormats_SpeechToText audioFormat, AudioLanguage audioLanguage) throws Exception {
+
+	static {
+		//FIXME: Figure out why the default level results in an exception when uploading files
+        HttpLogging.getLoggingInterceptor().setLevel(okhttp3.logging.HttpLoggingInterceptor.Level.NONE);
+	}
+
+	public static IMendixObject Transcribe(IContext context, FileDocument audioFileParameter1, AudioFormats_SpeechToText audioFormat, AudioLanguage audioLanguage,
+			String apiKey, String url) throws Exception {
+
+		IamOptions iamOptions = new IamOptions.Builder()
+				.apiKey(apiKey)
+				.build();
+		final SpeechToText service = new SpeechToText(iamOptions);
+		service.setEndPoint(url);
 		
-		service.setUsernameAndPassword(username, password);
 		File speechFile = File.createTempFile("speech-file", "tmp");
 		FileOutputStream fos;
 		fos = new FileOutputStream(speechFile);
@@ -49,21 +55,21 @@ public class SpeechToTextService {
 		fos.close();
 		is.close();
 		
-		RecognizeOptions options = new RecognizeOptions.Builder().continuous(true).interimResults(true)
+		RecognizeOptions options = new RecognizeOptions.Builder().audio(speechFile).interimResults(true)
 				.contentType(getAudioFormat(audioFormat)).model(getAudioLanguage(audioLanguage)).build();
 
-		SpeechResults transcript = service.recognize(speechFile, options).execute();
+		SpeechRecognitionResults transcript = service.recognize(options).execute();
 		speechFile.delete();
 
 		SpeechReturn speechToTextObj = new SpeechReturn(context);
 		speechToTextObj.setresults_index(transcript.getResultIndex());
 		ArrayList<IMendixObject> mxObjs = new ArrayList<IMendixObject>();
-		for (Transcript result : transcript.getResults()) {
+		for (SpeechRecognitionResult result : transcript.getResults()) {
 			Result res = new Result(context);
-			res.set_final(result.isFinal());
+			res.set_final(result.isFinalResults());
 			res.setresults(speechToTextObj);
 			mxObjs.add(res.getMendixObject());
-			for (SpeechAlternative alt : result.getAlternatives()) {
+			for (SpeechRecognitionAlternative alt : result.getAlternatives()) {
 				Alternative altMx = new Alternative(context);
 				BigDecimal confidence = new BigDecimal(alt.getConfidence(), MathContext.DECIMAL64);
 				altMx.setconfidence(confidence);
@@ -157,5 +163,4 @@ public class SpeechToTextService {
         }
         return model;
 	}
-	*/
 }

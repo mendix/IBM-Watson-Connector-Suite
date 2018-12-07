@@ -20,6 +20,7 @@ public class UserActionsRegistrar
     registrator.registerUserAction(watsonservices.actions.AnalyzeGeneralTone.class);
     registrator.registerUserAction(watsonservices.actions.ClassifyImage.class);
     registrator.registerUserAction(watsonservices.actions.CreateClassifier.class);
+    registrator.registerUserAction(watsonservices.actions.CreateSession.class);
     registrator.registerUserAction(watsonservices.actions.DetectFaces.class);
     registrator.registerUserAction(watsonservices.actions.GetIdentifiableLanguages.class);
     registrator.registerUserAction(watsonservices.actions.RecongnizeAudio.class);
