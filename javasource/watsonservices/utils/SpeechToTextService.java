@@ -1,13 +1,13 @@
 package watsonservices.utils;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 
-import org.apache.commons.io.IOUtils;
 import com.ibm.watson.developer_cloud.http.HttpMediaType;
 import com.ibm.watson.developer_cloud.service.security.IamOptions;
 import com.ibm.watson.developer_cloud.speech_to_text.v1.SpeechToText;
@@ -15,7 +15,6 @@ import com.ibm.watson.developer_cloud.speech_to_text.v1.model.RecognizeOptions;
 import com.ibm.watson.developer_cloud.speech_to_text.v1.model.SpeechRecognitionAlternative;
 import com.ibm.watson.developer_cloud.speech_to_text.v1.model.SpeechRecognitionResult;
 import com.ibm.watson.developer_cloud.speech_to_text.v1.model.SpeechRecognitionResults;
-import com.ibm.watson.developer_cloud.util.HttpLogging;
 import com.mendix.core.Core;
 import com.mendix.logging.ILogNode;
 import com.mendix.systemwideinterfaces.core.IContext;
@@ -33,11 +32,6 @@ public class SpeechToTextService {
 
 	private static final ILogNode LOGGER = Core.getLogger("SpeechToTextService");
 
-	static {
-		//FIXME: Figure out why the default level results in an exception when uploading files
-        HttpLogging.getLoggingInterceptor().setLevel(okhttp3.logging.HttpLoggingInterceptor.Level.NONE);
-	}
-
 	public static IMendixObject Transcribe(IContext context, FileDocument audioFileParameter1, AudioFormats_SpeechToText audioFormat, AudioLanguage audioLanguage,
 			String apiKey, String url) throws Exception {
 
@@ -48,14 +42,12 @@ public class SpeechToTextService {
 		service.setEndPoint(url);
 		
 		File speechFile = File.createTempFile("speech-file", "tmp");
-		FileOutputStream fos;
-		fos = new FileOutputStream(speechFile);
-		InputStream is = Core.getFileDocumentContent(context, audioFileParameter1.getMendixObject());
-		IOUtils.copy(is, fos);
-		fos.close();
-		is.close();
+
+		try(InputStream is = Core.getFileDocumentContent(context, audioFileParameter1.getMendixObject())) {
+			Files.copy(is, speechFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+		}
 		
-		RecognizeOptions options = new RecognizeOptions.Builder().audio(speechFile).interimResults(true)
+		RecognizeOptions options = new RecognizeOptions.Builder().audio(new RestartableInputStream(speechFile)).interimResults(true)
 				.contentType(getAudioFormat(audioFormat)).model(getAudioLanguage(audioLanguage)).build();
 
 		SpeechRecognitionResults transcript = service.recognize(options).execute();

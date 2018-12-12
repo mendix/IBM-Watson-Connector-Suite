@@ -12,7 +12,6 @@ import java.util.List;
 import org.apache.commons.io.FilenameUtils;
 
 import com.ibm.watson.developer_cloud.service.security.IamOptions;
-import com.ibm.watson.developer_cloud.util.HttpLogging;
 import com.ibm.watson.developer_cloud.visual_recognition.v3.VisualRecognition;
 import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ClassResult;
 import com.ibm.watson.developer_cloud.visual_recognition.v3.model.ClassifiedImage;
@@ -50,11 +49,6 @@ public class VisualRecognitionService {
 	private static final String WATSON_DETECT_FACES_SUPPORTED_IMAGE_EXTENSION_ZIP = "zip";
 	private static final String DETECT_FACES_FILENAME = "VisualRecognition_DetectFaces_image.jpg";
 	private static final String WATSON_VISUAL_RECOGNITION_VERSION_DATE = "2018-03-19";
-
-	static {
-		//FIXME: Figure out why the default level results in an exception when uploading files
-        HttpLogging.getLoggingInterceptor().setLevel(okhttp3.logging.HttpLoggingInterceptor.Level.NONE);
-	}
 
 	public static List<IMendixObject> classifyImage(IContext context, VisualRecognitionImage VisualRequestObject, List<Classifier> classifiers, String apikey, String url) throws MendixException, CoreException {
 		LOGGER.debug("Executing RecognizeImage Connector...");
@@ -155,7 +149,8 @@ public class VisualRecognitionService {
 			options = new CreateClassifierOptions.Builder().
 					name(classifier.getName())
 					.addClass(posTrainingImagesZipFile.getName(), posTempFile)
-					.negativeExamples(negTempFile)
+					.negativeExamples(new RestartableInputStream(negTempFile))
+					.negativeExamplesFilename(negTempFile.getName())
 					.build();
 		} catch (FileNotFoundException e) {
 			LOGGER.error("Could not find find temporary file", e);
@@ -189,7 +184,8 @@ public class VisualRecognitionService {
 		final DetectFacesOptions options;
 		try {
 			options = new DetectFacesOptions.Builder().
-					imagesFile(imageToDetectFaces).
+					imagesFile(new RestartableInputStream(imageToDetectFaces)).
+					imagesFilename(imageToDetectFaces.getName()).
 					build();
 		} catch (FileNotFoundException e) {
 			LOGGER.error("Could not find image file: " + imageToDetectFaces, e);
@@ -256,7 +252,9 @@ public class VisualRecognitionService {
 		}
 
 		try {
-			builder = builder.imagesFile(imageToRecognizeFile);
+			builder = builder
+					.imagesFile(new RestartableInputStream(imageToRecognizeFile))
+					.imagesFilename(imageToRecognizeFile.getName());
 		} catch (FileNotFoundException e) {
 			LOGGER.error("Could not find image file: " + imageToRecognizeFile, e);
 			throw new MendixException(e);
