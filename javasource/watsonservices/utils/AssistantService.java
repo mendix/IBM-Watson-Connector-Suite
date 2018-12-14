@@ -19,15 +19,15 @@ import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 
 import watsonservices.proxies.Assistant;
-import watsonservices.proxies.ConversationEntity;
-import watsonservices.proxies.ConversationIntent;
-import watsonservices.proxies.ConversationMessageResponse;
+import watsonservices.proxies.AssistantEntity;
+import watsonservices.proxies.AssistantIntent;
+import watsonservices.proxies.AssistantMessageResponse;
 import watsonservices.proxies.SessionContext;
 
 public class AssistantService {
 
-	private static final String WATSON_CONVERSATION_LOGNODE = "WatsonServices.IBM_WatsonConnector_Conversation";
-	private static final ILogNode LOGGER = Core.getLogger((Core.getConfiguration().getConstantValue(WATSON_CONVERSATION_LOGNODE).toString()));
+	private static final String WATSON_ASSISTANT_LOGNODE = "WatsonServices.IBM_WatsonConnector_Assistant";
+	private static final ILogNode LOGGER = Core.getLogger((Core.getConfiguration().getConstantValue(WATSON_ASSISTANT_LOGNODE).toString()));
 	private static final String WATSON_ASSISTANT_VERSION_DATE = "2018-11-08";
 
 	public static IMendixObject createSession(IContext context, Assistant assistant, String apikey, String url) throws CoreException, MendixException {
@@ -75,7 +75,7 @@ public class AssistantService {
 			response = service.message(options).execute();
 		} catch(Exception ex) {
 			LOGGER.error("Watson Service connection - Failed conversing with Watson with assistantID " + assistant.getAssistantId() +
-					" and conversationID " + sessionContext.getSessionId(), ex);
+					" and sessionID " + sessionContext.getSessionId(), ex);
 			throw new MendixException(ex);
 		}
 
@@ -97,28 +97,28 @@ public class AssistantService {
 	}
 
 	private static IMendixObject createMessageResponse(IContext context, SessionContext sessionContext, String input, MessageResponse response) throws CoreException {
-		final IMendixObject messageResponseObject = Core.instantiate(context, ConversationMessageResponse.entityName);
-		messageResponseObject.setValue(context, ConversationMessageResponse.MemberNames.SessionId.toString(), sessionContext.getSessionId());
-		messageResponseObject.setValue(context, ConversationMessageResponse.MemberNames.Input.toString(), input);
-		messageResponseObject.setValue(context, ConversationMessageResponse.MemberNames.Output.toString(),
+		final IMendixObject messageResponseObject = Core.instantiate(context, AssistantMessageResponse.entityName);
+		messageResponseObject.setValue(context, AssistantMessageResponse.MemberNames.SessionId.toString(), sessionContext.getSessionId());
+		messageResponseObject.setValue(context, AssistantMessageResponse.MemberNames.Input.toString(), input);
+		messageResponseObject.setValue(context, AssistantMessageResponse.MemberNames.Output.toString(),
 				response.getOutput().getGeneric().stream().map(rg -> rg.getText()).collect(Collectors.joining(",")));
 
 		Core.commit(context, messageResponseObject);
 
 		for(RuntimeIntent intent : response.getOutput().getIntents()){
-			final IMendixObject intentObject = Core.instantiate(context, ConversationIntent.entityName);
-			intentObject.setValue(context, ConversationIntent.MemberNames.Name.toString(), intent.getIntent());
-			intentObject.setValue(context, ConversationIntent.MemberNames.Confidence.toString(), intent.getConfidence().toString());
-			intentObject.setValue(context, ConversationIntent.MemberNames.ConversationIntent_ConversationResponse.toString(), messageResponseObject.getId());
+			final IMendixObject intentObject = Core.instantiate(context, AssistantIntent.entityName);
+			intentObject.setValue(context, AssistantIntent.MemberNames.Name.toString(), intent.getIntent());
+			intentObject.setValue(context, AssistantIntent.MemberNames.Confidence.toString(), intent.getConfidence().toString());
+			intentObject.setValue(context, AssistantIntent.MemberNames.AssistantIntent_AssistantResponse.toString(), messageResponseObject.getId());
 
 			Core.commit(context, intentObject);
 		}
 
 		for(RuntimeEntity entity : response.getOutput().getEntities()){
-			final IMendixObject entityObject = Core.instantiate(context, ConversationEntity.entityName);
-			entityObject.setValue(context, ConversationEntity.MemberNames.Name.toString(), entity.getEntity());
-			entityObject.setValue(context, ConversationEntity.MemberNames.Value.toString(), entity.getValue());
-			entityObject.setValue(context, ConversationEntity.MemberNames.ConversationEntity_ConversationResponse.toString(), messageResponseObject.getId());
+			final IMendixObject entityObject = Core.instantiate(context, AssistantEntity.entityName);
+			entityObject.setValue(context, AssistantEntity.MemberNames.Name.toString(), entity.getEntity());
+			entityObject.setValue(context, AssistantEntity.MemberNames.Value.toString(), entity.getValue());
+			entityObject.setValue(context, AssistantEntity.MemberNames.AssistantEntity_AssistantResponse.toString(), messageResponseObject.getId());
 
 			Core.commit(context, entityObject);
 		}
