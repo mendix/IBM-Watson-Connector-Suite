@@ -60,7 +60,7 @@ public class VisualRecognitionService {
 		service.setApiKey(apikey);
 		service.setEndPoint(url);
 
-		final File imageToClassifyFile = new File(Core.getConfiguration().getTempPath() + VisualRequestObject.getName());	
+		final File imageToClassifyFile = new File(Core.getConfiguration().getTempPath(), VisualRequestObject.getName());
 		try(InputStream stream = Core.getFileDocumentContent(context, VisualRequestObject.getMendixObject())){
 
 			Files.copy(stream, imageToClassifyFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
