@@ -1,11 +1,7 @@
 package watsonservices.utils;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.math.BigDecimal;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +26,6 @@ import com.mendix.systemwideinterfaces.MendixException;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 
-import system.proxies.FileDocument;
 import system.proxies.Image;
 import watsonservices.proxies.Classifier;
 import watsonservices.proxies.ClassifierClass;
@@ -47,7 +42,6 @@ public class VisualRecognitionService {
 	private static final String WATSON_DETECT_FACES_SUPPORTED_IMAGE_EXTENSION_JPEG = "jpeg";
 	private static final String WATSON_DETECT_FACES_SUPPORTED_IMAGE_EXTENSION_PNG = "png";
 	private static final String WATSON_DETECT_FACES_SUPPORTED_IMAGE_EXTENSION_ZIP = "zip";
-	private static final String DETECT_FACES_FILENAME = "VisualRecognition_DetectFaces_image.jpg";
 	private static final String WATSON_VISUAL_RECOGNITION_VERSION_DATE = "2018-03-19";
 
 	public static List<IMendixObject> classifyImage(IContext context, VisualRecognitionImage VisualRequestObject, List<Classifier> classifiers, String apikey, String url) throws MendixException, CoreException {
@@ -60,25 +54,16 @@ public class VisualRecognitionService {
 		service.setApiKey(apikey);
 		service.setEndPoint(url);
 
-		final File imageToClassifyFile = new File(Core.getConfiguration().getTempPath(), VisualRequestObject.getName());
-		try(InputStream stream = Core.getFileDocumentContent(context, VisualRequestObject.getMendixObject())){
+		final InputStream imageInputStream = new RestartableInputStream(context, VisualRequestObject.getMendixObject());
 
-			Files.copy(stream, imageToClassifyFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-		}catch(Exception e){
-			LOGGER.error("There was a problem with the image file: " + imageToClassifyFile.getPath(), e);
-			throw new MendixException(e);
-		}
-
-		final ClassifyOptions options = buildClassifyImagesOptions(classifiers, imageToClassifyFile);
-		ClassifiedImages response;
+		final ClassifyOptions options = buildClassifyImagesOptions(classifiers, imageInputStream, VisualRequestObject.getName());
+		final ClassifiedImages response;
 		try{
 
 			response = service.classify(options).execute();
 		}catch(Exception e){
-			LOGGER.error("Watson Service connection - Failed classifying the image: " + imageToClassifyFile.getName(), e);
+			LOGGER.error("Watson Service connection - Failed classifying the image: " + VisualRequestObject.getName(), e);
 			throw new MendixException(e);
-		}finally{
-			imageToClassifyFile.delete();
 		}
 
 		final List<IMendixObject> responseResults = new ArrayList<IMendixObject>();
@@ -127,35 +112,17 @@ public class VisualRecognitionService {
 		service.setEndPoint(url);
 
 		final TrainingImagesZipFile posTrainingImagesZipFile = classifier.getClassifier_positiveTrainingImagesZipFile();
-		final FileDocument posZipFileDocument = posTrainingImagesZipFile;
-		final File posTempFile = new File(Core.getConfiguration().getTempPath() + posZipFileDocument.getName());
-
+		final InputStream posTrainingImagesZipInputStream = new RestartableInputStream(context, posTrainingImagesZipFile.getMendixObject());
 		final TrainingImagesZipFile negTrainingImagesZipFile = classifier.getClassifier_negativeTrainingImagesZipFile();
-		final FileDocument negZipFileDocument = negTrainingImagesZipFile;
-		final File negTempFile = new File(Core.getConfiguration().getTempPath() + negZipFileDocument.getName());
+		final InputStream negTrainingImagesZipInputStream = new RestartableInputStream(context, negTrainingImagesZipFile.getMendixObject());
 
-		try(InputStream postFileStream = Core.getFileDocumentContent(context, posTrainingImagesZipFile.getMendixObject()); 
-			InputStream	negFileStream = Core.getFileDocumentContent(context, negTrainingImagesZipFile.getMendixObject())){
 
-			Files.copy(postFileStream, posTempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-			Files.copy(negFileStream, negTempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-
-		}catch(Exception e){
-			LOGGER.error("There was a problem with the ZIP files: " + posTempFile.getPath() + " and " + negTempFile.getPath(), e);
-		}		
-
-	    final CreateClassifierOptions options;
-	    try {
-			options = new CreateClassifierOptions.Builder().
-					name(classifier.getName())
-					.addClass(posTrainingImagesZipFile.getName(), posTempFile)
-					.negativeExamples(new RestartableInputStream(negTempFile))
-					.negativeExamplesFilename(negTempFile.getName())
-					.build();
-		} catch (FileNotFoundException e) {
-			LOGGER.error("Could not find find temporary file", e);
-			throw new MendixException(e);
-		}
+	    final CreateClassifierOptions options = new CreateClassifierOptions.Builder().
+	    		name(classifier.getName())
+	    		.addPositiveExamples(posTrainingImagesZipFile.getName(), posTrainingImagesZipInputStream)
+	    		.negativeExamples(negTrainingImagesZipInputStream)
+	    		.negativeExamplesFilename(negTrainingImagesZipFile.getName())
+	    		.build();
 	    
 	    com.ibm.watson.developer_cloud.visual_recognition.v3.model.Classifier visualClassifier;
 		try {
@@ -178,30 +145,23 @@ public class VisualRecognitionService {
 		final VisualRecognition service = new VisualRecognition(WATSON_VISUAL_RECOGNITION_VERSION_DATE, iamOptions);
 		service.setApiKey(apikey);
 		service.setEndPoint(url);
-			
-		final File imageToDetectFaces = createImageFile(context, image);
 
-		final DetectFacesOptions options;
-		try {
-			options = new DetectFacesOptions.Builder().
-					imagesFile(new RestartableInputStream(imageToDetectFaces)).
-					imagesFilename(imageToDetectFaces.getName()).
-					build();
-		} catch (FileNotFoundException e) {
-			LOGGER.error("Could not find image file: " + imageToDetectFaces, e);
-			throw new MendixException(e);
-		}
+		validateImageFile(context, image);
+
+		final InputStream imageInputStream = new RestartableInputStream(context, image.getMendixObject());
+
+		final DetectFacesOptions options = new DetectFacesOptions.Builder().
+				imagesFile(imageInputStream).
+				imagesFilename(image.getName()).
+				build();
 				
 		DetectedFaces response;
 		try {
 
 			response = service.detectFaces(options).execute();
 		} catch (Exception e) {
-			LOGGER.error("Watson Service connection - Failed detecting the faces in the image: " + imageToDetectFaces.getName(), e);
+			LOGGER.error("Watson Service connection - Failed detecting the faces in the image: " + image.getName(), e);
 			throw new MendixException(e);
-		}
-		finally{
-			imageToDetectFaces.delete();
 		}
 
 		final List<IMendixObject> results = new ArrayList<IMendixObject>();
@@ -239,7 +199,7 @@ public class VisualRecognitionService {
 		}
 		return results;
 	}
-	private static ClassifyOptions buildClassifyImagesOptions(List<Classifier> classifiers, File imageToRecognizeFile) throws MendixException {
+	private static ClassifyOptions buildClassifyImagesOptions(List<Classifier> classifiers, InputStream imageToRecognizeInputStream, String imageToRecognizeFileName) throws MendixException {
 		ClassifyOptions.Builder builder = new ClassifyOptions.Builder();
 		if(!classifiers.isEmpty()) {
 			List<String> classifierIds = new ArrayList<String>();
@@ -251,16 +211,9 @@ public class VisualRecognitionService {
 			builder = builder.classifierIds(classifierIds);
 		}
 
-		try {
-			builder = builder
-					.imagesFile(new RestartableInputStream(imageToRecognizeFile))
-					.imagesFilename(imageToRecognizeFile.getName());
-		} catch (FileNotFoundException e) {
-			LOGGER.error("Could not find image file: " + imageToRecognizeFile, e);
-			throw new MendixException(e);
-		}
-
-		return builder.build();
+		return builder.imagesFile(imageToRecognizeInputStream)
+				.imagesFilename(imageToRecognizeFileName)
+				.build();
 	}
 
 	private static IMendixObject getClassifierEntity(IContext context,  String classifierName) throws MendixException{
@@ -274,8 +227,7 @@ public class VisualRecognitionService {
 		return classifierObjectList.get(0);
 	}
 
-	private static File createImageFile(IContext context, Image image) throws MendixException {
-		
+	private static void validateImageFile(IContext context, Image image) throws MendixException {
 		final String imageFileExtension = FilenameUtils.getExtension(image.getName(context));
 		
 		if(!WATSON_DETECT_FACES_SUPPORTED_IMAGE_EXTENSION_JPG.equals(imageFileExtension.toLowerCase()) && 
@@ -287,17 +239,5 @@ public class VisualRecognitionService {
 			LOGGER.error(errorMessage);
 			throw new MendixException(errorMessage);	
 		}
-
-		final File imageToDetectFaces = new File(Core.getConfiguration().getTempPath(), DETECT_FACES_FILENAME);
-		
-		try(final InputStream stream = Core.getFileDocumentContent(context, image.getMendixObject());) {
-
-			Files.copy(stream, imageToDetectFaces.toPath(), StandardCopyOption.REPLACE_EXISTING);
-		} catch (Exception e) {
-			LOGGER.error("There was a problem with the image file: " + imageToDetectFaces.getPath(), e);
-			throw new MendixException(e);
-		}
-
-		return imageToDetectFaces;
 	}
 }

@@ -1,11 +1,8 @@
 package watsonservices.utils;
 
-import java.io.File;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.MathContext;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 
 import com.ibm.watson.developer_cloud.http.HttpMediaType;
@@ -41,17 +38,12 @@ public class SpeechToTextService {
 		final SpeechToText service = new SpeechToText(iamOptions);
 		service.setEndPoint(url);
 		
-		File speechFile = File.createTempFile("speech-file", "tmp");
+		final InputStream audioFileInputStream = new RestartableInputStream(context, audioFileParameter1.getMendixObject());
 
-		try(InputStream is = Core.getFileDocumentContent(context, audioFileParameter1.getMendixObject())) {
-			Files.copy(is, speechFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-		}
-		
-		RecognizeOptions options = new RecognizeOptions.Builder().audio(new RestartableInputStream(speechFile)).interimResults(true)
+		RecognizeOptions options = new RecognizeOptions.Builder().audio(audioFileInputStream).interimResults(true)
 				.contentType(getAudioFormat(audioFormat)).model(getAudioLanguage(audioLanguage)).build();
 
 		SpeechRecognitionResults transcript = service.recognize(options).execute();
-		speechFile.delete();
 
 		SpeechReturn speechToTextObj = new SpeechReturn(context);
 		speechToTextObj.setresults_index(transcript.getResultIndex());

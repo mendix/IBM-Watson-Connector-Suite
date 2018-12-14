@@ -1,10 +1,12 @@
 package watsonservices.utils;
 
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FilterInputStream;
 import java.io.IOException;
+
+import com.mendix.core.Core;
+import com.mendix.systemwideinterfaces.core.IContext;
+import com.mendix.systemwideinterfaces.core.IMendixObject;
 
 /**
  * {@link FileInputStream} wrapper which can reopen a stream after it was closed.
@@ -14,17 +16,19 @@ import java.io.IOException;
  */
 public class RestartableInputStream extends FilterInputStream {
 
-    private final File file;
+	private final IContext context;
+    private final IMendixObject fileDocument;
 
-    public RestartableInputStream(File file) throws FileNotFoundException {
+    public RestartableInputStream(IContext context, IMendixObject fileDocument) {
         super(null);
-        this.file = file;
+        this.context = context;
+        this.fileDocument = fileDocument;
         openStreamIfNeeded();
     }
 
-    private void openStreamIfNeeded() throws FileNotFoundException {
+    private void openStreamIfNeeded() {
         if (in == null) {
-            in = new FileInputStream(file);
+            in = Core.getFileDocumentContent(context, fileDocument);
         }
     }
 
