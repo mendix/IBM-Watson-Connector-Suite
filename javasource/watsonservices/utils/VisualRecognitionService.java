@@ -1,11 +1,10 @@
 package watsonservices.utils;
 
+import java.io.File;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.commons.io.FilenameUtils;
 
 import com.ibm.watson.developer_cloud.service.security.IamOptions;
 import com.ibm.watson.developer_cloud.visual_recognition.v3.VisualRecognition;
@@ -228,7 +227,12 @@ public class VisualRecognitionService {
 	}
 
 	private static void validateImageFile(IContext context, Image image) throws MendixException {
-		final String imageFileExtension = FilenameUtils.getExtension(image.getName(context));
+		final String imageFileName = new File(image.getName(context)).getName();
+
+		// Get file extension
+		final int extensionPos = imageFileName.lastIndexOf('.') + 1;
+		final boolean haveExtension = extensionPos > 0 && extensionPos < imageFileName.length();
+		final String imageFileExtension = haveExtension ? imageFileName.substring(extensionPos) : "";
 		
 		if(!WATSON_DETECT_FACES_SUPPORTED_IMAGE_EXTENSION_JPG.equals(imageFileExtension.toLowerCase()) && 
 				!WATSON_DETECT_FACES_SUPPORTED_IMAGE_EXTENSION_JPEG.equals(imageFileExtension.toLowerCase()) && 
