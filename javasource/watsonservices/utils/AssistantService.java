@@ -10,6 +10,7 @@ import com.ibm.watson.developer_cloud.assistant.v2.model.MessageResponse;
 import com.ibm.watson.developer_cloud.assistant.v2.model.RuntimeEntity;
 import com.ibm.watson.developer_cloud.assistant.v2.model.RuntimeIntent;
 import com.ibm.watson.developer_cloud.assistant.v2.model.SessionResponse;
+import com.ibm.watson.developer_cloud.service.exception.NotFoundException;
 import com.ibm.watson.developer_cloud.service.security.IamOptions;
 import com.mendix.core.Core;
 import com.mendix.core.CoreException;
@@ -70,9 +71,13 @@ public class AssistantService {
 				  .input(messageInput)
 				  .build();
 
-		final MessageResponse response;
+		MessageResponse response;
 		try {
 			response = service.message(options).execute();
+		} catch (NotFoundException ex) {
+			LOGGER.error("Watson Service connection - Session with Watson with assistantID " + assistant.getAssistantId() +
+					" and sessionID " + sessionContext.getSessionId() + " not found", ex);
+			response = null;
 		} catch(Exception ex) {
 			LOGGER.error("Watson Service connection - Failed conversing with Watson with assistantID " + assistant.getAssistantId() +
 					" and sessionID " + sessionContext.getSessionId(), ex);
@@ -98,6 +103,12 @@ public class AssistantService {
 
 	private static IMendixObject createMessageResponse(IContext context, SessionContext sessionContext, String input, MessageResponse response) throws CoreException {
 		final IMendixObject messageResponseObject = Core.instantiate(context, AssistantMessageResponse.entityName);
+
+		if (response == null) {
+			Core.commit(context, messageResponseObject);
+			return messageResponseObject;
+		}
+
 		messageResponseObject.setValue(context, AssistantMessageResponse.MemberNames.SessionId.toString(), sessionContext.getSessionId());
 		messageResponseObject.setValue(context, AssistantMessageResponse.MemberNames.Input.toString(), input);
 		messageResponseObject.setValue(context, AssistantMessageResponse.MemberNames.Output.toString(),
