@@ -67,84 +67,76 @@ public class SpeechToTextService {
 		return speechToTextObj.getMendixObject();
 	}
 	private static String getAudioFormat(AudioFormats_SpeechToText audioFormat){
-		String audio = null;
+		if (audioFormat == null) {
+			return RecognizeOptions.ContentType.APPLICATION_OCTET_STREAM;
+		}
         switch (audioFormat) {
 	        case FLAC:
-	            audio = HttpMediaType.AUDIO_FLAC;
-	            break;
+	            return RecognizeOptions.ContentType.AUDIO_FLAC;
 	        case BASIC:
-	            audio = HttpMediaType.AUDIO_BASIC;
-	            break;
+	            return RecognizeOptions.ContentType.AUDIO_BASIC;
 	        case OGG:
-	        	audio = HttpMediaType.AUDIO_OGG;
-	        	break;
+	            return RecognizeOptions.ContentType.AUDIO_OGG;
 	        case OGG_VORBIS:
-	            audio = HttpMediaType.AUDIO_OGG_VORBIS;
-	            break;
-	        case RAW:
-	        	audio = HttpMediaType.AUDIO_RAW;
-	            break;
+	            return RecognizeOptions.ContentType.AUDIO_OGG_CODECS_VORBIS;
+	        case OGG_OPUS:
+	            return RecognizeOptions.ContentType.AUDIO_OGG_CODECS_OPUS;
+	        case L16:
+	            return RecognizeOptions.ContentType.AUDIO_L16;
 	        case WAV:
-	        	audio = HttpMediaType.AUDIO_WAV;
-	            break;
-	        case PCM:
-	        	audio = HttpMediaType.AUDIO_PCM;
-	        	break;
-	        default :
-	        	audio = HttpMediaType.AUDIO_RAW;
-	            break;
+	            return RecognizeOptions.ContentType.AUDIO_WAV;
+	        case WEBM:
+	            return RecognizeOptions.ContentType.AUDIO_WEBM;
+	        case WEBM_OPUS:
+	            return RecognizeOptions.ContentType.AUDIO_WEBM_CODECS_OPUS;
+	        case WEBM_VORBIS:
+	            return RecognizeOptions.ContentType.AUDIO_WEBM_CODECS_VORBIS;
+	        case MP3:
+	            return RecognizeOptions.ContentType.AUDIO_MP3;
+	        case MPEG:
+	            return RecognizeOptions.ContentType.AUDIO_MPEG;
+	        default:
+	            return RecognizeOptions.ContentType.APPLICATION_OCTET_STREAM;
         }
-        return audio;
 	}
 	private static String getAudioLanguage(AudioLanguage audioLanguage){
-        String model = null;
         switch (audioLanguage){
         	case Brazillian_Portuguese:
-        		model = "pt-BR_NarrowbandModel";
-        		break;
+	            return RecognizeOptions.Model.PT_BR_NARROWBANDMODEL;
+		    case Brazillian_Portuguese_Broadband:
+	            return RecognizeOptions.Model.PT_BR_BROADBANDMODEL;
         	case French:
-        		model = "fr-FR_BroadbandModel";
-        		break;
+	            return RecognizeOptions.Model.FR_FR_BROADBANDMODEL;
         	case Japanese:
-        		model = "ja-JP_NarrowbandModel";
-        		break;
+	            return RecognizeOptions.Model.JA_JP_NARROWBANDMODEL;
         	case Japanese_Broadband:
-        		model = "ja-JP_BroadbandModel";
-        		break;
+	            return RecognizeOptions.Model.JA_JP_BROADBANDMODEL;
         	case Mandarin_Chinese:
-        		model = "zh-CN_NarrowbandModel";
-        		break;
+	            return RecognizeOptions.Model.ZH_CN_NARROWBANDMODEL;
         	case Mandarin_Chinese_Broadband:
-        		model = "zh-CN_BroadbandModel";
-        		break;
+	            return RecognizeOptions.Model.ZH_CN_BROADBANDMODEL;
         	case Modern_Standard_Arabic:
-        		model = "ar-AR_BroadbandModel";
-        		break;
+	            return RecognizeOptions.Model.AR_AR_BROADBANDMODEL;
         	case Spanish:
-        		model = "es-ES_NarrowbandModel";
-        		break;
+	            return RecognizeOptions.Model.ES_ES_NARROWBANDMODEL;
         	case Spanish_Broadband:
-        		model = "es-ES_BroadbandModel";
-        		break;
+	            return RecognizeOptions.Model.ES_ES_BROADBANDMODEL;
         	case UK_English:
-        		model = "en-UK_NarrowbandModel";
-        		break;
+	            return RecognizeOptions.Model.EN_GB_NARROWBANDMODEL;
         	case UK_English_Broadband:
-        		model = "en-UK_BroadbandModel";
-        		break;
+	            return RecognizeOptions.Model.EN_GB_BROADBANDMODEL;
         	case US_English:
-        		model = "en-US_NarrowbandModel";
-        		break;
+	            return RecognizeOptions.Model.EN_US_NARROWBANDMODEL;
         	case US_English_Broadband:
-        		model = "en-US_BroadbandModel";
-        		break;
-
+	            return RecognizeOptions.Model.EN_US_BROADBANDMODEL;
+	        case German:
+	            return RecognizeOptions.Model.DE_DE_BROADBANDMODEL;
+	        case Korean:
+	            return RecognizeOptions.Model.KO_KR_NARROWBANDMODEL;
+	        case Korean_Broadband:
+	            return RecognizeOptions.Model.KO_KR_BROADBANDMODEL;
         	default:
-        		model = "en-US_BroadbandModel";
-        		break;
-        		
-        		
+	            return RecognizeOptions.Model.EN_US_BROADBANDMODEL;
         }
-        return model;
 	}
 }
