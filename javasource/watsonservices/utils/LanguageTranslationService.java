@@ -2,17 +2,18 @@ package watsonservices.utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import com.ibm.watson.developer_cloud.service.security.IamOptions;
 import org.apache.commons.lang3.StringUtils;
 
 import com.ibm.watson.developer_cloud.language_translator.v3.model.IdentifiableLanguage;
-import com.ibm.watson.developer_cloud.language_translator.v3.util.Language;
 import com.ibm.watson.developer_cloud.language_translator.v3.model.TranslationResult;
 import com.ibm.watson.developer_cloud.language_translator.v3.LanguageTranslator;
 import com.ibm.watson.developer_cloud.language_translator.v3.model.IdentifiableLanguages;
 import com.ibm.watson.developer_cloud.language_translator.v3.model.TranslateOptions;
-
+import com.ibm.watson.developer_cloud.language_translator.v3.model.TranslationModels;
 import com.mendix.core.Core;
 import com.mendix.core.CoreException;
 import com.mendix.logging.ILogNode;
@@ -20,7 +21,9 @@ import com.mendix.systemwideinterfaces.MendixException;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 
+import watsonservices.proxies.Language;
 import watsonservices.proxies.Translation;
+import watsonservices.proxies.TranslationModel;
 
 public class LanguageTranslationService {
 
@@ -68,8 +71,8 @@ public class LanguageTranslationService {
 		final LanguageTranslator service = new LanguageTranslator(WATSON_LANGUAGE_TRANSLATOR_VERSION_DATE, iamOptions);
 		service.setEndPoint(url);
 
-		final String source = getLanguage(translation.getTranslation_SourceLanguage().getCode());
-		final String target = getLanguage(translation.getTranslation_TargetLanguage().getCode());
+		final String source = translation.getTranslation_SourceLanguage().getCode();
+		final String target = translation.getTranslation_TargetLanguage().getCode();
 
 		TranslateOptions translateOptions = new TranslateOptions.Builder()
 				  .addText(translation.getText())
@@ -82,7 +85,7 @@ public class LanguageTranslationService {
 
 			result = service.translate(translateOptions).execute();
 		} catch (Exception e) {
-			LOGGER.error("Watson Service connection - Failed translating from" + source + " to " + target + " the text " + StringUtils.abbreviate(translation.getText(), 20), e);
+			LOGGER.error("Watson Service connection - Failed translating from " + source + " to " + target + " the text " + StringUtils.abbreviate(translation.getText(), 20), e);
 			throw new MendixException(e);
 		}
 
@@ -94,26 +97,35 @@ public class LanguageTranslationService {
 		return translation.getMendixObject();
 	}
 
-	private static String getLanguage(String lang) throws MendixException {
-		if(Language.ARABIC.toString().equals(lang)){
-			return Language.ARABIC;
+	public static List<IMendixObject> getModels(IContext context, List<Language> languages, String apiKey, String url) throws MendixException {
+		LOGGER.debug("Executing GetModels Connector...");
+
+		IamOptions iamOptions = new IamOptions.Builder()
+				.apiKey(apiKey)
+				.build();
+		final LanguageTranslator service = new LanguageTranslator(WATSON_LANGUAGE_TRANSLATOR_VERSION_DATE, iamOptions);
+		service.setEndPoint(url);
+
+		final TranslationModels models;
+		try {
+			models = service.listModels().execute();
+		} catch(Exception ex) {
+			LOGGER.error("Watson Service connection - Failed to retrieve the translation models", ex);
+			throw new MendixException(ex);
 		}
-		if(Language.ENGLISH.toString().equals(lang)){
-			return Language.ENGLISH;
-		}
-		if(Language.SPANISH.toString().equals(lang)){
-			return Language.SPANISH;
-		}
-		if(Language.FRENCH.toString().equals(lang)){
-			return Language.FRENCH;
-		}
-		if(Language.ITALIAN.toString().equals(lang)){
-			return Language.ITALIAN;
-		}
-		if(Language.PORTUGUESE.toString().equals(lang)){
-			return Language.PORTUGUESE;
-		}
-		
-		throw new MendixException("The language is not supported: " + lang);
+
+		final Function<String, Language> findLanguage = code -> languages.stream()
+				.filter(l -> code != null && code.equals(l.getCode()))
+				.findFirst()
+				.orElse(null);
+
+		return models.getModels().stream().map(tm -> {
+			TranslationModel mendixTM = new TranslationModel(context);
+			mendixTM.setModelId(tm.getModelId());
+			mendixTM.setTranslationModel_SourceLanguage(findLanguage.apply(tm.getSource()));
+			mendixTM.setTranslationModel_TargetLanguage(findLanguage.apply(tm.getTarget()));
+			return mendixTM.getMendixObject();
+		}).collect(Collectors.toList());
 	}
+
 }
