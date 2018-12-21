@@ -50,12 +50,16 @@ public class TextToSpeechService {
 		}
 
 		final IMendixObject speechObject = Core.instantiate(context, Speech.entityName);
-		Core.storeFileDocumentContent(context, speechObject, stream);
+		final String filename = "Speech" + getFileExtension(audioFormatEnum);
+		Core.storeFileDocumentContent(context, speechObject, filename, stream);
 
 		return speechObject;
 	}
 
 	private static String getAcceptAudioFormat(AudioFormats_TextToSpeech audioFormatEnum) {
+		if (audioFormatEnum == null) {
+			return SynthesizeOptions.Accept.AUDIO_OGG;
+		}
 		switch (audioFormatEnum) {
 		case BASIC:
 			return SynthesizeOptions.Accept.AUDIO_BASIC;
@@ -65,51 +69,102 @@ public class TextToSpeechService {
 			return SynthesizeOptions.Accept.AUDIO_OGG;
 		case OGG_VORBIS:
 			return SynthesizeOptions.Accept.AUDIO_OGG_CODECS_VORBIS;
+		case OGG_OPUS:
+			return SynthesizeOptions.Accept.AUDIO_OGG_CODECS_OPUS;
 		case WAV:
 			return SynthesizeOptions.Accept.AUDIO_WAV;
-
+		case L16:
+			return SynthesizeOptions.Accept.AUDIO_L16;
+		case MP3:
+			return SynthesizeOptions.Accept.AUDIO_MP3;
+		case MPEG:
+			return SynthesizeOptions.Accept.AUDIO_MPEG;
+		case WEBM:
+			return SynthesizeOptions.Accept.AUDIO_WEBM;
+		case WEBM_OPUS:
+			return SynthesizeOptions.Accept.AUDIO_WEBM_CODECS_OPUS;
+		case WEBM_VORBIS:
+			return SynthesizeOptions.Accept.AUDIO_WEBM_CODECS_VORBIS;
 		default:
-			break;
+			return SynthesizeOptions.Accept.AUDIO_OGG;
 		}
-		return null;
+	}
+
+	private static String getFileExtension(AudioFormats_TextToSpeech audioFormatEnum) {
+		if (audioFormatEnum == null) {
+			return ".ogg";
+		}
+		switch (audioFormatEnum) {
+		case BASIC:
+			return ".basic";
+		case FLAC:
+			return ".flac";
+		case OGG:
+		case OGG_VORBIS:
+		case OGG_OPUS:
+			return ".ogg";
+		case WAV:
+			return ".wav";
+		case L16:
+			return ".aiff";
+		case MP3:
+			return ".mp3";
+		case MPEG:
+			return ".mpeg";
+		case WEBM:
+		case WEBM_OPUS:
+		case WEBM_VORBIS:
+			return ".webm";
+		default:
+			return ".ogg";
+		}
 	}
 
 	private static String getVoice(VoiceEnum parameter) throws MendixException {
 		String voice = null;
 		
 		switch(parameter){
-			case DE_DIETER:
-				voice = SynthesizeOptions.Voice.DE_DE_DIETERVOICE;
-				break;
-			case EN_ALLISON:
-				voice = SynthesizeOptions.Voice.EN_US_ALLISONVOICE;
-				break;
-			case EN_LISA:
-				voice = SynthesizeOptions.Voice.EN_US_LISAVOICE;
-				break;
-			case DE_BIRGIT:
+			case DE_DE_BIRGIT:
 				voice = SynthesizeOptions.Voice.DE_DE_BIRGITVOICE;
 				break;
-			case ES_ENRIQUE:
-				voice = SynthesizeOptions.Voice.ES_ES_ENRIQUEVOICE;
+			case DE_DE_DIETER:
+				voice = SynthesizeOptions.Voice.DE_DE_DIETERVOICE;
 				break;
-			case ES_LAURA:
-				voice = SynthesizeOptions.Voice.ES_ES_LAURAVOICE;
-				break;
-			case ES_SOFIA:
-				voice = SynthesizeOptions.Voice.ES_US_SOFIAVOICE;
-				break;
-			case FR_RENEE:
-				voice = SynthesizeOptions.Voice.FR_FR_RENEEVOICE;
-				break;
-			case GB_KATE:
+			case EN_GB_KATE:
 				voice = SynthesizeOptions.Voice.EN_GB_KATEVOICE;
 				break;
-			case IT_FRANCESCA:
+			case EN_US_ALLISON:
+				voice = SynthesizeOptions.Voice.EN_US_ALLISONVOICE;
+				break;
+			case EN_US_LISA:
+				voice = SynthesizeOptions.Voice.EN_US_LISAVOICE;
+				break;
+			case EN_US_MICHAEL:
+				voice = SynthesizeOptions.Voice.EN_US_MICHAELVOICE;
+				break;
+			case ES_ES_ENRIQUE:
+				voice = SynthesizeOptions.Voice.ES_ES_ENRIQUEVOICE;
+				break;
+			case ES_ES_LAURA:
+				voice = SynthesizeOptions.Voice.ES_ES_LAURAVOICE;
+				break;
+			case ES_LA_SOFIA:
+				voice = SynthesizeOptions.Voice.ES_LA_SOFIAVOICE;
+				break;
+			case ES_US_SOFIA:
+				voice = SynthesizeOptions.Voice.ES_US_SOFIAVOICE;
+				break;
+			case FR_FR_RENEE:
+				voice = SynthesizeOptions.Voice.FR_FR_RENEEVOICE;
+				break;
+			case IT_IT_FRANCESCA:
 				voice = SynthesizeOptions.Voice.IT_IT_FRANCESCAVOICE;
 				break;
-			case JA_EMI:
+			case JA_JP_EMI:
 				voice = SynthesizeOptions.Voice.JA_JP_EMIVOICE;
+				break;
+			case PT_BR_ISABELA:
+				voice = SynthesizeOptions.Voice.PT_BR_ISABELAVOICE;
 				break;
 		default:
 			break;
