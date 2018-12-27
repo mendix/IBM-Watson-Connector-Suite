@@ -31,7 +31,7 @@ public class AssistantService {
 	private static final ILogNode LOGGER = Core.getLogger((Core.getConfiguration().getConstantValue(WATSON_ASSISTANT_LOGNODE).toString()));
 	private static final String WATSON_ASSISTANT_VERSION_DATE = "2018-11-08";
 
-	public static IMendixObject createSession(IContext context, Assistant assistant, String apikey, String url) throws CoreException, MendixException {
+	public static IMendixObject createSession(IContext context, Assistant assistant, String apikey, String url) throws MendixException {
 		LOGGER.debug("Executing Watson Create Session Connector...");
 
 		final com.ibm.watson.developer_cloud.assistant.v2.Assistant service = createService(apikey, url);
@@ -56,7 +56,7 @@ public class AssistantService {
 		return result.getMendixObject();
 	}
 
-	public static IMendixObject sendMessage(IContext context, SessionContext sessionContext, String input, String apikey, String url) throws CoreException, MendixException {
+	public static IMendixObject sendMessage(IContext context, SessionContext sessionContext, String input, String apikey, String url) throws MendixException {
 		LOGGER.debug("Executing Watson Send Message Connector...");
 
 		final com.ibm.watson.developer_cloud.assistant.v2.Assistant service = createService(apikey, url);

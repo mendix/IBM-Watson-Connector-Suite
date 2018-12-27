@@ -24,7 +24,7 @@ public class UserActionsRegistrar
     registrator.registerUserAction(watsonservices.actions.DetectFaces.class);
     registrator.registerUserAction(watsonservices.actions.GetIdentifiableLanguages.class);
     registrator.registerUserAction(watsonservices.actions.GetModels.class);
-    registrator.registerUserAction(watsonservices.actions.RecongnizeAudio.class);
+    registrator.registerUserAction(watsonservices.actions.RecognizeAudio.class);
     registrator.registerUserAction(watsonservices.actions.SendMessage.class);
     registrator.registerUserAction(watsonservices.actions.Synthesize.class);
     registrator.registerUserAction(watsonservices.actions.Translate.class);

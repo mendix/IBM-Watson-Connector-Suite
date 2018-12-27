@@ -2,7 +2,6 @@ package watsonservices.utils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.ibm.watson.developer_cloud.service.security.IamOptions;
@@ -15,7 +14,6 @@ import com.ibm.watson.developer_cloud.language_translator.v3.model.IdentifiableL
 import com.ibm.watson.developer_cloud.language_translator.v3.model.TranslateOptions;
 import com.ibm.watson.developer_cloud.language_translator.v3.model.TranslationModels;
 import com.mendix.core.Core;
-import com.mendix.core.CoreException;
 import com.mendix.logging.ILogNode;
 import com.mendix.systemwideinterfaces.MendixException;
 import com.mendix.systemwideinterfaces.core.IContext;
@@ -62,7 +60,7 @@ public class LanguageTranslationService {
 		return results;
 	}
 
-	public static IMendixObject translate(IContext context, Translation translation, String apiKey, String url) throws MendixException, CoreException {
+	public static IMendixObject translate(IContext context, Translation translation, String apiKey, String url) throws MendixException {
 		LOGGER.debug("Executing Translate Connector...");
 
 		IamOptions iamOptions = new IamOptions.Builder()
@@ -114,18 +112,24 @@ public class LanguageTranslationService {
 			throw new MendixException(ex);
 		}
 
-		final Function<String, Language> findLanguage = code -> languages.stream()
-				.filter(l -> code != null && code.equals(l.getCode()))
-				.findFirst()
-				.orElse(null);
-
 		return models.getModels().stream().map(tm -> {
 			TranslationModel mendixTM = new TranslationModel(context);
 			mendixTM.setModelId(tm.getModelId());
-			mendixTM.setTranslationModel_SourceLanguage(findLanguage.apply(tm.getSource()));
-			mendixTM.setTranslationModel_TargetLanguage(findLanguage.apply(tm.getTarget()));
+			mendixTM.setTranslationModel_SourceLanguage(findLanguage(languages, tm.getSource()));
+			mendixTM.setTranslationModel_TargetLanguage(findLanguage(languages, tm.getTarget()));
 			return mendixTM.getMendixObject();
 		}).collect(Collectors.toList());
 	}
 
+	private static Language findLanguage(List<Language> languages, String code) {
+		if (code == null) {
+			return null;
+		}
+		for (Language language : languages) {
+			if (code.equals(language.getCode())) {
+				return language;
+			}
+		}
+		return null;
+	}
 }

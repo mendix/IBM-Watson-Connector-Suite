@@ -36,7 +36,7 @@ public class Synthesize extends CustomJavaAction<IMendixObject>
 	public IMendixObject executeAction() throws Exception
 	{
 		// BEGIN USER CODE
-		return TextToSpeechService.Synthesize(getContext(), text, voice, audioFormat, apikey, url);
+		return TextToSpeechService.synthesize(getContext(), text, voice, audioFormat, apikey, url);
 		// END USER CODE
 	}
 

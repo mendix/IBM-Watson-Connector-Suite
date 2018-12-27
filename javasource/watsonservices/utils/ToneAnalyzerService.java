@@ -52,10 +52,10 @@ public class ToneAnalyzerService {
 			throw new MendixException(e);
 		}
 
-		return CreateDocumentTone(context, response);
+		return createDocumentTone(context, response);
 	}
 
-	private static IMendixObject CreateDocumentTone(IContext context, ToneAnalysis response) {
+	private static IMendixObject createDocumentTone(IContext context, ToneAnalysis response) {
 		final IMendixObject toneAnalyzerResponse = Core.instantiate(context, ToneAnalyzerResponse.entityName);
 
 		response.getDocumentTone().getToneCategories().forEach(toneCategory -> buildToneCategory(context, toneAnalyzerResponse, toneCategory));

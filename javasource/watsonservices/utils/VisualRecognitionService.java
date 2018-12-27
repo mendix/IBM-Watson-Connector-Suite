@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.ibm.watson.developer_cloud.service.security.IamOptions;
@@ -43,7 +44,7 @@ public class VisualRecognitionService {
 	private static final String WATSON_DETECT_FACES_SUPPORTED_IMAGE_EXTENSION_ZIP = "zip";
 	private static final String WATSON_VISUAL_RECOGNITION_VERSION_DATE = "2018-03-19";
 
-	public static List<IMendixObject> classifyImage(IContext context, VisualRecognitionImage VisualRequestObject, List<Classifier> classifiers, String apikey, String url) throws MendixException, CoreException {
+	public static List<IMendixObject> classifyImage(IContext context, VisualRecognitionImage VisualRequestObject, List<Classifier> classifiers, String apikey, String url) throws MendixException {
 		LOGGER.debug("Executing RecognizeImage Connector...");
 
 		final IamOptions iamOptions = new IamOptions.Builder()
@@ -115,10 +116,12 @@ public class VisualRecognitionService {
 		final TrainingImagesZipFile negTrainingImagesZipFile = classifier.getClassifier_negativeTrainingImagesZipFile();
 		final InputStream negTrainingImagesZipInputStream = new RestartableInputStream(context, negTrainingImagesZipFile.getMendixObject());
 
+		final String positiveExamplesClass = classifier.getName() + "_positive_examples";
 
 	    final CreateClassifierOptions options = new CreateClassifierOptions.Builder().
 	    		name(classifier.getName())
-	    		.addPositiveExamples(posTrainingImagesZipFile.getName(), posTrainingImagesZipInputStream)
+	    		.addPositiveExamples(positiveExamplesClass, posTrainingImagesZipInputStream)
+	    		.positiveExamplesFilename(Collections.singletonMap(positiveExamplesClass, posTrainingImagesZipFile.getName()))
 	    		.negativeExamples(negTrainingImagesZipInputStream)
 	    		.negativeExamplesFilename(negTrainingImagesZipFile.getName())
 	    		.build();
@@ -204,7 +207,7 @@ public class VisualRecognitionService {
 			List<String> classifierIds = new ArrayList<String>();
 
 			for(Classifier classifier : classifiers){
-				classifierIds.add(classifier.getName());
+				classifierIds.add(classifier.getClassifierId());
 			}
 
 			builder = builder.classifierIds(classifierIds);
