@@ -181,12 +181,12 @@ public class VisualRecognitionService {
 				if(face.getAge() != null){
 					faceObject.setValue(context, watsonservices.proxies.Face.MemberNames.AgeMax.toString(), face.getAge().getMax());
 					faceObject.setValue(context, watsonservices.proxies.Face.MemberNames.AgeMin.toString(), face.getAge().getMin());
-					faceObject.setValue(context, watsonservices.proxies.Face.MemberNames.AgeScore.toString(), face.getAge().getScore().toString());
+					faceObject.setValue(context, watsonservices.proxies.Face.MemberNames.AgeScore.toString(), new BigDecimal(face.getAge().getScore()));
 				}
 
 				if(face.getGender() != null){
 					faceObject.setValue(context, watsonservices.proxies.Face.MemberNames.GenderName.toString(), face.getGender().getGender());
-					faceObject.setValue(context, watsonservices.proxies.Face.MemberNames.GenderScore.toString(), face.getGender().getScore().toString());
+					faceObject.setValue(context, watsonservices.proxies.Face.MemberNames.GenderScore.toString(), new BigDecimal(face.getGender().getScore()));
 				}
 
 				if(face.getFaceLocation() != null){
