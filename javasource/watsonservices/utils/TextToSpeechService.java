@@ -74,7 +74,7 @@ public class TextToSpeechService {
 		case WAV:
 			return SynthesizeOptions.Accept.AUDIO_WAV;
 		case L16:
-			return SynthesizeOptions.Accept.AUDIO_L16;
+			return SynthesizeOptions.Accept.AUDIO_L16 + ";rate=22050";
 		case MP3:
 			return SynthesizeOptions.Accept.AUDIO_MP3;
 		case MPEG:
@@ -96,7 +96,7 @@ public class TextToSpeechService {
 		}
 		switch (audioFormatEnum) {
 		case BASIC:
-			return ".basic";
+			return ".au";
 		case FLAC:
 			return ".flac";
 		case OGG:

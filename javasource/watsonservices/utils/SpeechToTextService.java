@@ -81,7 +81,7 @@ public class SpeechToTextService {
 	        case OGG_OPUS:
 	            return RecognizeOptions.ContentType.AUDIO_OGG_CODECS_OPUS;
 	        case L16:
-	            return RecognizeOptions.ContentType.AUDIO_L16;
+	            return RecognizeOptions.ContentType.AUDIO_L16 + ";rate=22050";
 	        case WAV:
 	            return RecognizeOptions.ContentType.AUDIO_WAV;
 	        case WEBM:
