@@ -105,6 +105,8 @@ public class SpeechToTextService {
 		    case Brazillian_Portuguese_Broadband:
 	            return RecognizeOptions.Model.PT_BR_BROADBANDMODEL;
         	case French:
+	            return "fr-FR_NarrowbandModel";
+	        case French_Broadband:
 	            return RecognizeOptions.Model.FR_FR_BROADBANDMODEL;
         	case Japanese:
 	            return RecognizeOptions.Model.JA_JP_NARROWBANDMODEL;
@@ -126,9 +128,13 @@ public class SpeechToTextService {
 	            return RecognizeOptions.Model.EN_GB_BROADBANDMODEL;
         	case US_English:
 	            return RecognizeOptions.Model.EN_US_NARROWBANDMODEL;
+	        case US_English_ShortForm_Narrowband:
+	            return "en-US_ShortForm_NarrowbandModel";
         	case US_English_Broadband:
 	            return RecognizeOptions.Model.EN_US_BROADBANDMODEL;
 	        case German:
+	            return "de-DE_NarrowbandModel";
+	        case German_Broadband:
 	            return RecognizeOptions.Model.DE_DE_BROADBANDMODEL;
 	        case Korean:
 	            return RecognizeOptions.Model.KO_KR_NARROWBANDMODEL;
