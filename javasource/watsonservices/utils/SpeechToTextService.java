@@ -13,6 +13,7 @@ import com.ibm.watson.developer_cloud.speech_to_text.v1.model.SpeechRecognitionR
 import com.ibm.watson.developer_cloud.speech_to_text.v1.model.SpeechRecognitionResults;
 import com.mendix.core.Core;
 import com.mendix.logging.ILogNode;
+import com.mendix.systemwideinterfaces.MendixException;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 
@@ -29,7 +30,7 @@ public class SpeechToTextService {
 	private static final ILogNode LOGGER = Core.getLogger("SpeechToTextService");
 
 	public static IMendixObject transcribe(IContext context, FileDocument audioFileParameter1, AudioFormats_SpeechToText audioFormat, AudioLanguage audioLanguage,
-			String apiKey, String url) throws Exception {
+			String apiKey, String url) throws MendixException {
 
 		IamOptions iamOptions = new IamOptions.Builder()
 				.apiKey(apiKey)
@@ -98,7 +99,7 @@ public class SpeechToTextService {
 	            return RecognizeOptions.ContentType.APPLICATION_OCTET_STREAM;
         }
 	}
-	private static String getAudioLanguage(AudioLanguage audioLanguage){
+	private static String getAudioLanguage(AudioLanguage audioLanguage) throws MendixException {
         switch (audioLanguage){
         	case Brazillian_Portuguese:
 	            return RecognizeOptions.Model.PT_BR_NARROWBANDMODEL;
@@ -141,7 +142,8 @@ public class SpeechToTextService {
 	        case Korean_Broadband:
 	            return RecognizeOptions.Model.KO_KR_BROADBANDMODEL;
         	default:
-	            return RecognizeOptions.Model.EN_US_BROADBANDMODEL;
+	            LOGGER.error("getAudioLanguage: cannot map unsupported language " + audioLanguage + " to a model");
+	            throw new MendixException("Unsupported language: " + audioLanguage);
         }
 	}
 }

@@ -46,6 +46,9 @@ public class VisualRecognitionService {
 	private static final String WATSON_DETECT_FACES_SUPPORTED_IMAGE_EXTENSION_JPG = "jpg";
 	private static final String WATSON_DETECT_FACES_SUPPORTED_IMAGE_EXTENSION_JPEG = "jpeg";
 	private static final String WATSON_DETECT_FACES_SUPPORTED_IMAGE_EXTENSION_PNG = "png";
+	private static final String WATSON_DETECT_FACES_SUPPORTED_IMAGE_EXTENSION_GIF = "gif";
+	private static final String WATSON_DETECT_FACES_SUPPORTED_IMAGE_EXTENSION_TIF = "tif";
+	private static final String WATSON_DETECT_FACES_SUPPORTED_IMAGE_EXTENSION_TIFF = "tiff";
 	private static final String WATSON_DETECT_FACES_SUPPORTED_IMAGE_EXTENSION_ZIP = "zip";
 	private static final String WATSON_VISUAL_RECOGNITION_VERSION_DATE = "2018-03-19";
 
@@ -58,6 +61,8 @@ public class VisualRecognitionService {
 		final VisualRecognition service = new VisualRecognition(WATSON_VISUAL_RECOGNITION_VERSION_DATE, iamOptions);
 		service.setApiKey(apikey);
 		service.setEndPoint(url);
+
+		validateImageFile(context, VisualRequestObject);
 
 		final InputStream imageInputStream = new RestartableInputStream(context, VisualRequestObject.getMendixObject());
 
@@ -301,9 +306,12 @@ public class VisualRecognitionService {
 		if(!WATSON_DETECT_FACES_SUPPORTED_IMAGE_EXTENSION_JPG.equals(imageFileExtension.toLowerCase()) && 
 				!WATSON_DETECT_FACES_SUPPORTED_IMAGE_EXTENSION_JPEG.equals(imageFileExtension.toLowerCase()) && 
 				!WATSON_DETECT_FACES_SUPPORTED_IMAGE_EXTENSION_PNG.equals(imageFileExtension.toLowerCase()) &&
+				!WATSON_DETECT_FACES_SUPPORTED_IMAGE_EXTENSION_GIF.equals(imageFileExtension.toLowerCase()) &&
+				!WATSON_DETECT_FACES_SUPPORTED_IMAGE_EXTENSION_TIF.equals(imageFileExtension.toLowerCase()) &&
+				!WATSON_DETECT_FACES_SUPPORTED_IMAGE_EXTENSION_TIFF.equals(imageFileExtension.toLowerCase()) &&
 				!WATSON_DETECT_FACES_SUPPORTED_IMAGE_EXTENSION_ZIP.equals(imageFileExtension.toLowerCase())){
 			
-			final String errorMessage = "The input file doesn't have a valid extension (jpg, jpeg, png or zip) :" + image.getName();
+			final String errorMessage = "The input file doesn't have a valid extension (jpg, jpeg, png, gif, tif, tiff or zip) :" + image.getName();
 			LOGGER.error(errorMessage);
 			throw new MendixException(errorMessage);	
 		}

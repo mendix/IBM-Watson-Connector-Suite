@@ -2,7 +2,6 @@ package watsonservices.utils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.ibm.watson.developer_cloud.service.security.IamOptions;
 import org.apache.commons.lang3.StringUtils;
@@ -98,6 +97,11 @@ public class LanguageTranslationService {
 	public static List<IMendixObject> getModels(IContext context, List<Language> languages, String apiKey, String url) throws MendixException {
 		LOGGER.debug("Executing GetModels Connector...");
 
+		if (languages == null || languages.isEmpty()) {
+			LOGGER.error("GetModels needs a complete list of languages to create associations");
+			throw new MendixException("No languages provided");
+		}
+
 		IamOptions iamOptions = new IamOptions.Builder()
 				.apiKey(apiKey)
 				.build();
@@ -112,24 +116,29 @@ public class LanguageTranslationService {
 			throw new MendixException(ex);
 		}
 
-		return models.getModels().stream().map(tm -> {
+		List<IMendixObject> mendixModels = new ArrayList<>(models.getModels().size());
+
+		for (com.ibm.watson.developer_cloud.language_translator.v3.model.TranslationModel tm : models.getModels()) {
 			TranslationModel mendixTM = new TranslationModel(context);
 			mendixTM.setModelId(tm.getModelId());
 			mendixTM.setTranslationModel_SourceLanguage(findLanguage(languages, tm.getSource()));
 			mendixTM.setTranslationModel_TargetLanguage(findLanguage(languages, tm.getTarget()));
-			return mendixTM.getMendixObject();
-		}).collect(Collectors.toList());
+		}
+
+		return mendixModels;
 	}
 
-	private static Language findLanguage(List<Language> languages, String code) {
+	private static Language findLanguage(List<Language> languages, String code) throws MendixException {
 		if (code == null) {
-			return null;
+			LOGGER.error("findLanguage language code is null");
+			throw new MendixException("Language code is null");
 		}
 		for (Language language : languages) {
 			if (code.equals(language.getCode())) {
 				return language;
 			}
 		}
-		return null;
+		LOGGER.error("findLanguage language not found: " + code);
+		throw new MendixException("Language code not found: "+ code);
 	}
 }
