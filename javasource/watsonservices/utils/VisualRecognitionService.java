@@ -53,7 +53,7 @@ public class VisualRecognitionService {
 	private static final String WATSON_VISUAL_RECOGNITION_VERSION_DATE = "2018-03-19";
 
 	public static List<IMendixObject> classifyImage(IContext context, VisualRecognitionImage VisualRequestObject, List<Classifier> classifiers, String apikey, String url) throws MendixException {
-		LOGGER.debug("Executing RecognizeImage Connector...");
+		LOGGER.debug("Executing ClassifyImage Connector...");
 
 		final IamOptions iamOptions = new IamOptions.Builder()
 				.apiKey(apikey)
@@ -63,6 +63,10 @@ public class VisualRecognitionService {
 		service.setEndPoint(url);
 
 		validateImageFile(context, VisualRequestObject);
+		if (classifiers == null || classifiers.isEmpty()) {
+			LOGGER.error("ClassifyImage needs at least one classifier to be specified");
+			throw new MendixException("No classifiers are specified");
+		}
 
 		final InputStream imageInputStream = new RestartableInputStream(context, VisualRequestObject.getMendixObject());
 
@@ -73,7 +77,7 @@ public class VisualRecognitionService {
 			response = service.classify(options).execute();
 		}catch(Exception e){
 			LOGGER.error("Watson Service connection - Failed classifying the image: " + VisualRequestObject.getName(), e);
-			throw new MendixException(e);
+			throw new MendixException(getExceptionString(e), e);
 		}
 
 		final List<IMendixObject> responseResults = new ArrayList<IMendixObject>();
