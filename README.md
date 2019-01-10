@@ -3,9 +3,9 @@
 The IBM Watson Connector Suite is a collection of connectors that brings the [IBM Watson cognitive services](https://www.ibm.com/watson/developercloud/) to the Mendix platform.
 For the latest documentation, please refer to our [Mendix Docs](https://docs.mendix.com/refguide/ibm/ibm-watson-connector).
 
-## Try it out an example in Bluemix
+## Try it out an example in IBM Cloud
 
-1. Deploy an example application using the Mendix's IBM Watson Connector Suite by clicking on the following button (or follow [this documentation](documentation/deploy-bluemix-button.md)).
+1. Deploy an example application using the Mendix's IBM Watson Connector Suite by clicking on the following button (or follow [this documentation](documentation/deploy-ibm-cloud-button.md)).
 
    [![Deploy to IBM Cloud](https://cloud.ibm.com/devops/setup/deploy/button.png)](https://cloud.ibm.com/devops/setup/deploy?repository=https://github.com/mendix/IBM-Watson-Connector-Suite.git)
 
@@ -76,7 +76,9 @@ The Watson Connectors Suite will install the following dependencies in your proj
 
 ## Known issues
 
-The ChatWidget doesn't show the username properly when the example app is deployed in a sandbox.
+* The ChatWidget doesn't show the username properly when the example app is deployed in a sandbox.
+* Not all Watson services are available in all regions.
+The the [Service availability](https://cloud.ibm.com/docs/resources/services_region.html#services_region) document contains a comprehensive list of services and the regions where they are available.
 
 ## Build Details
 
