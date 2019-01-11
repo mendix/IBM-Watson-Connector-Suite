@@ -123,6 +123,7 @@ public class LanguageTranslationService {
 			mendixTM.setModelId(tm.getModelId());
 			mendixTM.setTranslationModel_SourceLanguage(findLanguage(languages, tm.getSource()));
 			mendixTM.setTranslationModel_TargetLanguage(findLanguage(languages, tm.getTarget()));
+			mendixModels.add(mendixTM.getMendixObject());
 		}
 
 		return mendixModels;

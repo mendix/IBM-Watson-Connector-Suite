@@ -90,10 +90,12 @@ public class TextToSpeechService {
 		}
 	}
 
-	private static String getFileExtension(AudioFormats_TextToSpeech audioFormatEnum) {
-		if (audioFormatEnum == null) {
-			return ".ogg";
+	private static String getFileExtension(AudioFormats_TextToSpeech audioFormatEnum) throws MendixException {
+		if(audioFormatEnum == null) {
+			LOGGER.error("getFileExtension: audio format is empty");
+			throw new MendixException("audio format is empty");
 		}
+
 		switch (audioFormatEnum) {
 		case BASIC:
 			return ".au";
@@ -116,65 +118,50 @@ public class TextToSpeechService {
 		case WEBM_VORBIS:
 			return ".webm";
 		default:
-			return ".ogg";
+			LOGGER.error("getFileExtension: cannot map unsupported format " + audioFormatEnum + " to a file extension");
+			throw new MendixException("The supplied parameter doesn't correspond to any audio format: " + audioFormatEnum);
 		}
 	}
 
 	private static String getVoice(VoiceEnum parameter) throws MendixException {
-		String voice = null;
-		
+		if(parameter == null) {
+			LOGGER.error("getVoice: parameter is empty");
+			throw new MendixException("parameter is empty");
+		}
+
 		switch(parameter){
 			case DE_DE_BIRGIT:
-				voice = SynthesizeOptions.Voice.DE_DE_BIRGITVOICE;
-				break;
+				return SynthesizeOptions.Voice.DE_DE_BIRGITVOICE;
 			case DE_DE_DIETER:
-				voice = SynthesizeOptions.Voice.DE_DE_DIETERVOICE;
-				break;
+				return SynthesizeOptions.Voice.DE_DE_DIETERVOICE;
 			case EN_GB_KATE:
-				voice = SynthesizeOptions.Voice.EN_GB_KATEVOICE;
-				break;
+				return SynthesizeOptions.Voice.EN_GB_KATEVOICE;
 			case EN_US_ALLISON:
-				voice = SynthesizeOptions.Voice.EN_US_ALLISONVOICE;
-				break;
+				return SynthesizeOptions.Voice.EN_US_ALLISONVOICE;
 			case EN_US_LISA:
-				voice = SynthesizeOptions.Voice.EN_US_LISAVOICE;
-				break;
+				return SynthesizeOptions.Voice.EN_US_LISAVOICE;
 			case EN_US_MICHAEL:
-				voice = SynthesizeOptions.Voice.EN_US_MICHAELVOICE;
-				break;
+				return SynthesizeOptions.Voice.EN_US_MICHAELVOICE;
 			case ES_ES_ENRIQUE:
-				voice = SynthesizeOptions.Voice.ES_ES_ENRIQUEVOICE;
-				break;
+				return SynthesizeOptions.Voice.ES_ES_ENRIQUEVOICE;
 			case ES_ES_LAURA:
-				voice = SynthesizeOptions.Voice.ES_ES_LAURAVOICE;
-				break;
+				return SynthesizeOptions.Voice.ES_ES_LAURAVOICE;
 			case ES_LA_SOFIA:
-				voice = SynthesizeOptions.Voice.ES_LA_SOFIAVOICE;
-				break;
+				return SynthesizeOptions.Voice.ES_LA_SOFIAVOICE;
 			case ES_US_SOFIA:
-				voice = SynthesizeOptions.Voice.ES_US_SOFIAVOICE;
-				break;
+				return SynthesizeOptions.Voice.ES_US_SOFIAVOICE;
 			case FR_FR_RENEE:
-				voice = SynthesizeOptions.Voice.FR_FR_RENEEVOICE;
-				break;
+				return SynthesizeOptions.Voice.FR_FR_RENEEVOICE;
 			case IT_IT_FRANCESCA:
-				voice = SynthesizeOptions.Voice.IT_IT_FRANCESCAVOICE;
-				break;
+				return SynthesizeOptions.Voice.IT_IT_FRANCESCAVOICE;
 			case JA_JP_EMI:
-				voice = SynthesizeOptions.Voice.JA_JP_EMIVOICE;
-				break;
+				return SynthesizeOptions.Voice.JA_JP_EMIVOICE;
 			case PT_BR_ISABELA:
-				voice = SynthesizeOptions.Voice.PT_BR_ISABELAVOICE;
-				break;
-		default:
-			break;
+				return SynthesizeOptions.Voice.PT_BR_ISABELAVOICE;
+			default:
+				LOGGER.error("getVoice: cannot map unsupported voice " + parameter + " to a voice parameter");
+				throw new MendixException("The supplied parameter doesn't correspond to any voice: " + parameter);
 		}
-
-		if(voice == null){
-			throw new MendixException("The supplied parameter doesn't correspond to any voice: " + parameter);
-		}
-
-		return voice;
 	}
 
 }

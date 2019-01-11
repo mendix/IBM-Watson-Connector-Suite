@@ -221,7 +221,7 @@ public class VisualRecognitionService {
 			response = service.detectFaces(options).execute();
 		} catch (Exception e) {
 			LOGGER.error("Watson Service connection - Failed detecting the faces in the image: " + image.getName(), e);
-			throw new MendixException(e.getMessage(), e);
+			throw new MendixException(getExceptionString(e), e);
 		}
 
 		final List<IMendixObject> results = new ArrayList<IMendixObject>();
@@ -300,6 +300,10 @@ public class VisualRecognitionService {
 	}
 
 	private static void validateImageFile(IContext context, Image image) throws MendixException {
+		if (image == null || !image.getHasContents(context)) {
+			LOGGER.error("Empty image provided");
+			throw new MendixException("Image is empty");
+		}
 		final String imageFileName = new File(image.getName(context)).getName();
 
 		// Get file extension

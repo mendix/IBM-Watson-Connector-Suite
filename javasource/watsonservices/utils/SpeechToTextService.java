@@ -66,7 +66,7 @@ public class SpeechToTextService {
 		Core.commit(context, speechToTextObj.getMendixObject());
 		return speechToTextObj.getMendixObject();
 	}
-	private static String getAudioFormat(AudioFormats_SpeechToText audioFormat){
+	private static String getAudioFormat(AudioFormats_SpeechToText audioFormat) throws MendixException {
 		if (audioFormat == null) {
 			return RecognizeOptions.ContentType.APPLICATION_OCTET_STREAM;
 		}
@@ -96,10 +96,15 @@ public class SpeechToTextService {
 	        case MPEG:
 	            return RecognizeOptions.ContentType.AUDIO_MPEG;
 	        default:
-	            return RecognizeOptions.ContentType.APPLICATION_OCTET_STREAM;
+	            LOGGER.error("getAudioFormat: cannot map unsupported audio format " + audioFormat + " to a content type");
+	            throw new MendixException("Unsupported audio format: " + audioFormat);
         }
 	}
 	private static String getAudioLanguage(AudioLanguage audioLanguage) throws MendixException {
+		if(audioLanguage == null) {
+			LOGGER.error("getAudioLanguage: audioLanguage is empty");
+			throw new MendixException("audioLanguage is empty");
+		}
         switch (audioLanguage){
         	case Brazillian_Portuguese:
 	            return RecognizeOptions.Model.PT_BR_NARROWBANDMODEL;
