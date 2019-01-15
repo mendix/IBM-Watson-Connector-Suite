@@ -22,7 +22,7 @@ public class TextToSpeechService {
 	private static final String WATSON_TEXT_TO_SPEECH_LOGNODE = "WatsonServices.IBM_WatsonConnector_TextToSpeech";
 	private static final ILogNode LOGGER = Core.getLogger(Core.getConfiguration().getConstantValue(WATSON_TEXT_TO_SPEECH_LOGNODE).toString());
 
-	public static IMendixObject synthesize(IContext context, String text, VoiceEnum voiceEnumParameter, AudioFormats_TextToSpeech audioFormatEnum, String apiKey, String url) throws MendixException {
+	public static IMendixObject synthesize(IContext context, String apiKey, String url, String text, VoiceEnum voiceEnumParameter, AudioFormats_TextToSpeech audioFormatEnum) throws MendixException {
 		LOGGER.debug("Executing Synthetize Connector...");
 
 		IamOptions iamOptions = new IamOptions.Builder()

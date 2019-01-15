@@ -16,17 +16,17 @@ import watsonservices.utils.VisualRecognitionService;
 
 public class CreateClassifier extends CustomJavaAction<java.lang.String>
 {
-	private IMendixObject __classifier;
-	private watsonservices.proxies.Classifier classifier;
 	private java.lang.String apikey;
 	private java.lang.String url;
+	private IMendixObject __classifier;
+	private watsonservices.proxies.Classifier classifier;
 
-	public CreateClassifier(IContext context, IMendixObject classifier, java.lang.String apikey, java.lang.String url)
+	public CreateClassifier(IContext context, java.lang.String apikey, java.lang.String url, IMendixObject classifier)
 	{
 		super(context);
-		this.__classifier = classifier;
 		this.apikey = apikey;
 		this.url = url;
+		this.__classifier = classifier;
 	}
 
 	@Override
@@ -35,7 +35,7 @@ public class CreateClassifier extends CustomJavaAction<java.lang.String>
 		this.classifier = __classifier == null ? null : watsonservices.proxies.Classifier.initialize(getContext(), __classifier);
 
 		// BEGIN USER CODE
-		return VisualRecognitionService.createClassifier(getContext(), classifier, apikey, url);
+		return VisualRecognitionService.createClassifier(getContext(), apikey, url, classifier);
 		// END USER CODE
 	}
 

@@ -52,7 +52,7 @@ public class VisualRecognitionService {
 	private static final String WATSON_DETECT_FACES_SUPPORTED_IMAGE_EXTENSION_ZIP = "zip";
 	private static final String WATSON_VISUAL_RECOGNITION_VERSION_DATE = "2018-03-19";
 
-	public static List<IMendixObject> classifyImage(IContext context, VisualRecognitionImage VisualRequestObject, List<Classifier> classifiers, String apikey, String url) throws MendixException {
+	public static List<IMendixObject> classifyImage(IContext context, String apikey, String url, VisualRecognitionImage VisualRequestObject, List<Classifier> classifiers) throws MendixException {
 		LOGGER.debug("Executing ClassifyImage Connector...");
 
 		final IamOptions iamOptions = new IamOptions.Builder()
@@ -115,7 +115,7 @@ public class VisualRecognitionService {
 		return responseResults;
 	}
 	
-	public static String createClassifier(IContext context, Classifier classifier, String apikey, String url) throws CoreException, MendixException {
+	public static String createClassifier(IContext context, String apikey, String url, Classifier classifier) throws CoreException, MendixException {
 		LOGGER.debug("Executing CreateClassifier Connector...");
 
 		final IamOptions iamOptions = new IamOptions.Builder()
@@ -174,7 +174,7 @@ public class VisualRecognitionService {
 				.collect(Collectors.toList());
 	}
 
-	public static void deleteClassifier(IContext context, String classifierId, String apikey, String url) throws MendixException {
+	public static void deleteClassifier(IContext context, String apikey, String url, String classifierId) throws MendixException {
 		LOGGER.debug("Executing deleteClassifier Connector...");
 
 		final IamOptions iamOptions = new IamOptions.Builder()
@@ -195,7 +195,7 @@ public class VisualRecognitionService {
 		}
 	}
 
-	public static List<IMendixObject> detectFaces(IContext context, Image image, String apikey, String url) throws MendixException {
+	public static List<IMendixObject> detectFaces(IContext context, String apikey, String url, Image image) throws MendixException {
 		LOGGER.debug("Executing DetectFaces Connector...");
 		
 

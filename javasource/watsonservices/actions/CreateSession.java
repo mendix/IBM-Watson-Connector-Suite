@@ -19,17 +19,17 @@ import com.mendix.systemwideinterfaces.core.IMendixObject;
  */
 public class CreateSession extends CustomJavaAction<IMendixObject>
 {
-	private IMendixObject __assistant;
-	private watsonservices.proxies.Assistant assistant;
 	private java.lang.String apikey;
 	private java.lang.String url;
+	private IMendixObject __assistant;
+	private watsonservices.proxies.Assistant assistant;
 
-	public CreateSession(IContext context, IMendixObject assistant, java.lang.String apikey, java.lang.String url)
+	public CreateSession(IContext context, java.lang.String apikey, java.lang.String url, IMendixObject assistant)
 	{
 		super(context);
-		this.__assistant = assistant;
 		this.apikey = apikey;
 		this.url = url;
+		this.__assistant = assistant;
 	}
 
 	@Override
@@ -38,7 +38,7 @@ public class CreateSession extends CustomJavaAction<IMendixObject>
 		this.assistant = __assistant == null ? null : watsonservices.proxies.Assistant.initialize(getContext(), __assistant);
 
 		// BEGIN USER CODE
-		return AssistantService.createSession(getContext(), assistant, apikey, url);
+		return AssistantService.createSession(getContext(), apikey, url, assistant);
 		// END USER CODE
 	}
 

@@ -29,8 +29,8 @@ public class SpeechToTextService {
 
 	private static final ILogNode LOGGER = Core.getLogger("SpeechToTextService");
 
-	public static IMendixObject transcribe(IContext context, FileDocument audioFileParameter1, AudioFormats_SpeechToText audioFormat, AudioLanguage audioLanguage,
-			String apiKey, String url) throws MendixException {
+	public static IMendixObject transcribe(IContext context, String apiKey, String url,
+			FileDocument audioFileParameter1, AudioFormats_SpeechToText audioFormat, AudioLanguage audioLanguage) throws MendixException {
 
 		IamOptions iamOptions = new IamOptions.Builder()
 				.apiKey(apiKey)

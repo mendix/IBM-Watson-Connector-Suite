@@ -15,23 +15,23 @@ import watsonservices.utils.VisualRecognitionService;
 
 public class DeleteClassifier extends CustomJavaAction<java.lang.Boolean>
 {
-	private java.lang.String classifierId;
+	private java.lang.String apikey;
 	private java.lang.String url;
-	private java.lang.String apiKey;
+	private java.lang.String classifierId;
 
-	public DeleteClassifier(IContext context, java.lang.String classifierId, java.lang.String url, java.lang.String apiKey)
+	public DeleteClassifier(IContext context, java.lang.String apikey, java.lang.String url, java.lang.String classifierId)
 	{
 		super(context);
-		this.classifierId = classifierId;
+		this.apikey = apikey;
 		this.url = url;
-		this.apiKey = apiKey;
+		this.classifierId = classifierId;
 	}
 
 	@Override
 	public java.lang.Boolean executeAction() throws Exception
 	{
 		// BEGIN USER CODE
-		VisualRecognitionService.deleteClassifier(getContext(), classifierId, apiKey, url);
+		VisualRecognitionService.deleteClassifier(getContext(), apikey, url, classifierId);
 		return true;
 		// END USER CODE
 	}

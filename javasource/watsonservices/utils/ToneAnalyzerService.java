@@ -24,7 +24,7 @@ public class ToneAnalyzerService {
 	private static final ILogNode LOGGER = Core.getLogger((Core.getConfiguration().getConstantValue(WATSON_TONE_ANALYZER_LOGNODE).toString()));
 	private static final String WATSON_TONE_ANALYZER_VERSION_DATE = "2017-09-21";
 
-	public static IMendixObject analyzeTone(IContext context, String text, String apiKey, String url) throws MendixException {
+	public static IMendixObject analyzeTone(IContext context, String apiKey, String url, String text) throws MendixException {
 		LOGGER.debug("Executing Watson AnalyzeTone Connector...");
 
 		IamOptions iamOptions = new IamOptions.Builder()

@@ -16,23 +16,23 @@ import watsonservices.utils.ToneAnalyzerService;
 
 public class AnalyzeGeneralTone extends CustomJavaAction<IMendixObject>
 {
-	private java.lang.String text;
 	private java.lang.String apikey;
 	private java.lang.String url;
+	private java.lang.String text;
 
-	public AnalyzeGeneralTone(IContext context, java.lang.String text, java.lang.String apikey, java.lang.String url)
+	public AnalyzeGeneralTone(IContext context, java.lang.String apikey, java.lang.String url, java.lang.String text)
 	{
 		super(context);
-		this.text = text;
 		this.apikey = apikey;
 		this.url = url;
+		this.text = text;
 	}
 
 	@Override
 	public IMendixObject executeAction() throws Exception
 	{
 		// BEGIN USER CODE
-		return ToneAnalyzerService.analyzeTone(getContext(), text, apikey, url);
+		return ToneAnalyzerService.analyzeTone(getContext(), apikey, url, text);
 		// END USER CODE
 	}
 

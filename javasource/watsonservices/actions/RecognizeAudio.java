@@ -16,21 +16,21 @@ import com.mendix.systemwideinterfaces.core.IMendixObject;
 
 public class RecognizeAudio extends CustomJavaAction<IMendixObject>
 {
+	private java.lang.String apikey;
+	private java.lang.String url;
 	private IMendixObject __audioFile;
 	private system.proxies.FileDocument audioFile;
 	private watsonservices.proxies.AudioFormats_SpeechToText audioFormat;
 	private watsonservices.proxies.AudioLanguage audioLanguage;
-	private java.lang.String apikey;
-	private java.lang.String url;
 
-	public RecognizeAudio(IContext context, IMendixObject audioFile, java.lang.String audioFormat, java.lang.String audioLanguage, java.lang.String apikey, java.lang.String url)
+	public RecognizeAudio(IContext context, java.lang.String apikey, java.lang.String url, IMendixObject audioFile, java.lang.String audioFormat, java.lang.String audioLanguage)
 	{
 		super(context);
+		this.apikey = apikey;
+		this.url = url;
 		this.__audioFile = audioFile;
 		this.audioFormat = audioFormat == null ? null : watsonservices.proxies.AudioFormats_SpeechToText.valueOf(audioFormat);
 		this.audioLanguage = audioLanguage == null ? null : watsonservices.proxies.AudioLanguage.valueOf(audioLanguage);
-		this.apikey = apikey;
-		this.url = url;
 	}
 
 	@Override
@@ -39,7 +39,7 @@ public class RecognizeAudio extends CustomJavaAction<IMendixObject>
 		this.audioFile = __audioFile == null ? null : system.proxies.FileDocument.initialize(getContext(), __audioFile);
 
 		// BEGIN USER CODE
-		return SpeechToTextService.transcribe(getContext(), this.audioFile, audioFormat, audioLanguage, apikey, url);
+		return SpeechToTextService.transcribe(getContext(), apikey, url, audioFile, audioFormat, audioLanguage);
 		// END USER CODE
 	}
 

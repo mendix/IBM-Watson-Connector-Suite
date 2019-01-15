@@ -16,17 +16,17 @@ import com.mendix.systemwideinterfaces.core.IMendixObject;
 
 public class GetModels extends CustomJavaAction<java.util.List<IMendixObject>>
 {
-	private java.util.List<IMendixObject> __languages;
-	private java.util.List<watsonservices.proxies.Language> languages;
 	private java.lang.String apikey;
 	private java.lang.String url;
+	private java.util.List<IMendixObject> __languages;
+	private java.util.List<watsonservices.proxies.Language> languages;
 
-	public GetModels(IContext context, java.util.List<IMendixObject> languages, java.lang.String apikey, java.lang.String url)
+	public GetModels(IContext context, java.lang.String apikey, java.lang.String url, java.util.List<IMendixObject> languages)
 	{
 		super(context);
-		this.__languages = languages;
 		this.apikey = apikey;
 		this.url = url;
+		this.__languages = languages;
 	}
 
 	@Override
@@ -38,7 +38,7 @@ public class GetModels extends CustomJavaAction<java.util.List<IMendixObject>>
 				this.languages.add(watsonservices.proxies.Language.initialize(getContext(), __languagesElement));
 
 		// BEGIN USER CODE
-		return LanguageTranslationService.getModels(getContext(), languages, apikey, url);
+		return LanguageTranslationService.getModels(getContext(), apikey, url, languages);
 		// END USER CODE
 	}
 

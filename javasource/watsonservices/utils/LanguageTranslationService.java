@@ -59,7 +59,7 @@ public class LanguageTranslationService {
 		return results;
 	}
 
-	public static IMendixObject translate(IContext context, Translation translation, String apiKey, String url) throws MendixException {
+	public static IMendixObject translate(IContext context, String apiKey, String url, Translation translation) throws MendixException {
 		LOGGER.debug("Executing Translate Connector...");
 
 		IamOptions iamOptions = new IamOptions.Builder()
@@ -94,7 +94,7 @@ public class LanguageTranslationService {
 		return translation.getMendixObject();
 	}
 
-	public static List<IMendixObject> getModels(IContext context, List<Language> languages, String apiKey, String url) throws MendixException {
+	public static List<IMendixObject> getModels(IContext context, String apiKey, String url, List<Language> languages) throws MendixException {
 		LOGGER.debug("Executing GetModels Connector...");
 
 		if (languages == null || languages.isEmpty()) {

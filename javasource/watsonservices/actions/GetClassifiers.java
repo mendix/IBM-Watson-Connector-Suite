@@ -16,21 +16,21 @@ import com.mendix.systemwideinterfaces.core.IMendixObject;
 
 public class GetClassifiers extends CustomJavaAction<java.util.List<IMendixObject>>
 {
+	private java.lang.String apikey;
 	private java.lang.String url;
-	private java.lang.String apiKey;
 
-	public GetClassifiers(IContext context, java.lang.String url, java.lang.String apiKey)
+	public GetClassifiers(IContext context, java.lang.String apikey, java.lang.String url)
 	{
 		super(context);
+		this.apikey = apikey;
 		this.url = url;
-		this.apiKey = apiKey;
 	}
 
 	@Override
 	public java.util.List<IMendixObject> executeAction() throws Exception
 	{
 		// BEGIN USER CODE
-		return VisualRecognitionService.getClassifiers(getContext(), apiKey, url);
+		return VisualRecognitionService.getClassifiers(getContext(), apikey, url);
 		// END USER CODE
 	}
 

@@ -19,19 +19,19 @@ import watsonservices.utils.AssistantService;
  */
 public class SendMessage extends CustomJavaAction<IMendixObject>
 {
-	private java.lang.String input;
-	private IMendixObject __sessionContext;
-	private watsonservices.proxies.SessionContext sessionContext;
 	private java.lang.String apikey;
 	private java.lang.String url;
+	private IMendixObject __sessionContext;
+	private watsonservices.proxies.SessionContext sessionContext;
+	private java.lang.String input;
 
-	public SendMessage(IContext context, java.lang.String input, IMendixObject sessionContext, java.lang.String apikey, java.lang.String url)
+	public SendMessage(IContext context, java.lang.String apikey, java.lang.String url, IMendixObject sessionContext, java.lang.String input)
 	{
 		super(context);
-		this.input = input;
-		this.__sessionContext = sessionContext;
 		this.apikey = apikey;
 		this.url = url;
+		this.__sessionContext = sessionContext;
+		this.input = input;
 	}
 
 	@Override
@@ -40,7 +40,7 @@ public class SendMessage extends CustomJavaAction<IMendixObject>
 		this.sessionContext = __sessionContext == null ? null : watsonservices.proxies.SessionContext.initialize(getContext(), __sessionContext);
 
 		// BEGIN USER CODE
-		return AssistantService.sendMessage(getContext(), sessionContext, input, apikey, url);
+		return AssistantService.sendMessage(getContext(), apikey, url, sessionContext, input);
 		// END USER CODE
 	}
 
