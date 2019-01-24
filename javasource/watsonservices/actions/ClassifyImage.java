@@ -19,17 +19,19 @@ import watsonservices.utils.VisualRecognitionService;
  */
 public class ClassifyImage extends CustomJavaAction<java.util.List<IMendixObject>>
 {
+	private java.lang.String apikey;
+	private java.lang.String url;
 	private IMendixObject __VisualRequestObject;
 	private watsonservices.proxies.VisualRecognitionImage VisualRequestObject;
-	private java.lang.String apikey;
 	private java.util.List<IMendixObject> __classifiers;
 	private java.util.List<watsonservices.proxies.Classifier> classifiers;
 
-	public ClassifyImage(IContext context, IMendixObject VisualRequestObject, java.lang.String apikey, java.util.List<IMendixObject> classifiers)
+	public ClassifyImage(IContext context, java.lang.String apikey, java.lang.String url, IMendixObject VisualRequestObject, java.util.List<IMendixObject> classifiers)
 	{
 		super(context);
-		this.__VisualRequestObject = VisualRequestObject;
 		this.apikey = apikey;
+		this.url = url;
+		this.__VisualRequestObject = VisualRequestObject;
 		this.__classifiers = classifiers;
 	}
 
@@ -44,7 +46,7 @@ public class ClassifyImage extends CustomJavaAction<java.util.List<IMendixObject
 				this.classifiers.add(watsonservices.proxies.Classifier.initialize(getContext(), __classifiersElement));
 
 		// BEGIN USER CODE
-		return VisualRecognitionService.classifyImage(getContext(), VisualRequestObject, classifiers, apikey);
+		return VisualRecognitionService.classifyImage(getContext(), apikey, url, VisualRequestObject, classifiers);
 		// END USER CODE
 	}
 

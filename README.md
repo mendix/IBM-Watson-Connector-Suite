@@ -3,34 +3,39 @@
 The IBM Watson Connector Suite is a collection of connectors that brings the [IBM Watson cognitive services](https://www.ibm.com/watson/developercloud/) to the Mendix platform.
 For the latest documentation, please refer to our [Mendix Docs](https://docs.mendix.com/refguide/ibm/ibm-watson-connector).
 
-## Try it out an example in Bluemix
+## Try it out an example in IBM Cloud
 
-1. Deploy an example application using the Mendix's IBM Watson Connector Suite by clicking on the following button (or follow [this documentation](documentation/deploy-bluemix-button.md)). [![Deploy to Bluemix](https://bluemix.net/deploy/button.png)](https://bluemix.net/deploy?repository=https://github.com/mendix/IBM-Watson-Connector-Suite.git)
+1. Deploy an example application using the Mendix's IBM Watson Connector Suite by clicking on the following button (or follow [this documentation](documentation/deploy-ibm-cloud-button.md)).
 
-2. When possible, IBM watson services should be automatically configured. To check the service and configure the Alchemy service manually please refer to the [documentation here](documentation/usage.md).
+   [![Deploy to IBM Cloud](https://cloud.ibm.com/devops/setup/deploy/button.png)](https://cloud.ibm.com/devops/setup/deploy?repository=https://github.com/mendix/IBM-Watson-Connector-Suite.git)
+
+2. When possible, IBM Watson services should be automatically configured. To check the service, please refer to the [documentation here](documentation/usage.md).
 
 ## Getting Started with the connectors
 
-With this project and you will be ready to go using the [Mendix Modeler](https://appstore.home.mendix.com/index3.html) to deploy locally or in the Mendix free tier (because this is an example app plus the connectors that point to several IBM Watson services).
+With this project and you will be ready to go using the [Mendix Modeler](https://appstore.home.mendix.com/link/modelers/) to deploy locally or in the Mendix free tier (because this is an example app plus the connectors that point to several IBM Watson services).
 
 ### Prerequisities
 
 * Mendix user account (sign up [here](https://www.mendix.com/try-now/))
-* IBM Bluemix account (sign up [here](https://console.ng.bluemix.net/registration/))
-* Mendix Modeler (only Windows-compatible) (download [here](https://appstore.home.mendix.com/index3.html))
+* IBM Cloud account (sign up [here](https://cloud.ibm.com/registration))
+* Mendix Modeler (only Windows-compatible) (download [here](https://appstore.home.mendix.com/link/modelers/))
 
 ### Features
 
 These are the Watson APIs that have a connector implemented:
 
-* Conversation – [Send Message](http://www.ibm.com/watson/developercloud/conversation/api/v1/#send_message)
-* Language Translation – [Translate](http://www.ibm.com/watson/developercloud/language-translation/api/v2/#translate)
-* Language Translation – [Get Identifiable Languages](http://www.ibm.com/watson/developercloud/language-translation/api/v2/#identifiable_languages)
-* Text to Speech – [Synthesize](http://www.ibm.com/watson/developercloud/text-to-speech/api/v1/#synthesize audio)
-* Tone Analyzer – [Analyze Tone ](https://www.ibm.com/watson/developercloud/tone-analyzer/api/v3/#post-tone)
-* Visual Recognition – [Classify Image](http://www.ibm.com/watson/developercloud/visual-recognition/api/v3/#classify_an_image)
-* Visual Recognition – [Create Classifier](http://www.ibm.com/watson/developercloud/visual-recognition/api/v3/#create_a_classifier)
-* Visual Recognition - [Detect Faces](http://www.ibm.com/watson/developercloud/visual-recognition/api/v3/#detect_faces)
+* Assistant (formerly Conversation) – [Create Session](https://cloud.ibm.com/apidocs/assistant-v2#create-a-session)
+* Assistant (formerly Conversation) – [Send Message](https://cloud.ibm.com/apidocs/assistant-v2#send-user-input-to-assistant)
+* Language Translation – [Translate](https://cloud.ibm.com/apidocs/language-translator#translate)
+* Language Translation – [Get Identifiable Languages](https://cloud.ibm.com/apidocs/language-translator#list-identifiable-languages)
+* Language Translation – [Get Models](https://cloud.ibm.com/apidocs/language-translator#list-models)
+* Text to Speech – [Synthesize](https://cloud.ibm.com/apidocs/text-to-speech#synthesize-audio)
+* Speech to Text – [Recognize Audio](https://cloud.ibm.com/apidocs/speech-to-text#recognize-audio)
+* Tone Analyzer – [Analyze Tone](https://cloud.ibm.com/apidocs/tone-analyzer#analyze-general-tone)
+* Visual Recognition – [Classify Image](https://cloud.ibm.com/apidocs/visual-recognition#classify-an-image)
+* Visual Recognition – [Create Classifier](https://cloud.ibm.com/apidocs/visual-recognition#create-a-classifier)
+* Visual Recognition – [Detect Faces](https://cloud.ibm.com/apidocs/visual-recognition#detect-faces-in-an-image)
 
 ### Installation
 
@@ -48,29 +53,17 @@ Once you have imported the module into your project, you will have at your dispo
 
 ### Configuration
 
-In your IBM Bluemix console, every instance of a Watson service will have a section called "Service credentials", which will provide you the data in a format like this:
+In your IBM Cloud console, every instance of a Watson service will have a section called "Service credentials", which will provide you the data in a format like this:
 
 ```
 {
   "credentials": {
-    "url": "<SERVICE_URL_PROVIDED_BY_IBM_BLUEMIX>",
-    "note": "It may take up to 5 minutes for this key to become active",
-    "apikey": "<YOUR_API_KEY>"
+    "apikey": "<YOUR_API_KEY>",
+    "url": "<SERVICE_URL_PROVIDED_BY_IBM_CLOUD>"
   }
 }
 ```
 
-Alternatively, if the service does not require an API key, it will instead require a username and password:
-
-```
-{
-  "credentials": {
-    "url": "<SERVICE_URL_PROVIDED_BY_IBM_BLUEMIX>",
-    "password": "<YOUR_PASSWORD>",
-    "username": "<YOUR_USERNAME>"
-  }
-}
-```
 Please follow the instructions in the example app to provide the service with the necessary credentials.
 
 ## Dependencies
@@ -78,20 +71,20 @@ Please follow the instructions in the example app to provide the service with th
 The Watson Connectors Suite will install the following dependencies in your project's *userlib* folder:
 
 * java-sdk-x.y.z-jar-with-dependencies.jar
-* org.apache.commons.io-2.3.0.jar
-* org.apache.commons.lang3.jar
 
 > Note: Please be aware if you upgrade The Watson Connector Suite in your project, you will have to remove manually the old version of these dependencies.
 
 ## Known issues
 
-The ChatWidget doesn't show the username properly when the example app is deployed in a sandbox.
+* The ChatWidget doesn't show the username properly when the example app is deployed in a sandbox.
+* Not all Watson services are available in all regions.
+The the [Service availability](https://cloud.ibm.com/docs/resources/services_region.html#services_region) document contains a comprehensive list of services and the regions where they are available.
 
 ## Build Details
 
 This was built with the following:
 
-* Mendix Modeler 6.6.0
+* Mendix Modeler 7.15.1
 * Eclipse IDE Neon
 
 ## Versioning

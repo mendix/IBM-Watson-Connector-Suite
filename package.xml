@@ -30,7 +30,7 @@
       <file path="userlib\fontbox-1.8.5.jar.CommunityCommons.RequiredLib" />
       <file path="userlib\guice-2.0.jar" />
       <file path="userlib\guice-2.0.jar.AppCloudServices.RequiredLib" />
-      <file path="userlib\java-sdk-3.5.3-jar-with-dependencies.jar" />
+      <file path="userlib\java-sdk-6.11.0-mendix-jar-with-dependencies.jar" />
       <file path="userlib\jempbox-1.8.5.jar" />
       <file path="userlib\jempbox-1.8.5.jar.CommunityCommons.RequiredLib" />
       <file path="userlib\joda-time-1.6.2.jar" />

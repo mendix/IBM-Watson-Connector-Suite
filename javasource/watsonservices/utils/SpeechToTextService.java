@@ -1,21 +1,19 @@
 package watsonservices.utils;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.ArrayList;
 
-import org.apache.commons.io.IOUtils;
-import com.ibm.watson.developer_cloud.http.HttpMediaType;
+import com.ibm.watson.developer_cloud.service.security.IamOptions;
 import com.ibm.watson.developer_cloud.speech_to_text.v1.SpeechToText;
 import com.ibm.watson.developer_cloud.speech_to_text.v1.model.RecognizeOptions;
-import com.ibm.watson.developer_cloud.speech_to_text.v1.model.SpeechAlternative;
-import com.ibm.watson.developer_cloud.speech_to_text.v1.model.SpeechResults;
-import com.ibm.watson.developer_cloud.speech_to_text.v1.model.Transcript;
+import com.ibm.watson.developer_cloud.speech_to_text.v1.model.SpeechRecognitionAlternative;
+import com.ibm.watson.developer_cloud.speech_to_text.v1.model.SpeechRecognitionResult;
+import com.ibm.watson.developer_cloud.speech_to_text.v1.model.SpeechRecognitionResults;
 import com.mendix.core.Core;
 import com.mendix.logging.ILogNode;
+import com.mendix.systemwideinterfaces.MendixException;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 
@@ -28,35 +26,34 @@ import watsonservices.proxies.AudioLanguage;
 
 
 public class SpeechToTextService {
-	private static final SpeechToText service = new SpeechToText();
+
 	private static final ILogNode LOGGER = Core.getLogger("SpeechToTextService");
-	public static IMendixObject Transcribe(IContext context, FileDocument audioFileParameter1, String username,
-			String password, AudioFormats_SpeechToText audioFormat, AudioLanguage audioLanguage) throws Exception {
+
+	public static IMendixObject transcribe(IContext context, String apiKey, String url,
+			FileDocument audioFileParameter1, AudioFormats_SpeechToText audioFormat, AudioLanguage audioLanguage) throws MendixException {
+
+		IamOptions iamOptions = new IamOptions.Builder()
+				.apiKey(apiKey)
+				.build();
+		final SpeechToText service = new SpeechToText(iamOptions);
+		service.setEndPoint(url);
 		
-		service.setUsernameAndPassword(username, password);
-		File speechFile = File.createTempFile("speech-file", "tmp");
-		FileOutputStream fos;
-		fos = new FileOutputStream(speechFile);
-		InputStream is = Core.getFileDocumentContent(context, audioFileParameter1.getMendixObject());
-		IOUtils.copy(is, fos);
-		fos.close();
-		is.close();
-		
-		RecognizeOptions options = new RecognizeOptions.Builder().continuous(true).interimResults(true)
+		final InputStream audioFileInputStream = new RestartableInputStream(context, audioFileParameter1.getMendixObject());
+
+		RecognizeOptions options = new RecognizeOptions.Builder().audio(audioFileInputStream).interimResults(true)
 				.contentType(getAudioFormat(audioFormat)).model(getAudioLanguage(audioLanguage)).build();
 
-		SpeechResults transcript = service.recognize(speechFile, options).execute();
-		speechFile.delete();
+		SpeechRecognitionResults transcript = service.recognize(options).execute();
 
 		SpeechReturn speechToTextObj = new SpeechReturn(context);
 		speechToTextObj.setresults_index(transcript.getResultIndex());
 		ArrayList<IMendixObject> mxObjs = new ArrayList<IMendixObject>();
-		for (Transcript result : transcript.getResults()) {
+		for (SpeechRecognitionResult result : transcript.getResults()) {
 			Result res = new Result(context);
-			res.set_final(result.isFinal());
+			res.set_final(result.isFinalResults());
 			res.setresults(speechToTextObj);
 			mxObjs.add(res.getMendixObject());
-			for (SpeechAlternative alt : result.getAlternatives()) {
+			for (SpeechRecognitionAlternative alt : result.getAlternatives()) {
 				Alternative altMx = new Alternative(context);
 				BigDecimal confidence = new BigDecimal(alt.getConfidence(), MathContext.DECIMAL64);
 				altMx.setconfidence(confidence);
@@ -69,85 +66,89 @@ public class SpeechToTextService {
 		Core.commit(context, speechToTextObj.getMendixObject());
 		return speechToTextObj.getMendixObject();
 	}
-	private static String getAudioFormat(AudioFormats_SpeechToText audioFormat){
-		String audio = null;
+	private static String getAudioFormat(AudioFormats_SpeechToText audioFormat) throws MendixException {
+		if (audioFormat == null) {
+			return RecognizeOptions.ContentType.APPLICATION_OCTET_STREAM;
+		}
         switch (audioFormat) {
 	        case FLAC:
-	            audio = HttpMediaType.AUDIO_FLAC;
-	            break;
+	            return RecognizeOptions.ContentType.AUDIO_FLAC;
 	        case BASIC:
-	            audio = HttpMediaType.AUDIO_BASIC;
-	            break;
+	            return RecognizeOptions.ContentType.AUDIO_BASIC;
 	        case OGG:
-	        	audio = HttpMediaType.AUDIO_OGG;
-	        	break;
+	            return RecognizeOptions.ContentType.AUDIO_OGG;
 	        case OGG_VORBIS:
-	            audio = HttpMediaType.AUDIO_OGG_VORBIS;
-	            break;
-	        case RAW:
-	        	audio = HttpMediaType.AUDIO_RAW;
-	            break;
+	            return RecognizeOptions.ContentType.AUDIO_OGG_CODECS_VORBIS;
+	        case OGG_OPUS:
+	            return RecognizeOptions.ContentType.AUDIO_OGG_CODECS_OPUS;
+	        case L16:
+	            return RecognizeOptions.ContentType.AUDIO_L16 + ";rate=22050";
 	        case WAV:
-	        	audio = HttpMediaType.AUDIO_WAV;
-	            break;
-	        case PCM:
-	        	audio = HttpMediaType.AUDIO_PCM;
-	        	break;
-	        default :
-	        	audio = HttpMediaType.AUDIO_RAW;
-	            break;
+	            return RecognizeOptions.ContentType.AUDIO_WAV;
+	        case WEBM:
+	            return RecognizeOptions.ContentType.AUDIO_WEBM;
+	        case WEBM_OPUS:
+	            return RecognizeOptions.ContentType.AUDIO_WEBM_CODECS_OPUS;
+	        case WEBM_VORBIS:
+	            return RecognizeOptions.ContentType.AUDIO_WEBM_CODECS_VORBIS;
+	        case MP3:
+	            return RecognizeOptions.ContentType.AUDIO_MP3;
+	        case MPEG:
+	            return RecognizeOptions.ContentType.AUDIO_MPEG;
+	        default:
+	            LOGGER.error("getAudioFormat: cannot map unsupported audio format " + audioFormat + " to a content type");
+	            throw new MendixException("Unsupported audio format: " + audioFormat);
         }
-        return audio;
 	}
-	private static String getAudioLanguage(AudioLanguage audioLanguage){
-        String model = null;
+	private static String getAudioLanguage(AudioLanguage audioLanguage) throws MendixException {
+		if(audioLanguage == null) {
+			LOGGER.error("getAudioLanguage: audioLanguage is empty");
+			throw new MendixException("audioLanguage is empty");
+		}
         switch (audioLanguage){
         	case Brazillian_Portuguese:
-        		model = "pt-BR_NarrowbandModel";
-        		break;
+	            return RecognizeOptions.Model.PT_BR_NARROWBANDMODEL;
+		    case Brazillian_Portuguese_Broadband:
+	            return RecognizeOptions.Model.PT_BR_BROADBANDMODEL;
         	case French:
-        		model = "fr-FR_BroadbandModel";
-        		break;
+	            return "fr-FR_NarrowbandModel";
+	        case French_Broadband:
+	            return RecognizeOptions.Model.FR_FR_BROADBANDMODEL;
         	case Japanese:
-        		model = "ja-JP_NarrowbandModel";
-        		break;
+	            return RecognizeOptions.Model.JA_JP_NARROWBANDMODEL;
         	case Japanese_Broadband:
-        		model = "ja-JP_BroadbandModel";
-        		break;
+	            return RecognizeOptions.Model.JA_JP_BROADBANDMODEL;
         	case Mandarin_Chinese:
-        		model = "zh-CN_NarrowbandModel";
-        		break;
+	            return RecognizeOptions.Model.ZH_CN_NARROWBANDMODEL;
         	case Mandarin_Chinese_Broadband:
-        		model = "zh-CN_BroadbandModel";
-        		break;
+	            return RecognizeOptions.Model.ZH_CN_BROADBANDMODEL;
         	case Modern_Standard_Arabic:
-        		model = "ar-AR_BroadbandModel";
-        		break;
+	            return RecognizeOptions.Model.AR_AR_BROADBANDMODEL;
         	case Spanish:
-        		model = "es-ES_NarrowbandModel";
-        		break;
+	            return RecognizeOptions.Model.ES_ES_NARROWBANDMODEL;
         	case Spanish_Broadband:
-        		model = "es-ES_BroadbandModel";
-        		break;
+	            return RecognizeOptions.Model.ES_ES_BROADBANDMODEL;
         	case UK_English:
-        		model = "en-UK_NarrowbandModel";
-        		break;
+	            return RecognizeOptions.Model.EN_GB_NARROWBANDMODEL;
         	case UK_English_Broadband:
-        		model = "en-UK_BroadbandModel";
-        		break;
+	            return RecognizeOptions.Model.EN_GB_BROADBANDMODEL;
         	case US_English:
-        		model = "en-US_NarrowbandModel";
-        		break;
+	            return RecognizeOptions.Model.EN_US_NARROWBANDMODEL;
+	        case US_English_ShortForm_Narrowband:
+	            return "en-US_ShortForm_NarrowbandModel";
         	case US_English_Broadband:
-        		model = "en-US_BroadbandModel";
-        		break;
-
+	            return RecognizeOptions.Model.EN_US_BROADBANDMODEL;
+	        case German:
+	            return "de-DE_NarrowbandModel";
+	        case German_Broadband:
+	            return RecognizeOptions.Model.DE_DE_BROADBANDMODEL;
+	        case Korean:
+	            return RecognizeOptions.Model.KO_KR_NARROWBANDMODEL;
+	        case Korean_Broadband:
+	            return RecognizeOptions.Model.KO_KR_BROADBANDMODEL;
         	default:
-        		model = "en-US_BroadbandModel";
-        		break;
-        		
-        		
+	            LOGGER.error("getAudioLanguage: cannot map unsupported language " + audioLanguage + " to a model");
+	            throw new MendixException("Unsupported language: " + audioLanguage);
         }
-        return model;
 	}
 }

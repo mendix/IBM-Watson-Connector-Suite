@@ -20,17 +20,17 @@ import watsonservices.utils.LanguageTranslationService;
  */
 public class Translate extends CustomJavaAction<IMendixObject>
 {
+	private java.lang.String apikey;
+	private java.lang.String url;
 	private IMendixObject __translation;
 	private watsonservices.proxies.Translation translation;
-	private java.lang.String username;
-	private java.lang.String password;
 
-	public Translate(IContext context, IMendixObject translation, java.lang.String username, java.lang.String password)
+	public Translate(IContext context, java.lang.String apikey, java.lang.String url, IMendixObject translation)
 	{
 		super(context);
+		this.apikey = apikey;
+		this.url = url;
 		this.__translation = translation;
-		this.username = username;
-		this.password = password;
 	}
 
 	@Override
@@ -39,7 +39,7 @@ public class Translate extends CustomJavaAction<IMendixObject>
 		this.translation = __translation == null ? null : watsonservices.proxies.Translation.initialize(getContext(), __translation);
 
 		// BEGIN USER CODE
-		return LanguageTranslationService.translate(getContext(), translation, username, password);
+		return LanguageTranslationService.translate(getContext(), apikey, url, translation);
 		// END USER CODE
 	}
 

@@ -12,35 +12,35 @@ package watsonservices.actions;
 import com.mendix.systemwideinterfaces.core.IContext;
 import com.mendix.systemwideinterfaces.core.IMendixObject;
 import com.mendix.webui.CustomJavaAction;
-import watsonservices.utils.ConversationService;
+import watsonservices.utils.AssistantService;
 
 /**
  * Add a natural language interface to your application to automate interactions with your end users. Common applications include virtual agents and chat bots that can integrate and communicate on any channel or device.
  */
 public class SendMessage extends CustomJavaAction<IMendixObject>
 {
-	private java.lang.String username;
-	private java.lang.String password;
+	private java.lang.String apikey;
+	private java.lang.String url;
+	private IMendixObject __sessionContext;
+	private watsonservices.proxies.SessionContext sessionContext;
 	private java.lang.String input;
-	private IMendixObject __conversationContext;
-	private watsonservices.proxies.ConversationContext conversationContext;
 
-	public SendMessage(IContext context, java.lang.String username, java.lang.String password, java.lang.String input, IMendixObject conversationContext)
+	public SendMessage(IContext context, java.lang.String apikey, java.lang.String url, IMendixObject sessionContext, java.lang.String input)
 	{
 		super(context);
-		this.username = username;
-		this.password = password;
+		this.apikey = apikey;
+		this.url = url;
+		this.__sessionContext = sessionContext;
 		this.input = input;
-		this.__conversationContext = conversationContext;
 	}
 
 	@Override
 	public IMendixObject executeAction() throws Exception
 	{
-		this.conversationContext = __conversationContext == null ? null : watsonservices.proxies.ConversationContext.initialize(getContext(), __conversationContext);
+		this.sessionContext = __sessionContext == null ? null : watsonservices.proxies.SessionContext.initialize(getContext(), __sessionContext);
 
 		// BEGIN USER CODE
-		return ConversationService.sendMessage(getContext(), conversationContext, input, username, password);
+		return AssistantService.sendMessage(getContext(), apikey, url, sessionContext, input);
 		// END USER CODE
 	}
 

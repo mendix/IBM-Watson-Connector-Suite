@@ -16,14 +16,16 @@ import watsonservices.utils.VisualRecognitionService;
 
 public class DetectFaces extends CustomJavaAction<java.util.List<IMendixObject>>
 {
-	private java.lang.String apiKey;
+	private java.lang.String apikey;
+	private java.lang.String url;
 	private IMendixObject __image;
 	private system.proxies.Image image;
 
-	public DetectFaces(IContext context, java.lang.String apiKey, IMendixObject image)
+	public DetectFaces(IContext context, java.lang.String apikey, java.lang.String url, IMendixObject image)
 	{
 		super(context);
-		this.apiKey = apiKey;
+		this.apikey = apikey;
+		this.url = url;
 		this.__image = image;
 	}
 
@@ -33,7 +35,7 @@ public class DetectFaces extends CustomJavaAction<java.util.List<IMendixObject>>
 		this.image = __image == null ? null : system.proxies.Image.initialize(getContext(), __image);
 
 		// BEGIN USER CODE
-		return VisualRecognitionService.detectFaces(getContext(), image, apiKey);
+		return VisualRecognitionService.detectFaces(getContext(), apikey, url, image);
 		// END USER CODE
 	}
 

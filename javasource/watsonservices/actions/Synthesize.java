@@ -16,17 +16,17 @@ import watsonservices.utils.TextToSpeechService;
 
 public class Synthesize extends CustomJavaAction<IMendixObject>
 {
-	private java.lang.String username;
-	private java.lang.String password;
+	private java.lang.String apikey;
+	private java.lang.String url;
 	private java.lang.String text;
 	private watsonservices.proxies.VoiceEnum voice;
 	private watsonservices.proxies.AudioFormats_TextToSpeech audioFormat;
 
-	public Synthesize(IContext context, java.lang.String username, java.lang.String password, java.lang.String text, java.lang.String voice, java.lang.String audioFormat)
+	public Synthesize(IContext context, java.lang.String apikey, java.lang.String url, java.lang.String text, java.lang.String voice, java.lang.String audioFormat)
 	{
 		super(context);
-		this.username = username;
-		this.password = password;
+		this.apikey = apikey;
+		this.url = url;
 		this.text = text;
 		this.voice = voice == null ? null : watsonservices.proxies.VoiceEnum.valueOf(voice);
 		this.audioFormat = audioFormat == null ? null : watsonservices.proxies.AudioFormats_TextToSpeech.valueOf(audioFormat);
@@ -36,7 +36,7 @@ public class Synthesize extends CustomJavaAction<IMendixObject>
 	public IMendixObject executeAction() throws Exception
 	{
 		// BEGIN USER CODE
-		return TextToSpeechService.Synthesize(getContext(), text, voice, audioFormat, username, password);
+		return TextToSpeechService.synthesize(getContext(), apikey, url, text, voice, audioFormat);
 		// END USER CODE
 	}
 

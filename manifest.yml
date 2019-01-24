@@ -1,20 +1,23 @@
 ---
 declared-services:
   mendix-example-db:
-    label: elephantsql
-    plan: turtle
-  mendix-example-conv:
+    label: compose-for-postgresql
+    plan: Standard
+  mendix-example-assistant:
     label: conversation
-    plan: free
+    plan: standard
   mendix-example-translator:
     label: language_translator
     plan: standard
   mendix-example-tts:
     label: text_to_speech
     plan: standard
+  mendix-example-stt:
+    label: speech_to_text
+    plan: standard
   mendix-example-vision:
     label: watson_vision_combined
-    plan: free
+    plan: standard-rc
   mendix-example-tone:
     label: tone_analyzer
     plan: standard
@@ -28,8 +31,9 @@ applications:
     DEVELOPMENT_MODE: true
   services:
   - mendix-example-db
-  - mendix-example-conv
+  - mendix-example-assistant
   - mendix-example-translator
   - mendix-example-tts
+  - mendix-example-stt
   - mendix-example-vision
   - mendix-example-tone
